@@ -1,0 +1,955 @@
+/* ============================================================
+   SocialData — Hoja de estilos institucional
+   CSS moderno, autocontenido, sin frameworks externos.
+   ============================================================ */
+
+:root {
+  /* Paleta base */
+  --color-bg: #EFF2EF;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #F5F7F5;
+  --color-ink: #17241F;
+  --color-ink-soft: #52655F;
+  --color-line: #DCE3DE;
+
+  --color-primary: #0F5C52;
+  --color-primary-dark: #0A3F38;
+  --color-primary-soft: #E3EEEB;
+  --color-accent: #B5762C;
+
+  /* Escala de privación / IPM */
+  --color-baja: #3F8F63;
+  --color-baja-bg: #E5F2EA;
+  --color-media: #D9A441;
+  --color-media-bg: #FBF1DE;
+  --color-alta: #B23A2E;
+  --color-alta-bg: #F8E6E3;
+
+  /* Tipografía */
+  --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Métrica */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --shadow-panel: 0 1px 2px rgba(23, 36, 31, 0.06), 0 1px 12px rgba(23, 36, 31, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--color-primary-dark);
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Estructura general
+   ============================================================ */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 16px 28px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.brand-text h1 {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.brand-text p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
+
+/* Breadcrumb */
+.breadcrumb ol {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb li:not(:first-child)::before {
+  content: '/';
+  color: var(--color-line);
+  font-size: 14px;
+}
+
+.crumb {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--color-ink-soft);
+}
+
+.crumb:hover {
+  background: var(--color-surface-soft);
+}
+
+.crumb.is-active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Layout principal (grid de 3 columnas)
+   ============================================================ */
+
+.app-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr) 320px;
+  gap: 16px;
+  padding: 16px 20px;
+  min-height: 0;
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel-header {
+  padding: 16px 18px 10px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.panel-header--indicadores {
+  border-top: 1px solid var(--color-line);
+  margin-top: 8px;
+}
+
+.panel-header h2 {
+  font-size: 17px;
+}
+
+.panel-header h3 {
+  font-size: 14px;
+  color: var(--color-primary-dark);
+}
+
+.panel-subtitle {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--color-ink-soft);
+}
+
+/* ============================================================
+   Panel de dimensiones e indicadores
+   ============================================================ */
+
+.panel-dimensiones {
+  overflow-y: auto;
+}
+
+.lista-dimensiones {
+  padding: 12px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarjeta-dimension {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.tarjeta-dimension:hover {
+  border-color: var(--color-primary);
+}
+
+.tarjeta-dimension.is-activa {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.tarjeta-dimension-indice {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary-dark);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarjeta-dimension-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.tarjeta-dimension-nombre {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.3;
+}
+
+.tarjeta-dimension-peso {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-soft);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+
+.tarjeta-dimension.is-activa .tarjeta-dimension-peso {
+  background: #fff;
+}
+
+.lista-indicadores {
+  padding: 8px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.indicador-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.indicador-item:hover {
+  background: var(--color-surface-soft);
+}
+
+.indicador-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  flex: 0 0 auto;
+}
+
+.indicador-item label {
+  font-size: 13px;
+  color: var(--color-ink);
+  line-height: 1.3;
+}
+
+.indicador-peso {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+.panel-footer {
+  margin-top: auto;
+  padding: 12px 14px 16px;
+  border-top: 1px solid var(--color-line);
+}
+
+.btn-secundario {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--color-primary);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-secundario:hover {
+  background: var(--color-primary-soft);
+}
+
+/* ============================================================
+   Panel del mapa
+   ============================================================ */
+
+.panel-mapa {
+  overflow: hidden;
+}
+
+.mapa-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.mapa-modo {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
+
+.mapa-modo strong {
+  color: var(--color-primary-dark);
+}
+
+.leyenda {
+  display: flex;
+  gap: 14px;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--color-ink-soft);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-baja { background: var(--color-baja); }
+.dot-media { background: var(--color-media); }
+.dot-alta { background: var(--color-alta); }
+
+.mapa-lienzo {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Popups de Leaflet ajustados a la identidad visual */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+}
+
+.popup-titulo {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--color-primary-dark);
+  margin: 0 0 4px;
+}
+
+.popup-ipm {
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+
+.popup-accion {
+  font-size: 12.5px;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Panel de detalle: selector de pestañas (Asistente / Vista técnica)
+   ============================================================ */
+
+.panel-detalle {
+  overflow: hidden; /* el scroll lo maneja cada vista interna, no el panel completo */
+}
+
+.tabs-detalle {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.tab-detalle {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 9px 8px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+}
+
+.tab-detalle:hover {
+  color: var(--color-primary-dark);
+}
+
+.tab-detalle.is-activa {
+  color: var(--color-primary-dark);
+  border-bottom-color: var(--color-primary);
+}
+
+.vista-detalle {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.vista-detalle[hidden] {
+  display: none;
+}
+
+/* ============================================================
+   Panel de detalle estadístico (vista técnica / opción avanzada)
+   ============================================================ */
+
+.detalle-vacio {
+  padding: 24px 18px;
+  color: var(--color-ink-soft);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.detalle-contenido {
+  padding: 16px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tarjetas-ipm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tarjeta-ipm {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-soft);
+}
+
+.tarjeta-ipm--destacada {
+  grid-column: 1 / -1;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.tarjeta-ipm-label {
+  font-size: 11.5px;
+  text-transform: none;
+  color: var(--color-ink-soft);
+}
+
+.tarjeta-ipm-valor {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--color-primary-dark);
+  line-height: 1.2;
+}
+
+.tarjeta-ipm-desc {
+  font-size: 11.5px;
+  color: var(--color-ink-soft);
+}
+
+#valor-escala.escala-baja { color: var(--color-baja); font-weight: 700; }
+#valor-escala.escala-media { color: var(--color-media); font-weight: 700; }
+#valor-escala.escala-alta { color: var(--color-alta); font-weight: 700; }
+
+.desglose h3 {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.desglose-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barra-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barra-cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.barra-nombre {
+  color: var(--color-ink);
+}
+
+.barra-valor {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.barra-pista {
+  width: 100%;
+  height: 8px;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra-relleno {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primary);
+  transition: width 0.35s ease;
+}
+
+.barra-relleno.escala-baja { background: var(--color-baja); }
+.barra-relleno.escala-media { background: var(--color-media); }
+.barra-relleno.escala-alta { background: var(--color-alta); }
+
+/* ============================================================
+   Chat conversacional (vista predeterminada del panel derecho)
+   ============================================================ */
+
+.chat-contenido {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-mensajes {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-mensaje {
+  display: flex;
+  gap: 8px;
+  max-width: 92%;
+}
+
+.chat-mensaje.es-usuario {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-primary);
+}
+
+.chat-mensaje.es-usuario .chat-avatar {
+  background: var(--color-accent);
+}
+
+.chat-burbuja {
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+}
+
+.chat-mensaje.es-usuario .chat-burbuja {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-soft);
+}
+
+.chat-burbuja p {
+  margin: 0 0 6px;
+}
+
+.chat-burbuja p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-burbuja ul {
+  margin: 4px 0 6px;
+  padding-left: 18px;
+}
+
+.chat-burbuja li {
+  margin-bottom: 2px;
+}
+
+/* Indicador de "escribiendo…" */
+.chat-escribiendo .chat-burbuja {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 11px 14px;
+}
+
+.chat-punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-ink-soft);
+  opacity: 0.5;
+  animation: chat-parpadeo 1.1s infinite ease-in-out;
+}
+
+.chat-punto:nth-child(2) { animation-delay: 0.15s; }
+.chat-punto:nth-child(3) { animation-delay: 0.30s; }
+
+@keyframes chat-parpadeo {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 0.9; transform: translateY(-2px); }
+}
+
+.chat-sugerencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 16px 10px;
+}
+
+.chat-chip {
+  border: 1px solid var(--color-primary);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.chat-chip:hover {
+  background: var(--color-primary-soft);
+}
+
+.chat-formulario {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--color-line);
+}
+
+.chat-input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-ink);
+  background: var(--color-surface-soft);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.chat-enviar {
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 18px;
+  border-radius: 999px;
+}
+
+.chat-enviar:hover {
+  background: var(--color-primary-dark);
+}
+
+.chat-enviar:disabled {
+  background: var(--color-line);
+  color: var(--color-ink-soft);
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Marcadores del mapa (círculos IPM)
+   ============================================================ */
+
+.marcador-ipm {
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+/* ============================================================
+   Pie de página
+   ============================================================ */
+
+.app-footer {
+  padding: 10px 24px 16px;
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--color-ink-soft);
+}
+
+/* ============================================================
+   Responsivo
+   ============================================================ */
+
+@media (max-width: 1080px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .panel-mapa {
+    order: 1;
+  }
+
+  .panel-dimensiones {
+    order: 2;
+    max-height: 420px;
+  }
+
+  .panel-detalle {
+    order: 3;
+    max-height: 480px;
+  }
+
+  .mapa-lienzo {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    padding: 14px 16px;
+  }
+
+  .app-main {
+    padding: 12px;
+  }
+
+  .tarjetas-ipm {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+
+  .chat-punto {
+    animation: none !important;
+    opacity: 0.6;
+  }
+}
+
+/* =========================================================
+   SocialData — Ajustes de la adaptación a datos reales
+   ========================================================= */
+
+/* El atributo hidden debe ganar a cualquier display declarado después. */
+[hidden] { display: none !important; }
+
+/* --- Mapa --- */
+.mapa-pie {
+  margin: 0; padding: 9px 14px; font-size: .76rem; line-height: 1.45;
+  color: #55605C; border-top: 1px solid var(--borde, #DDE3E1);
+}
+.zona-rural { cursor: pointer; }
+
+/* --- Chat --- */
+.chat-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chat-acciones .btn-secundario { flex: 1; min-width: 132px; padding: 8px 10px; font-size: .82rem; }
+.chat-mensaje { display: flex; flex-direction: column; margin-bottom: 14px; }
+.chat-mensaje--usuario { align-items: flex-end; }
+.chat-mensaje--asistente { align-items: flex-start; }
+.chat-burbuja {
+  max-width: 90%; padding: 10px 13px; border-radius: 12px;
+  font-size: .89rem; line-height: 1.55; white-space: pre-wrap;
+}
+.chat-mensaje--usuario .chat-burbuja { background: #17241F; color: #fff; }
+.chat-mensaje--asistente .chat-burbuja { background: #EEF2F0; color: #17241F; }
+.chat-burbuja--cargando { font-style: italic; color: #55605C; }
+.chat-fuentes {
+  max-width: 90%; margin: 5px 0 0; font-size: .72rem; line-height: 1.45; color: #6B7672;
+}
+
+/* --- Barras de la ficha técnica --- */
+.barra-relleno.grupo-A { background: #B23A2E; }
+.barra-relleno.grupo-B { background: #D9A441; }
+.barra-relleno.grupo-C { background: #4A7FA5; }
+.barra-relleno.grupo-D { background: #3F8F63; }
+.barra-valor small { font-weight: 400; color: #6B7672; }
+.barra-nombre small { font-weight: 400; color: #6B7672; }
+.indicador-item label { flex: 1; }
+
+/* --- Alternativa cuando el mapa no está disponible --- */
+.mapa-lista { overflow-y: auto; padding: 16px; }
+.zona-lista { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; }
+.zona-item {
+  display: flex; align-items: center; gap: 11px; width: 100%; padding: 11px 13px;
+  background: #fff; border: 1px solid var(--borde, #DDE3E1); border-radius: 9px;
+  font: inherit; text-align: left; cursor: pointer;
+}
+.zona-item:hover { border-color: #17241F; }
+.zona-item.is-activa { border-color: #17241F; background: #EEF2F0; }
+.zona-punto { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+.zona-punto.escala-baja { background: #3F8F63; }
+.zona-punto.escala-media { background: #D9A441; }
+.zona-punto.escala-alta { background: #B23A2E; }
+.zona-nombre { flex: 1; font-size: .88rem; }
+.zona-valor { font-weight: 600; font-size: .88rem; font-variant-numeric: tabular-nums; }
+
+/* --- Sugerencias del asistente --- */
+.chat-sugerencias { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.chat-sugerencia {
+  padding: 6px 11px; font: inherit; font-size: .79rem; line-height: 1.3;
+  background: #fff; color: #17241F; border: 1px solid var(--borde, #DDE3E1);
+  border-radius: 999px; cursor: pointer;
+}
+.chat-sugerencia:hover { border-color: #17241F; background: #EEF2F0; }
+
+/* En la vista del asistente el scroll lo lleva el hilo de mensajes, de modo que
+   las sugerencias y el campo de texto queden siempre a la vista. */
+#vista-chat { overflow: hidden; }
+.chat-sugerencias { padding: 0 16px; }
+.chat-formulario { padding: 10px 16px 14px; }
+
+/* En escritorio la aplicación ocupa exactamente el alto de la ventana y el
+   scroll ocurre dentro de cada panel; por debajo de 1080 px los paneles se
+   apilan y la página vuelve a desplazarse de forma normal. */
+@media (min-width: 1081px) {
+  .app-shell { height: 100vh; }
+  .panel-detalle, .panel-dimensiones { min-height: 0; }
+}
+
+
+/* --- Lienzo del mapa ----------------------------------------------- */
+/* Fondo neutro mientras cargan las teselas de la cartografía base.     */
+.mapa-lienzo,
+.mapa-lienzo .leaflet-container {
+  background-color: #EDF1EF;
+}
+
+/* Respaldo sin conexión: si ningún proveedor de teselas responde,
+   map.js marca el contenedor y el fondo pasa a una retícula sutil que
+   sigue dando referencia espacial a las zonas.                        */
+.mapa-lienzo.sin-cartografia,
+.mapa-lienzo.sin-cartografia .leaflet-container {
+  background-image:
+    linear-gradient(to right, rgba(23, 36, 31, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 36, 31, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.etiqueta-municipio {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(23, 36, 31, 0.18);
+  border-radius: 4px;
+  box-shadow: none;
+  color: #17241F;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.etiqueta-municipio::before { display: none; }

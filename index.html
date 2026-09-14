@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocialData · Vulnerabilidad socioeconómica — Área Metropolitana de Bucaramanga</title>
+  <meta name="description" content="Plataforma de analítica sobre indicadores de vulnerabilidad socioeconómica del Área Metropolitana de Bucaramanga." />
+
+  <!-- Leaflet 1.9.4 incluido en el propio proyecto (carpeta vendor/), para
+       que el prototipo no dependa de ningún servicio externo. -->
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <script src="vendor/leaflet/leaflet.js"></script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">SD</span>
+        <div class="brand-text">
+          <h1>SocialData</h1>
+          <p>Vulnerabilidad socioeconómica · Área Metropolitana de Bucaramanga</p>
+        </div>
+      </div>
+
+      <nav class="breadcrumb" aria-label="Ruta de navegación geográfica">
+        <ol id="breadcrumb-list"></ol>
+      </nav>
+    </header>
+
+    <main class="app-main">
+
+      <!-- ---------- PANEL IZQUIERDO ---------- -->
+      <aside class="panel panel-dimensiones" aria-label="Dimensiones e indicadores">
+        <div class="panel-header">
+          <h2>Dimensiones e indicadores</h2>
+          <p class="panel-subtitle">Privaciones publicadas por el DNP en el Sisbén IV · 15 indicadores</p>
+        </div>
+
+        <div id="lista-dimensiones" class="lista-dimensiones" role="list"></div>
+
+        <div class="panel-header panel-header--indicadores">
+          <h3 id="titulo-indicadores">Indicadores</h3>
+          <p class="panel-subtitle" id="subtitulo-indicadores">Selecciona una dimensión para ver sus indicadores</p>
+        </div>
+
+        <div id="lista-indicadores" class="lista-indicadores" role="list"></div>
+
+        <div class="panel-footer">
+          <button type="button" id="btn-vista-general" class="btn-secundario">
+            Ver todas las dimensiones
+          </button>
+        </div>
+      </aside>
+
+      <!-- ---------- CENTRO: MAPA ---------- -->
+      <section class="panel panel-mapa" aria-label="Mapa de zonas">
+        <div class="mapa-toolbar">
+          <div class="mapa-modo">
+            Capa activa: <strong id="mapa-modo-texto">Hogares en grupo A (pobreza extrema)</strong>
+          </div>
+          <div class="leyenda" aria-label="Leyenda de la escala">
+            <span class="leyenda-item"><i class="dot dot-baja"></i> Baja</span>
+            <span class="leyenda-item"><i class="dot dot-media"></i> Media</span>
+            <span class="leyenda-item"><i class="dot dot-alta"></i> Alta</span>
+          </div>
+        </div>
+        <div id="mapa" class="mapa-lienzo" role="img"
+             aria-label="Mapa de las ocho zonas del área metropolitana de Bucaramanga"></div>
+        <p class="mapa-pie">
+          <span id="resumen-global"></span> ·
+          El círculo marca la cabecera urbana; el anillo punteado representa de forma
+          esquemática el centro poblado y rural disperso.
+        </p>
+      </section>
+
+      <!-- ---------- PANEL DERECHO ---------- -->
+      <aside class="panel panel-detalle" aria-label="Asistente y ficha técnica">
+        <div class="panel-header">
+          <h2 id="detalle-titulo">Asistente SocialData</h2>
+          <p class="panel-subtitle" id="detalle-ubicacion">Área Metropolitana de Bucaramanga</p>
+        </div>
+
+        <div class="tabs-detalle" role="tablist">
+          <button type="button" id="tab-chat" class="tab-detalle is-activa" role="tab"
+                  aria-selected="true" aria-controls="vista-chat">Asistente</button>
+          <button type="button" id="tab-tecnica" class="tab-detalle" role="tab"
+                  aria-selected="false" aria-controls="vista-tecnica">Ficha técnica</button>
+        </div>
+
+        <div id="vista-chat" class="vista-detalle" role="tabpanel" aria-labelledby="tab-chat">
+          <div id="chat-vacio" class="detalle-vacio">
+            <p>Selecciona una zona en el mapa para conversar con el asistente sobre sus indicadores.</p>
+          </div>
+
+          <div id="chat-contenido" class="chat-contenido" hidden>
+            <div id="chat-mensajes" class="chat-mensajes" aria-live="polite"></div>
+            <div id="chat-sugerencias" class="chat-sugerencias"></div>
+            <form id="chat-formulario" class="chat-formulario" autocomplete="off">
+              <input type="text" id="chat-input" class="chat-input"
+                     placeholder="¿Qué quiere saber sobre esta zona?"
+                     aria-label="Escribe tu pregunta para el asistente" />
+              <button type="submit" class="chat-enviar">Enviar</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="vista-tecnica" class="vista-detalle" role="tabpanel" aria-labelledby="tab-tecnica" hidden>
+          <div id="detalle-vacio" class="detalle-vacio">
+            <p>Selecciona una zona en el mapa para ver su ficha de indicadores.</p>
+          </div>
+
+          <div id="detalle-contenido" class="detalle-contenido" hidden>
+
+            <div class="tarjetas-ipm">
+              <div class="tarjeta-ipm">
+                <span class="tarjeta-ipm-label">Hogares</span>
+                <span class="tarjeta-ipm-valor" id="valor-hogares">—</span>
+                <span class="tarjeta-ipm-desc">registrados en el Sisbén</span>
+              </div>
+              <div class="tarjeta-ipm tarjeta-ipm--destacada">
+                <span class="tarjeta-ipm-label">Grupo A observado</span>
+                <span class="tarjeta-ipm-valor" id="valor-grupo-a">—</span>
+                <span class="tarjeta-ipm-desc" id="valor-escala">—</span>
+              </div>
+              <div class="tarjeta-ipm">
+                <span class="tarjeta-ipm-label">Estimación del modelo</span>
+                <span class="tarjeta-ipm-valor" id="valor-predicho">—</span>
+                <span class="tarjeta-ipm-desc" id="valor-predicho-desc">—</span>
+              </div>
+            </div>
+
+            <div class="desglose">
+              <h3>Distribución por grupo del Sisbén</h3>
+              <div id="distribucion-grupos" class="desglose-lista"></div>
+            </div>
+
+            <div class="desglose">
+              <h3>Factores dominantes según el modelo</h3>
+              <div id="shap-lista" class="desglose-lista"></div>
+              <p class="panel-subtitle" id="shap-nota"></p>
+            </div>
+
+            <div class="desglose">
+              <h3>Prevalencia de privaciones observadas</h3>
+              <div id="desglose-lista" class="desglose-lista"></div>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+
+    </main>
+
+    <footer class="app-footer">
+      <p>SocialData · Proyecto Integrador II · Equipo 2 · Datos de la muestra anonimizada del
+        Sisbén IV (DNP, corte marzo de 2022, licencia CC BY-SA 4.0). Herramienta de apoyo a la
+        decisión: no reemplaza la clasificación oficial del DNP.</p>
+    </footer>
+  </div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
