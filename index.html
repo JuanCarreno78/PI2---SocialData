@@ -672,7 +672,7 @@
 
       /* ===== SocialData ===== */
       /* SocialData - hoja de estilos
-         Pantalla de acceso previa; barra lateral con mapa, metricas e indicadores;
+         Barra lateral con mapa, metricas e indicadores;
          asistente como elemento principal; ficha tecnica y mapa ampliado como
          paneles sobre la conversacion. */
 
@@ -843,41 +843,6 @@
         font-weight: 600;
       }
 
-      /* --- Cabecera: ruta y sesion ----------------------------------------- */
-
-      .header-end {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 12px 20px;
-      }
-
-      .session {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-left: 20px;
-        border-left: 1px solid var(--line);
-      }
-
-      .session-user {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        line-height: 1.25;
-      }
-
-      .session-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--ink);
-      }
-
-      .session-role {
-        font-size: 11.5px;
-        color: var(--ink-soft);
-      }
-
       /* minmax(0, 1fr) y no auto: sin esto la fila crece hasta el alto del
          contenido y las dos columnas desbordan la ventana en vez de scrollear. */
       .app-main {
@@ -937,22 +902,6 @@
         filter: none;
         transform: none;
         box-shadow: none;
-      }
-
-      .btn-ghost {
-        padding: 7px 14px;
-        border: 1.5px solid var(--line);
-        border-radius: 999px;
-        background: var(--surface);
-        font-size: 12.5px;
-        font-weight: 700;
-        color: var(--primary-dark);
-        transition: border-color 0.14s ease, background 0.14s ease;
-      }
-
-      .btn-ghost:hover {
-        border-color: var(--primary);
-        background: var(--primary-soft);
       }
 
       /* Encabeza su seccion, asi que el aire va debajo y no encima. */
@@ -1860,139 +1809,6 @@
         margin: 2px 0 -2px;
       }
 
-      /* --- Pantalla de acceso ---------------------------------------------- */
-
-      /* Fondo en reticula, la misma del mapa sin cartografia: remite a la
-         herramienta sin anticipar ningun dato antes de autenticarse. */
-      .login-screen {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 16px;
-        background-color: var(--bg);
-        background-image:
-          linear-gradient(to right, rgba(15, 92, 82, 0.07) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(15, 92, 82, 0.07) 1px, transparent 1px);
-        background-size: 44px 44px;
-      }
-
-      .login-card {
-        width: min(400px, 100%);
-        padding: 28px 28px 22px;
-        border: 1px solid var(--line);
-        border-top: 4px solid var(--primary);
-        border-radius: var(--radius-md);
-        background: var(--surface);
-        box-shadow: 0 1px 2px rgba(23, 36, 31, 0.06), 0 12px 40px rgba(23, 36, 31, 0.1);
-      }
-
-      .login-product {
-        margin: 0;
-        font-family: var(--font-display);
-        font-size: 22px;
-        font-weight: 700;
-        line-height: 1.1;
-        color: var(--primary-dark);
-      }
-
-      .login-title {
-        margin-top: 26px;
-        font-size: 24px;
-        line-height: 1.2;
-      }
-
-      .login-notice {
-        margin: 14px 0 0;
-        padding: 10px 12px;
-        border-left: 3px solid var(--accent);
-        border-radius: var(--radius-sm);
-        background: #f7efe4;
-        font-size: 13px;
-        line-height: 1.45;
-        color: var(--ink);
-      }
-
-      .login-form {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-top: 20px;
-      }
-
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .field label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--ink);
-      }
-
-      .field-input {
-        width: 100%;
-        padding: 11px 14px;
-        border: 1.5px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--surface-soft);
-        font-family: inherit;
-        font-size: 14px;
-        color: var(--ink);
-      }
-
-      .field-input:focus {
-        outline: none;
-        border-color: var(--primary);
-        background: var(--surface);
-        box-shadow: 0 0 0 3px var(--primary-soft);
-      }
-
-      .login-error {
-        margin: 0;
-        padding: 10px 12px;
-        border-left: 3px solid var(--high);
-        border-radius: var(--radius-sm);
-        background: #f8e9e7;
-        font-size: 13px;
-        line-height: 1.45;
-        color: #7c231a;
-      }
-
-      .login-error:empty {
-        display: none;
-      }
-
-      .login-form .btn-block {
-        margin: 4px 0 0;
-        padding: 12px 18px;
-        font-size: 14px;
-      }
-
-      .login-foot {
-        margin: 20px 0 0;
-        padding-top: 14px;
-        border-top: 1px solid var(--line);
-        font-size: 12px;
-        line-height: 1.5;
-        color: var(--ink-soft);
-      }
-
-      .noscript-note {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: 0;
-        padding: 12px 16px;
-        background: var(--high);
-        color: #ffffff;
-        text-align: center;
-        font-size: 13.5px;
-      }
-
       /* --- Barras de desplazamiento ----------------------------------------- */
 
       .sidebar,
@@ -2064,34 +1880,11 @@
           width: 100%;
           border-left: none;
         }
-
-        .session {
-          padding-left: 0;
-          border-left: none;
-        }
       }
 
       @media (max-width: 640px) {
         .app-header {
           padding: 12px 16px;
-        }
-
-        .header-end {
-          width: 100%;
-          justify-content: space-between;
-        }
-
-        .session-user {
-          align-items: flex-start;
-        }
-
-        .login-card {
-          padding: 22px 20px 18px;
-        }
-
-        .app-main {
-          gap: 12px;
-          padding: 12px;
         }
 
         .metrics {
@@ -2131,53 +1924,7 @@
     <script src="vendor/leaflet/leaflet.js"></script>
   </head>
   <body>
-    <!-- Pantalla de acceso. Mientras no haya sesion, la aplicacion ni se monta.
-         Los campos no llevan atributo name y el boton arranca deshabilitado:
-         si el JavaScript no llega a cargar, el formulario no puede enviar las
-         credenciales a ninguna parte. -->
-    <main class="login-screen" id="login-screen" aria-labelledby="login-title">
-      <div class="login-card">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true">SD</span>
-          <div>
-            <p class="login-product">SocialData</p>
-            <p class="tagline">Vulnerabilidad socioeconómica · Área Metropolitana de Bucaramanga</p>
-          </div>
-        </div>
-
-        <h1 id="login-title" class="login-title">Iniciar sesión</h1>
-        <p class="panel-subtitle">Acceso restringido a usuarios registrados en la plataforma.</p>
-
-        <p id="login-notice" class="login-notice" role="status" hidden></p>
-
-        <form id="login-form" class="login-form" method="post" novalidate>
-          <div class="field">
-            <label for="login-email">Correo electrónico</label>
-            <input type="email" id="login-email" class="field-input"
-                   autocomplete="username" inputmode="email" spellcheck="false" required />
-          </div>
-
-          <div class="field">
-            <label for="login-password">Contraseña</label>
-            <input type="password" id="login-password" class="field-input"
-                   autocomplete="current-password" required />
-          </div>
-
-          <p id="login-error" class="login-error" role="alert"></p>
-
-          <button type="submit" id="login-submit" class="btn-primary btn-block" disabled>
-            Iniciar sesión
-          </button>
-        </form>
-
-        <p class="login-foot">
-          La sesión se cierra al cerrar la pestaña y caduca a las 8 horas.
-          Tras cinco intentos fallidos el acceso se bloquea durante 15 minutos.
-        </p>
-      </div>
-    </main>
-
-    <div class="app" id="app" hidden>
+    <div class="app" id="app">
       <header class="app-header">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">SD</span>
@@ -2187,19 +1934,9 @@
           </div>
         </div>
 
-        <div class="header-end">
-          <nav aria-label="Ruta de navegación geográfica">
-            <ol id="breadcrumb" class="breadcrumb"></ol>
-          </nav>
-
-          <div class="session" aria-label="Sesión activa">
-            <div class="session-user">
-              <span class="session-name" id="session-name"></span>
-              <span class="session-role" id="session-role"></span>
-            </div>
-            <button type="button" id="logout" class="btn-ghost">Cerrar sesión</button>
-          </div>
-        </div>
+        <nav aria-label="Ruta de navegación geográfica">
+          <ol id="breadcrumb" class="breadcrumb"></ol>
+        </nav>
       </header>
 
       <main class="app-main">
@@ -2413,10 +2150,6 @@
       </footer>
     </div>
 
-    <noscript>
-      <p class="noscript-note">SocialData necesita JavaScript activado para iniciar sesión.</p>
-    </noscript>
-
     <!-- Aplicacion completa en un solo script clasico. Cada capa (modelo, mapa,
          vista, asistente y controlador) es un modulo en cierre con su propia
          interfaz publica, con la misma separacion de roles que antes tenian
@@ -2426,211 +2159,8 @@
 
       const Model = (() => {
         // Capa de datos. No toca el DOM.
-        // Al conectar el backend solo cambia este archivo: las firmas se mantienen.
-
-        // ---------------------------------------------------------------
-        // Configuracion de la API
-        // ---------------------------------------------------------------
-        // Base de la API del backend. Es el unico valor que cambia entre entornos.
-        const API_URL = 'http://localhost:8000/api/v1';
-
-        // Nombres de los campos que espera POST /auth/login. Si el esquema del backend
-        // usa otros nombres, se ajustan aqui y en ningun otro sitio.
-        const LOGIN_FIELDS = { email: 'correo', password: 'contrasena' };
-
-        // Duracion de la sesion en el backend (JWT_MINUTOS). Solo se usa si el token no
-        // trae el claim exp, para no dejar una sesion sin caducidad en el cliente.
-        const SESSION_MINUTES = 480;
-
-        // sessionStorage y no localStorage: la sesion muere al cerrar la pestaña.
-        const SESSION_KEY = 'socialdata.sesion';
-        const EXPIRED_KEY = 'socialdata.sesion-expirada';
-
-        // ---------------------------------------------------------------
-        // Sesion
-        // ---------------------------------------------------------------
-
-        // Error de autenticacion con un motivo que la vista traduce a un mensaje.
-        // Motivos: invalid (401), disabled (403), locked (429), network, server.
-        class AuthError extends Error {
-          constructor(reason, status = null) {
-            super(reason);
-            this.name = 'AuthError';
-            this.reason = reason;
-            this.status = status;
-          }
-        }
-
-        const REASON_BY_STATUS = { 401: 'invalid', 403: 'disabled', 429: 'locked' };
-
-        function readStorage(key) {
-          try {
-            return window.sessionStorage.getItem(key);
-          } catch (error) {
-            return null;
-          }
-        }
-
-        function writeStorage(key, value) {
-          try {
-            if (value === null) window.sessionStorage.removeItem(key);
-            else window.sessionStorage.setItem(key, value);
-          } catch (error) {
-            // Sin almacenamiento (modo privado estricto) la sesion vive solo en memoria
-            // hasta la siguiente recarga, que es el comportamiento mas seguro posible.
-          }
-        }
-
-        let memorySession = null;
-
-        // Lee los claims del JWT sin verificar la firma. La verificacion la hace el
-        // backend; aqui solo interesan la caducidad y los datos de presentacion.
-        function readClaims(token) {
-          try {
-            const part = token.split('.')[1];
-            const base64 = part.replace(/-/g, '+').replace(/_/g, '/')
-              .padEnd(Math.ceil(part.length / 4) * 4, '=');
-            const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
-            return JSON.parse(new TextDecoder().decode(bytes));
-          } catch (error) {
-            return {};
-          }
-        }
-
-        function textOf(value) {
-          if (value === null || value === undefined) return '';
-          if (typeof value === 'object') return String(value.nombre || value.name || '');
-          return String(value);
-        }
-
-        // Normaliza la respuesta del login. Acepta el usuario dentro del cuerpo o, si
-        // no viene, lo toma de los claims del token.
-        function sessionFrom(body) {
-          const token = body.access_token || body.token;
-          if (!token) throw new AuthError('server');
-
-          const claims = readClaims(token);
-          const user = body.usuario || body.user || {};
-          const expiresAt = claims.exp
-            ? claims.exp * 1000
-            : Date.now() + SESSION_MINUTES * 60 * 1000;
-
-          return {
-            token,
-            expiresAt,
-            user: {
-              name: textOf(user.nombre || user.nombre_completo || user.name || claims.nombre) ||
-                    textOf(user.correo || user.email || claims.sub),
-              role: textOf(user.rol || user.role || claims.rol || claims.role)
-            }
-          };
-        }
-
-        function saveSession(session) {
-          memorySession = session;
-          writeStorage(SESSION_KEY, JSON.stringify(session));
-        }
-
-        // La contraseña solo existe como argumento de esta funcion: se envia en el
-        // cuerpo del POST y no se guarda en ninguna variable de modulo ni almacenamiento.
-        async function login(email, password) {
-          let response;
-
-          try {
-            response = await fetch(`${API_URL}/auth/login`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ [LOGIN_FIELDS.email]: email, [LOGIN_FIELDS.password]: password })
-            });
-          } catch (error) {
-            throw new AuthError('network');
-          }
-
-          if (!response.ok) {
-            throw new AuthError(REASON_BY_STATUS[response.status] || 'server', response.status);
-          }
-
-          let body;
-          try {
-            body = await response.json();
-          } catch (error) {
-            throw new AuthError('server', response.status);
-          }
-
-          const session = sessionFrom(body);
-          saveSession(session);
-          writeStorage(EXPIRED_KEY, null);
-          return session;
-        }
-
-        // Sesion vigente o null. Una sesion caducada se descarta al leerla.
-        function getSession() {
-          let session = memorySession;
-
-          if (!session) {
-            const raw = readStorage(SESSION_KEY);
-            if (!raw) return null;
-            try {
-              session = JSON.parse(raw);
-            } catch (error) {
-              writeStorage(SESSION_KEY, null);
-              return null;
-            }
-          }
-
-          if (!session || !session.token || !session.expiresAt || Date.now() >= session.expiresAt) {
-            logout({ expired: Boolean(session && session.token) });
-            return null;
-          }
-
-          memorySession = session;
-          return session;
-        }
-
-        function getToken() {
-          const session = getSession();
-          return session ? session.token : null;
-        }
-
-        // Borra el token. Con expired se deja constancia para que la pantalla de login
-        // explique por que se volvio a ella.
-        function logout({ expired = false } = {}) {
-          memorySession = null;
-          writeStorage(SESSION_KEY, null);
-          writeStorage(EXPIRED_KEY, expired ? '1' : null);
-        }
-
-        // Devuelve si la ultima sesion termino por caducidad y consume el aviso.
-        function takeExpiredNotice() {
-          const expired = readStorage(EXPIRED_KEY) === '1';
-          writeStorage(EXPIRED_KEY, null);
-          return expired;
-        }
-
-        let unauthorizedHandler = () => {};
-
-        function onUnauthorized(handler) {
-          unauthorizedHandler = handler;
-        }
-
-        // Punto unico por el que pasan las peticiones autenticadas a la API. El token
-        // viaja siempre en la cabecera Authorization, nunca en la URL.
-        async function request(path, options = {}) {
-          const token = getToken();
-          const headers = { ...(options.headers || {}) };
-          if (token) headers.Authorization = `Bearer ${token}`;
-
-          const response = await fetch(API_URL + path, { ...options, headers });
-
-          if (response.status === 401) {
-            logout({ expired: true });
-            unauthorizedHandler();
-            throw new Error('Sesión expirada');
-          }
-
-          if (!response.ok) throw new Error('HTTP ' + response.status);
-          return response.status === 204 ? null : response.json();
-        }
+        // Lee el corte publicado en api/data.json: la aplicacion funciona sin
+        // backend ni base de datos, directamente desde un alojamiento estatico.
 
         // ---------------------------------------------------------------
         // Datos de indicadores
@@ -2638,8 +2168,7 @@
 
         let data = null;
 
-        // Corte local de los indicadores. Pasara a request('/...') cuando el backend
-        // publique los endpoints de datos; el resto de funciones no cambia.
+        // Corte de los indicadores publicado junto a la pagina.
         async function loadData() {
           const response = await fetch('api/data.json');
 
@@ -2688,7 +2217,7 @@
           return [...data.zonas].sort((a, b) => Number(b.pct_grupo_a) - Number(a.pct_grupo_a));
         }
 
-        return { API_URL, AuthError, login, getSession, getToken, logout, takeExpiredNotice, onUnauthorized, request, loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations, getPrediction, getExplanation, getZonesRanked };
+        return { loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations, getPrediction, getExplanation, getZonesRanked };
       })();
 
       const MapView = (() => {
@@ -3274,50 +2803,7 @@
           });
         }
 
-        // ---------------------------------------------------------------
-        // Inicio de sesion
-        // ---------------------------------------------------------------
-
-        // El mensaje de credenciales invalidas es deliberadamente generico: no dice si
-        // fallo el correo o la contraseña (RF-01, flujo alternativo 1).
-        const LOGIN_MESSAGES = {
-          empty: 'Escribe tu correo y tu contraseña.',
-          invalid: 'Correo o contraseña incorrectos.',
-          disabled: 'Tu usuario está desactivado. Contacta al administrador.',
-          locked: 'Demasiados intentos. Espera 15 minutos antes de volver a intentarlo.',
-          network: 'No se pudo conectar con el servidor. Comprueba que el backend esté en ejecución.',
-          server: 'No se pudo iniciar sesión por un error del servidor. Inténtalo de nuevo.'
-        };
-
-        function renderLoginError(errorEl, reason) {
-          errorEl.textContent = reason ? (LOGIN_MESSAGES[reason] || LOGIN_MESSAGES.server) : '';
-        }
-
-        function renderLoginNotice(noticeEl, expired) {
-          noticeEl.textContent = expired ? 'Tu sesión expiró. Inicia sesión de nuevo para continuar.' : '';
-          noticeEl.hidden = !expired;
-        }
-
-        function setLoginBusy(buttonEl, busy) {
-          buttonEl.disabled = busy;
-          buttonEl.setAttribute('aria-busy', String(busy));
-          buttonEl.textContent = busy ? 'Verificando…' : 'Iniciar sesión';
-        }
-
-        const ROLE_NAMES = {
-          administrador: 'Administrador',
-          admin: 'Administrador',
-          analista: 'Analista'
-        };
-
-        function renderSession(nameEl, roleEl, user) {
-          const role = String(user.role || '').trim();
-          nameEl.textContent = user.name || 'Usuario';
-          roleEl.textContent = ROLE_NAMES[role.toLowerCase()] ||
-            (role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Sin rol');
-        }
-
-        return { formatRatio, formatPercent, escapeHtml, renderSummary, renderBreadcrumb, renderDimensions, setDimensionExpanded, renderIndicatorsNote, renderIndicators, renderCollapseButton, renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations, renderMessages, renderSuggestions, renderLoginError, renderLoginNotice, setLoginBusy, renderSession };
+        return { formatRatio, formatPercent, escapeHtml, renderSummary, renderBreadcrumb, renderDimensions, setDimensionExpanded, renderIndicatorsNote, renderIndicators, renderCollapseButton, renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations, renderMessages, renderSuggestions };
       })();
 
       const Chat = (() => {
@@ -3544,13 +3030,7 @@
           return messagesOf(zoneId);
         }
 
-        // Borra toda la conversacion en memoria. Se usa al cerrar sesion: el historial
-        // contiene cifras de las zonas consultadas.
-        function resetChat() {
-          history.clear();
-        }
-
-        return { SUGGESTIONS, greet, ask, getMessages, resetChat };
+        return { SUGGESTIONS, greet, ask, getMessages };
       })();
 
       (() => {
@@ -3559,35 +3039,20 @@
 
         const {
           loadData, getSummary, getCatalog, getZones, getZonesRanked,
-          getDeprivations, getPrediction, getExplanation,
-          login, logout, getSession, takeExpiredNotice, onUnauthorized
+          getDeprivations, getPrediction, getExplanation
         } = Model;
 
         const { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode } = MapView;
-        const { greet, ask, getMessages, resetChat, SUGGESTIONS } = Chat;
+        const { greet, ask, getMessages, SUGGESTIONS } = Chat;
 
         const {
           renderSummary, renderBreadcrumb, renderDimensions, renderIndicators,
           setDimensionExpanded, renderIndicatorsNote, renderCollapseButton,
           renderMetrics, clearMetrics, renderDistribution,
-          renderExplanation, renderDeprivations, renderMessages, renderSuggestions,
-          renderLoginError, renderLoginNotice, setLoginBusy, renderSession
+          renderExplanation, renderDeprivations, renderMessages, renderSuggestions
         } = View;
 
         const refs = {
-          loginScreenEl: document.getElementById('login-screen'),
-          loginForm: document.getElementById('login-form'),
-          loginEmail: document.getElementById('login-email'),
-          loginPassword: document.getElementById('login-password'),
-          loginSubmit: document.getElementById('login-submit'),
-          loginErrorEl: document.getElementById('login-error'),
-          loginNoticeEl: document.getElementById('login-notice'),
-
-          appEl: document.getElementById('app'),
-          sessionNameEl: document.getElementById('session-name'),
-          sessionRoleEl: document.getElementById('session-role'),
-          logoutBtn: document.getElementById('logout'),
-
           mapEl: document.getElementById('map'),
           mapPlaceholderEl: document.getElementById('map-placeholder'),
           mapBtn: document.getElementById('toggle-map'),
@@ -3642,8 +3107,7 @@
           deprivations: null,
           // Mapa ampliado y, si lo esta, si vive en el panel o crece en su sitio.
           mapLarge: false,
-          mapInPanel: false,
-          started: false
+          mapInPanel: false
         };
 
         // Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel
@@ -3921,96 +3385,6 @@
         });
 
         // ---------------------------------------------------------------
-        // Sesion
-        // ---------------------------------------------------------------
-
-        // Cierra la sesion de verdad: borra el token, el historial del asistente y
-        // recarga la pagina para descartar todo el estado en memoria (mapa, zona,
-        // cifras). replace y no assign, para no dejar la pagina autenticada en el
-        // historial del navegador.
-        function endSession(expired = false) {
-          resetChat();
-          logout({ expired });
-          window.location.replace(window.location.pathname);
-        }
-
-        refs.logoutBtn.addEventListener('click', () => endSession(false));
-
-        // Un 401 de la API significa token vencido o revocado.
-        onUnauthorized(() => endSession(true));
-
-        // Los datos se sirven hoy desde el corte local, asi que ninguna peticion al
-        // backend detectaria la caducidad. El cliente la vigila por su cuenta con la
-        // fecha exp del token, tambien al volver a la pestaña tras suspender el equipo.
-        function watchExpiry(session) {
-          const remaining = session.expiresAt - Date.now();
-          if (remaining <= 0) {
-            endSession(true);
-            return;
-          }
-
-          setTimeout(() => endSession(true), Math.min(remaining, 2 ** 31 - 1));
-
-          document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && !getSession()) endSession(true);
-          });
-        }
-
-        function showLogin(expired) {
-          refs.appEl.hidden = true;
-          refs.loginScreenEl.hidden = false;
-          renderLoginNotice(refs.loginNoticeEl, expired);
-          refs.loginSubmit.disabled = false;
-          refs.loginEmail.focus();
-        }
-
-        function enterApp(session) {
-          refs.loginScreenEl.hidden = true;
-          refs.appEl.hidden = false;
-          renderSession(refs.sessionNameEl, refs.sessionRoleEl, session.user);
-          watchExpiry(session);
-
-          // La aplicacion se hace visible antes de arrancar: Leaflet necesita que el
-          // contenedor del mapa tenga medidas reales al crearse.
-          if (!state.started) {
-            state.started = true;
-            start();
-          }
-        }
-
-        // La contraseña se lee del campo, se entrega a login() y el campo se vacia
-        // siempre, haya exito o error. No se guarda en ninguna variable persistente.
-        refs.loginForm.addEventListener('submit', async (event) => {
-          event.preventDefault();
-
-          const email = refs.loginEmail.value.trim();
-          if (!email || !refs.loginPassword.value) {
-            renderLoginError(refs.loginErrorEl, 'empty');
-            (email ? refs.loginPassword : refs.loginEmail).focus();
-            return;
-          }
-
-          renderLoginError(refs.loginErrorEl, null);
-          renderLoginNotice(refs.loginNoticeEl, false);
-          setLoginBusy(refs.loginSubmit, true);
-
-          try {
-            const session = await login(email, refs.loginPassword.value);
-            refs.loginPassword.value = '';
-            enterApp(session);
-          } catch (error) {
-            refs.loginPassword.value = '';
-            renderLoginError(refs.loginErrorEl, error.reason || 'server');
-            refs.loginPassword.focus();
-          } finally {
-            setLoginBusy(refs.loginSubmit, false);
-          }
-        });
-
-        // ---------------------------------------------------------------
-        // Arranque
-        // ---------------------------------------------------------------
-        // ---------------------------------------------------------------
         // Arranque
         // ---------------------------------------------------------------
         async function start() {
@@ -4043,14 +3417,7 @@
           selectZone(getZonesRanked()[0], false);
         }
 
-        // Sin sesion vigente solo se muestra el login; start() espera a que haya token.
-        function boot() {
-          const session = getSession();
-          if (session) enterApp(session);
-          else showLogin(takeExpiredNotice());
-        }
-
-        boot();
+        start();
       })();
     </script>
   </body>
