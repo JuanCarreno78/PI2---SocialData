@@ -4,8 +4,2130 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SocialData - Vulnerabilidad socioeconómica AMB</title>
-    <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Estilos internos: la pagina no enlaza ninguna hoja de estilos, asi que
+         no puede quedar a medias por un archivo ausente o una cache antigua. -->
+    <style>
+      /* ===== Leaflet 1.9.4 (vendor/leaflet/leaflet.css) ===== */
+      /* required styles */
+
+      .leaflet-pane,
+      .leaflet-tile,
+      .leaflet-marker-icon,
+      .leaflet-marker-shadow,
+      .leaflet-tile-container,
+      .leaflet-pane > svg,
+      .leaflet-pane > canvas,
+      .leaflet-zoom-box,
+      .leaflet-image-layer,
+      .leaflet-layer {
+      	position: absolute;
+      	left: 0;
+      	top: 0;
+      	}
+      .leaflet-container {
+      	overflow: hidden;
+      	}
+      .leaflet-tile,
+      .leaflet-marker-icon,
+      .leaflet-marker-shadow {
+      	-webkit-user-select: none;
+      	   -moz-user-select: none;
+      	        user-select: none;
+      	  -webkit-user-drag: none;
+      	}
+      /* Prevents IE11 from highlighting tiles in blue */
+      .leaflet-tile::selection {
+      	background: transparent;
+      }
+      /* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+      .leaflet-safari .leaflet-tile {
+      	image-rendering: -webkit-optimize-contrast;
+      	}
+      /* hack that prevents hw layers "stretching" when loading new tiles */
+      .leaflet-safari .leaflet-tile-container {
+      	width: 1600px;
+      	height: 1600px;
+      	-webkit-transform-origin: 0 0;
+      	}
+      .leaflet-marker-icon,
+      .leaflet-marker-shadow {
+      	display: block;
+      	}
+      /* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+      /* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+      .leaflet-container .leaflet-overlay-pane svg {
+      	max-width: none !important;
+      	max-height: none !important;
+      	}
+      .leaflet-container .leaflet-marker-pane img,
+      .leaflet-container .leaflet-shadow-pane img,
+      .leaflet-container .leaflet-tile-pane img,
+      .leaflet-container img.leaflet-image-layer,
+      .leaflet-container .leaflet-tile {
+      	max-width: none !important;
+      	max-height: none !important;
+      	width: auto;
+      	padding: 0;
+      	}
+
+      .leaflet-container img.leaflet-tile {
+      	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+      	mix-blend-mode: plus-lighter;
+      }
+
+      .leaflet-container.leaflet-touch-zoom {
+      	-ms-touch-action: pan-x pan-y;
+      	touch-action: pan-x pan-y;
+      	}
+      .leaflet-container.leaflet-touch-drag {
+      	-ms-touch-action: pinch-zoom;
+      	/* Fallback for FF which doesn't support pinch-zoom */
+      	touch-action: none;
+      	touch-action: pinch-zoom;
+      }
+      .leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+      	-ms-touch-action: none;
+      	touch-action: none;
+      }
+      .leaflet-container {
+      	-webkit-tap-highlight-color: transparent;
+      }
+      .leaflet-container a {
+      	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+      }
+      .leaflet-tile {
+      	filter: inherit;
+      	visibility: hidden;
+      	}
+      .leaflet-tile-loaded {
+      	visibility: inherit;
+      	}
+      .leaflet-zoom-box {
+      	width: 0;
+      	height: 0;
+      	-moz-box-sizing: border-box;
+      	     box-sizing: border-box;
+      	z-index: 800;
+      	}
+      /* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+      .leaflet-overlay-pane svg {
+      	-moz-user-select: none;
+      	}
+
+      .leaflet-pane         { z-index: 400; }
+
+      .leaflet-tile-pane    { z-index: 200; }
+      .leaflet-overlay-pane { z-index: 400; }
+      .leaflet-shadow-pane  { z-index: 500; }
+      .leaflet-marker-pane  { z-index: 600; }
+      .leaflet-tooltip-pane   { z-index: 650; }
+      .leaflet-popup-pane   { z-index: 700; }
+
+      .leaflet-map-pane canvas { z-index: 100; }
+      .leaflet-map-pane svg    { z-index: 200; }
+
+      .leaflet-vml-shape {
+      	width: 1px;
+      	height: 1px;
+      	}
+      .lvml {
+      	behavior: url(#default#VML);
+      	display: inline-block;
+      	position: absolute;
+      	}
+
+
+      /* control positioning */
+
+      .leaflet-control {
+      	position: relative;
+      	z-index: 800;
+      	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+      	pointer-events: auto;
+      	}
+      .leaflet-top,
+      .leaflet-bottom {
+      	position: absolute;
+      	z-index: 1000;
+      	pointer-events: none;
+      	}
+      .leaflet-top {
+      	top: 0;
+      	}
+      .leaflet-right {
+      	right: 0;
+      	}
+      .leaflet-bottom {
+      	bottom: 0;
+      	}
+      .leaflet-left {
+      	left: 0;
+      	}
+      .leaflet-control {
+      	float: left;
+      	clear: both;
+      	}
+      .leaflet-right .leaflet-control {
+      	float: right;
+      	}
+      .leaflet-top .leaflet-control {
+      	margin-top: 10px;
+      	}
+      .leaflet-bottom .leaflet-control {
+      	margin-bottom: 10px;
+      	}
+      .leaflet-left .leaflet-control {
+      	margin-left: 10px;
+      	}
+      .leaflet-right .leaflet-control {
+      	margin-right: 10px;
+      	}
+
+
+      /* zoom and fade animations */
+
+      .leaflet-fade-anim .leaflet-popup {
+      	opacity: 0;
+      	-webkit-transition: opacity 0.2s linear;
+      	   -moz-transition: opacity 0.2s linear;
+      	        transition: opacity 0.2s linear;
+      	}
+      .leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+      	opacity: 1;
+      	}
+      .leaflet-zoom-animated {
+      	-webkit-transform-origin: 0 0;
+      	    -ms-transform-origin: 0 0;
+      	        transform-origin: 0 0;
+      	}
+      svg.leaflet-zoom-animated {
+      	will-change: transform;
+      }
+
+      .leaflet-zoom-anim .leaflet-zoom-animated {
+      	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+      	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+      	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+      	}
+      .leaflet-zoom-anim .leaflet-tile,
+      .leaflet-pan-anim .leaflet-tile {
+      	-webkit-transition: none;
+      	   -moz-transition: none;
+      	        transition: none;
+      	}
+
+      .leaflet-zoom-anim .leaflet-zoom-hide {
+      	visibility: hidden;
+      	}
+
+
+      /* cursors */
+
+      .leaflet-interactive {
+      	cursor: pointer;
+      	}
+      .leaflet-grab {
+      	cursor: -webkit-grab;
+      	cursor:    -moz-grab;
+      	cursor:         grab;
+      	}
+      .leaflet-crosshair,
+      .leaflet-crosshair .leaflet-interactive {
+      	cursor: crosshair;
+      	}
+      .leaflet-popup-pane,
+      .leaflet-control {
+      	cursor: auto;
+      	}
+      .leaflet-dragging .leaflet-grab,
+      .leaflet-dragging .leaflet-grab .leaflet-interactive,
+      .leaflet-dragging .leaflet-marker-draggable {
+      	cursor: move;
+      	cursor: -webkit-grabbing;
+      	cursor:    -moz-grabbing;
+      	cursor:         grabbing;
+      	}
+
+      /* marker & overlays interactivity */
+      .leaflet-marker-icon,
+      .leaflet-marker-shadow,
+      .leaflet-image-layer,
+      .leaflet-pane > svg path,
+      .leaflet-tile-container {
+      	pointer-events: none;
+      	}
+
+      .leaflet-marker-icon.leaflet-interactive,
+      .leaflet-image-layer.leaflet-interactive,
+      .leaflet-pane > svg path.leaflet-interactive,
+      svg.leaflet-image-layer.leaflet-interactive path {
+      	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+      	pointer-events: auto;
+      	}
+
+      /* visual tweaks */
+
+      .leaflet-container {
+      	background: #ddd;
+      	outline-offset: 1px;
+      	}
+      .leaflet-container a {
+      	color: #0078A8;
+      	}
+      .leaflet-zoom-box {
+      	border: 2px dotted #38f;
+      	background: rgba(255,255,255,0.5);
+      	}
+
+
+      /* general typography */
+      .leaflet-container {
+      	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+      	font-size: 12px;
+      	font-size: 0.75rem;
+      	line-height: 1.5;
+      	}
+
+
+      /* general toolbar styles */
+
+      .leaflet-bar {
+      	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+      	border-radius: 4px;
+      	}
+      .leaflet-bar a {
+      	background-color: #fff;
+      	border-bottom: 1px solid #ccc;
+      	width: 26px;
+      	height: 26px;
+      	line-height: 26px;
+      	display: block;
+      	text-align: center;
+      	text-decoration: none;
+      	color: black;
+      	}
+      .leaflet-bar a,
+      .leaflet-control-layers-toggle {
+      	background-position: 50% 50%;
+      	background-repeat: no-repeat;
+      	display: block;
+      	}
+      .leaflet-bar a:hover,
+      .leaflet-bar a:focus {
+      	background-color: #f4f4f4;
+      	}
+      .leaflet-bar a:first-child {
+      	border-top-left-radius: 4px;
+      	border-top-right-radius: 4px;
+      	}
+      .leaflet-bar a:last-child {
+      	border-bottom-left-radius: 4px;
+      	border-bottom-right-radius: 4px;
+      	border-bottom: none;
+      	}
+      .leaflet-bar a.leaflet-disabled {
+      	cursor: default;
+      	background-color: #f4f4f4;
+      	color: #bbb;
+      	}
+
+      .leaflet-touch .leaflet-bar a {
+      	width: 30px;
+      	height: 30px;
+      	line-height: 30px;
+      	}
+      .leaflet-touch .leaflet-bar a:first-child {
+      	border-top-left-radius: 2px;
+      	border-top-right-radius: 2px;
+      	}
+      .leaflet-touch .leaflet-bar a:last-child {
+      	border-bottom-left-radius: 2px;
+      	border-bottom-right-radius: 2px;
+      	}
+
+      /* zoom control */
+
+      .leaflet-control-zoom-in,
+      .leaflet-control-zoom-out {
+      	font: bold 18px 'Lucida Console', Monaco, monospace;
+      	text-indent: 1px;
+      	}
+
+      .leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+      	font-size: 22px;
+      	}
+
+
+      /* layers control */
+
+      .leaflet-control-layers {
+      	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+      	background: #fff;
+      	border-radius: 5px;
+      	}
+      .leaflet-control-layers-toggle {
+      	background-image: url(vendor/leaflet/images/layers.png);
+      	width: 36px;
+      	height: 36px;
+      	}
+      .leaflet-retina .leaflet-control-layers-toggle {
+      	background-image: url(vendor/leaflet/images/layers-2x.png);
+      	background-size: 26px 26px;
+      	}
+      .leaflet-touch .leaflet-control-layers-toggle {
+      	width: 44px;
+      	height: 44px;
+      	}
+      .leaflet-control-layers .leaflet-control-layers-list,
+      .leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+      	display: none;
+      	}
+      .leaflet-control-layers-expanded .leaflet-control-layers-list {
+      	display: block;
+      	position: relative;
+      	}
+      .leaflet-control-layers-expanded {
+      	padding: 6px 10px 6px 6px;
+      	color: #333;
+      	background: #fff;
+      	}
+      .leaflet-control-layers-scrollbar {
+      	overflow-y: scroll;
+      	overflow-x: hidden;
+      	padding-right: 5px;
+      	}
+      .leaflet-control-layers-selector {
+      	margin-top: 2px;
+      	position: relative;
+      	top: 1px;
+      	}
+      .leaflet-control-layers label {
+      	display: block;
+      	font-size: 13px;
+      	font-size: 1.08333em;
+      	}
+      .leaflet-control-layers-separator {
+      	height: 0;
+      	border-top: 1px solid #ddd;
+      	margin: 5px -10px 5px -6px;
+      	}
+
+      /* Default icon URLs */
+      .leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+      	background-image: url(vendor/leaflet/images/marker-icon.png);
+      	}
+
+
+      /* attribution and scale controls */
+
+      .leaflet-container .leaflet-control-attribution {
+      	background: #fff;
+      	background: rgba(255, 255, 255, 0.8);
+      	margin: 0;
+      	}
+      .leaflet-control-attribution,
+      .leaflet-control-scale-line {
+      	padding: 0 5px;
+      	color: #333;
+      	line-height: 1.4;
+      	}
+      .leaflet-control-attribution a {
+      	text-decoration: none;
+      	}
+      .leaflet-control-attribution a:hover,
+      .leaflet-control-attribution a:focus {
+      	text-decoration: underline;
+      	}
+      .leaflet-attribution-flag {
+      	display: inline !important;
+      	vertical-align: baseline !important;
+      	width: 1em;
+      	height: 0.6669em;
+      	}
+      .leaflet-left .leaflet-control-scale {
+      	margin-left: 5px;
+      	}
+      .leaflet-bottom .leaflet-control-scale {
+      	margin-bottom: 5px;
+      	}
+      .leaflet-control-scale-line {
+      	border: 2px solid #777;
+      	border-top: none;
+      	line-height: 1.1;
+      	padding: 2px 5px 1px;
+      	white-space: nowrap;
+      	-moz-box-sizing: border-box;
+      	     box-sizing: border-box;
+      	background: rgba(255, 255, 255, 0.8);
+      	text-shadow: 1px 1px #fff;
+      	}
+      .leaflet-control-scale-line:not(:first-child) {
+      	border-top: 2px solid #777;
+      	border-bottom: none;
+      	margin-top: -2px;
+      	}
+      .leaflet-control-scale-line:not(:first-child):not(:last-child) {
+      	border-bottom: 2px solid #777;
+      	}
+
+      .leaflet-touch .leaflet-control-attribution,
+      .leaflet-touch .leaflet-control-layers,
+      .leaflet-touch .leaflet-bar {
+      	box-shadow: none;
+      	}
+      .leaflet-touch .leaflet-control-layers,
+      .leaflet-touch .leaflet-bar {
+      	border: 2px solid rgba(0,0,0,0.2);
+      	background-clip: padding-box;
+      	}
+
+
+      /* popup */
+
+      .leaflet-popup {
+      	position: absolute;
+      	text-align: center;
+      	margin-bottom: 20px;
+      	}
+      .leaflet-popup-content-wrapper {
+      	padding: 1px;
+      	text-align: left;
+      	border-radius: 12px;
+      	}
+      .leaflet-popup-content {
+      	margin: 13px 24px 13px 20px;
+      	line-height: 1.3;
+      	font-size: 13px;
+      	font-size: 1.08333em;
+      	min-height: 1px;
+      	}
+      .leaflet-popup-content p {
+      	margin: 17px 0;
+      	margin: 1.3em 0;
+      	}
+      .leaflet-popup-tip-container {
+      	width: 40px;
+      	height: 20px;
+      	position: absolute;
+      	left: 50%;
+      	margin-top: -1px;
+      	margin-left: -20px;
+      	overflow: hidden;
+      	pointer-events: none;
+      	}
+      .leaflet-popup-tip {
+      	width: 17px;
+      	height: 17px;
+      	padding: 1px;
+
+      	margin: -10px auto 0;
+      	pointer-events: auto;
+
+      	-webkit-transform: rotate(45deg);
+      	   -moz-transform: rotate(45deg);
+      	    -ms-transform: rotate(45deg);
+      	        transform: rotate(45deg);
+      	}
+      .leaflet-popup-content-wrapper,
+      .leaflet-popup-tip {
+      	background: white;
+      	color: #333;
+      	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+      	}
+      .leaflet-container a.leaflet-popup-close-button {
+      	position: absolute;
+      	top: 0;
+      	right: 0;
+      	border: none;
+      	text-align: center;
+      	width: 24px;
+      	height: 24px;
+      	font: 16px/24px Tahoma, Verdana, sans-serif;
+      	color: #757575;
+      	text-decoration: none;
+      	background: transparent;
+      	}
+      .leaflet-container a.leaflet-popup-close-button:hover,
+      .leaflet-container a.leaflet-popup-close-button:focus {
+      	color: #585858;
+      	}
+      .leaflet-popup-scrolled {
+      	overflow: auto;
+      	}
+
+      .leaflet-oldie .leaflet-popup-content-wrapper {
+      	-ms-zoom: 1;
+      	}
+      .leaflet-oldie .leaflet-popup-tip {
+      	width: 24px;
+      	margin: 0 auto;
+
+      	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+      	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+      	}
+
+      .leaflet-oldie .leaflet-control-zoom,
+      .leaflet-oldie .leaflet-control-layers,
+      .leaflet-oldie .leaflet-popup-content-wrapper,
+      .leaflet-oldie .leaflet-popup-tip {
+      	border: 1px solid #999;
+      	}
+
+
+      /* div icon */
+
+      .leaflet-div-icon {
+      	background: #fff;
+      	border: 1px solid #666;
+      	}
+
+
+      /* Tooltip */
+      /* Base styles for the element that has a tooltip */
+      .leaflet-tooltip {
+      	position: absolute;
+      	padding: 6px;
+      	background-color: #fff;
+      	border: 1px solid #fff;
+      	border-radius: 3px;
+      	color: #222;
+      	white-space: nowrap;
+      	-webkit-user-select: none;
+      	-moz-user-select: none;
+      	-ms-user-select: none;
+      	user-select: none;
+      	pointer-events: none;
+      	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      	}
+      .leaflet-tooltip.leaflet-interactive {
+      	cursor: pointer;
+      	pointer-events: auto;
+      	}
+      .leaflet-tooltip-top:before,
+      .leaflet-tooltip-bottom:before,
+      .leaflet-tooltip-left:before,
+      .leaflet-tooltip-right:before {
+      	position: absolute;
+      	pointer-events: none;
+      	border: 6px solid transparent;
+      	background: transparent;
+      	content: "";
+      	}
+
+      /* Directions */
+
+      .leaflet-tooltip-bottom {
+      	margin-top: 6px;
+      }
+      .leaflet-tooltip-top {
+      	margin-top: -6px;
+      }
+      .leaflet-tooltip-bottom:before,
+      .leaflet-tooltip-top:before {
+      	left: 50%;
+      	margin-left: -6px;
+      	}
+      .leaflet-tooltip-top:before {
+      	bottom: 0;
+      	margin-bottom: -12px;
+      	border-top-color: #fff;
+      	}
+      .leaflet-tooltip-bottom:before {
+      	top: 0;
+      	margin-top: -12px;
+      	margin-left: -6px;
+      	border-bottom-color: #fff;
+      	}
+      .leaflet-tooltip-left {
+      	margin-left: -6px;
+      }
+      .leaflet-tooltip-right {
+      	margin-left: 6px;
+      }
+      .leaflet-tooltip-left:before,
+      .leaflet-tooltip-right:before {
+      	top: 50%;
+      	margin-top: -6px;
+      	}
+      .leaflet-tooltip-left:before {
+      	right: 0;
+      	margin-right: -12px;
+      	border-left-color: #fff;
+      	}
+      .leaflet-tooltip-right:before {
+      	left: 0;
+      	margin-left: -12px;
+      	border-right-color: #fff;
+      	}
+
+      /* Printing */
+
+      @media print {
+      	/* Prevent printers from removing background-images of controls. */
+      	.leaflet-control {
+      		-webkit-print-color-adjust: exact;
+      		print-color-adjust: exact;
+      		}
+      	}
+
+      /* ===== SocialData ===== */
+      /* SocialData - hoja de estilos
+         Pantalla de acceso previa; barra lateral con mapa, metricas e indicadores;
+         asistente como elemento principal; ficha tecnica y mapa ampliado como
+         paneles sobre la conversacion. */
+
+      :root {
+        --bg: #eff2ef;
+        --surface: #ffffff;
+        --surface-soft: #f5f7f5;
+        --ink: #17241f;
+        --ink-soft: #52655f;
+        --line: #dce3de;
+
+        --primary: #0f5c52;
+        --primary-dark: #0a3f38;
+        --primary-soft: #e3eeeb;
+        --accent: #b5762c;
+
+        --low: #3f8f63;
+        --medium: #d9a441;
+        --high: #b23a2e;
+
+        --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+        --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --shadow-panel: 0 1px 2px rgba(23, 36, 31, 0.06), 0 1px 12px rgba(23, 36, 31, 0.05);
+        --shadow-button: 0 1px 2px rgba(10, 63, 56, 0.24), 0 2px 8px rgba(10, 63, 56, 0.18);
+
+        --sidebar-width: 340px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-body);
+        color: var(--ink);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: var(--font-display);
+        color: var(--primary-dark);
+      }
+
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      .panel-subtitle {
+        margin: 4px 0 0;
+        font-size: 12.5px;
+        line-height: 1.4;
+        color: var(--ink-soft);
+      }
+
+      /* --- Estructura ------------------------------------------------------- */
+
+      .app {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+        padding: 14px 26px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        background: var(--primary);
+        color: #ffffff;
+        font-family: var(--font-display);
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .brand h1 {
+        font-size: 22px;
+        line-height: 1.1;
+      }
+
+      .tagline {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .breadcrumb li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .breadcrumb li:not(:first-child)::before {
+        content: '/';
+        color: var(--line);
+        font-size: 14px;
+      }
+
+      .crumb {
+        padding: 6px 10px;
+        border: none;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        font-size: 14px;
+        color: var(--ink-soft);
+      }
+
+      .crumb:hover {
+        background: var(--surface-soft);
+      }
+
+      .crumb.is-active {
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        font-weight: 600;
+      }
+
+      /* --- Cabecera: ruta y sesion ----------------------------------------- */
+
+      .header-end {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+      }
+
+      .session {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 20px;
+        border-left: 1px solid var(--line);
+      }
+
+      .session-user {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.25;
+      }
+
+      .session-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .session-role {
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      /* minmax(0, 1fr) y no auto: sin esto la fila crece hasta el alto del
+         contenido y las dos columnas desbordan la ventana en vez de scrollear. */
+      .app-main {
+        flex: 1;
+        display: grid;
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+        gap: 16px;
+        padding: 16px 20px;
+        min-height: 0;
+      }
+
+      /* --- Botones ---------------------------------------------------------- */
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #14705f 0%, var(--primary) 60%, var(--primary-dark) 100%);
+        color: #ffffff;
+        font-size: 13.5px;
+        font-weight: 700;
+        box-shadow: var(--shadow-button);
+        transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      }
+
+      .btn-primary:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(10, 63, 56, 0.26), 0 6px 18px rgba(10, 63, 56, 0.24);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+        filter: brightness(0.96);
+      }
+
+      .btn-primary.is-active {
+        background: linear-gradient(180deg, #c9862f 0%, var(--accent) 70%, #96601f 100%);
+        box-shadow: 0 1px 2px rgba(150, 96, 31, 0.28), 0 2px 10px rgba(150, 96, 31, 0.22);
+      }
+
+      .btn-icon {
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      /* Deshabilitado: sin elevacion ni cambio al pasar el puntero, para que no
+         parezca pulsable. */
+      .btn-primary:disabled {
+        opacity: 0.45;
+        cursor: default;
+        filter: none;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-ghost {
+        padding: 7px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        transition: border-color 0.14s ease, background 0.14s ease;
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+      }
+
+      /* Encabeza su seccion, asi que el aire va debajo y no encima. */
+      .btn-block {
+        width: 100%;
+        margin: 10px 0 4px;
+      }
+
+      /* --- Barra lateral ---------------------------------------------------- */
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+        padding-right: 4px;
+      }
+
+      /* Cada bloque conserva su alto natural. Si se les deja encoger, el
+         overflow hidden que redondea sus esquinas se traga el contenido sobrante
+         en silencio y la barra deja de tener desplazamiento. */
+      .sidebar > * {
+        flex: 0 0 auto;
+      }
+
+      .block,
+      .accordion {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-panel);
+        overflow: hidden;
+      }
+
+      .map-block {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .map-toolbar {
+        padding: 10px 12px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .map-toolbar-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .btn-map {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border: 1.5px solid var(--primary);
+        border-radius: 999px;
+        background: var(--surface);
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        transition: background 0.14s ease, color 0.14s ease;
+      }
+
+      .btn-map:hover {
+        background: var(--primary-soft);
+      }
+
+      .btn-map.is-active {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #ffffff;
+      }
+
+      /* Cuatro esquinas hacia fuera; ampliado, hacia dentro. */
+      .btn-map-icon {
+        position: relative;
+        width: 11px;
+        height: 11px;
+        background:
+          linear-gradient(currentColor, currentColor) top left / 4px 1.5px no-repeat,
+          linear-gradient(currentColor, currentColor) top left / 1.5px 4px no-repeat,
+          linear-gradient(currentColor, currentColor) top right / 4px 1.5px no-repeat,
+          linear-gradient(currentColor, currentColor) top right / 1.5px 4px no-repeat,
+          linear-gradient(currentColor, currentColor) bottom left / 4px 1.5px no-repeat,
+          linear-gradient(currentColor, currentColor) bottom left / 1.5px 4px no-repeat,
+          linear-gradient(currentColor, currentColor) bottom right / 4px 1.5px no-repeat,
+          linear-gradient(currentColor, currentColor) bottom right / 1.5px 4px no-repeat;
+      }
+
+      .btn-map.is-active .btn-map-icon {
+        transform: scale(0.8);
+      }
+
+      .layer-label {
+        margin: 0;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      .layer-label strong {
+        display: block;
+        margin-top: 2px;
+        font-size: 13px;
+        line-height: 1.3;
+        letter-spacing: 0;
+        text-transform: none;
+        color: var(--primary-dark);
+      }
+
+      .legend {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+      }
+
+      .dot.scale-low {
+        background: var(--low);
+      }
+
+      .dot.scale-medium {
+        background: var(--medium);
+      }
+
+      .dot.scale-high {
+        background: var(--high);
+      }
+
+      /* El mapa es un recuadro de referencia, no el protagonista. El alto se
+         adapta para que en pantallas bajas no se coma el espacio de las metricas. */
+      .map-canvas {
+        height: clamp(185px, 24vh, 250px);
+        background-color: #edf1ef;
+      }
+
+      /* Ampliado en su sitio, en pantallas compactas. */
+      .map-canvas.is-large {
+        height: clamp(380px, 55vh, 620px);
+      }
+
+      .map-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: clamp(185px, 24vh, 250px);
+        padding: 16px;
+        background: var(--surface-soft);
+        text-align: center;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      .map-placeholder p {
+        margin: 0;
+      }
+
+      /* Aviso si Leaflet no llega a cargar. */
+      .map-canvas.map-unavailable {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        text-align: center;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      .map-canvas .leaflet-container {
+        background-color: #edf1ef;
+      }
+
+      /* Respaldo sin conexion: si ningun proveedor de teselas responde, map.js
+         marca el contenedor y el fondo pasa a una reticula. */
+      .map-canvas.no-basemap,
+      .map-canvas.no-basemap .leaflet-container {
+        background-image:
+          linear-gradient(to right, rgba(23, 36, 31, 0.06) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(23, 36, 31, 0.06) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+
+      .map-footer {
+        margin: 0;
+        padding: 8px 12px 10px;
+        border-top: 1px solid var(--line);
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      .map-note {
+        display: block;
+        margin-top: 3px;
+        opacity: 0.85;
+      }
+
+      .map-canvas .leaflet-control-attribution {
+        padding: 0 4px;
+        background: rgba(255, 255, 255, 0.82);
+        font-size: 9.5px;
+      }
+
+      .town-label {
+        padding: 1px 5px;
+        border: 1px solid rgba(23, 36, 31, 0.18);
+        border-radius: 4px;
+        box-shadow: none;
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 10.5px;
+        font-weight: 600;
+        white-space: nowrap;
+        color: var(--ink);
+      }
+
+      .town-label::before {
+        display: none;
+      }
+
+      .rural-ring {
+        cursor: pointer;
+      }
+
+      .leaflet-popup-content-wrapper {
+        border-radius: var(--radius-sm);
+        font-family: var(--font-body);
+      }
+
+      .popup-title {
+        margin: 0 0 4px;
+        font-family: var(--font-display);
+        font-size: 14px;
+        color: var(--primary-dark);
+      }
+
+      .popup-value {
+        margin: 0 0 6px;
+        font-size: 13px;
+      }
+
+      .popup-action {
+        margin: 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      /* --- Acordeones: un mismo boton abre y cierra ------------------------- */
+
+      .accordion-head {
+        margin: 0;
+        font-family: var(--font-body);
+      }
+
+      .accordion-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 13px 14px;
+        border: none;
+        background: var(--surface);
+        text-align: left;
+        transition: background 0.14s ease;
+      }
+
+      .accordion-button:hover {
+        background: var(--primary-soft);
+      }
+
+      .accordion-button[aria-expanded='true'] {
+        background: var(--primary-soft);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .accordion-title {
+        flex: 1;
+        font-family: var(--font-display);
+        font-size: 14.5px;
+        font-weight: 700;
+        line-height: 1.25;
+        color: var(--primary-dark);
+      }
+
+      .accordion-count {
+        flex: 0 0 auto;
+        padding: 1px 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .accordion-chevron {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        transition: transform 0.2s ease;
+      }
+
+      .accordion-chevron::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-right: 2px solid var(--primary);
+        border-bottom: 2px solid var(--primary);
+        transform: translateY(-2px) rotate(45deg);
+      }
+
+      .accordion-button[aria-expanded='true'] .accordion-chevron {
+        transform: rotate(180deg);
+      }
+
+      .accordion-body {
+        padding: 12px 14px 14px;
+      }
+
+      /* --- Metricas --------------------------------------------------------- */
+
+      .metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .metric {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+      }
+
+      .metric--main {
+        grid-column: 1 / -1;
+        border-color: var(--primary);
+        background: var(--primary-soft);
+      }
+
+      .metric-label {
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      .metric-value {
+        font-family: var(--font-display);
+        font-size: 24px;
+        line-height: 1.2;
+        color: var(--primary-dark);
+      }
+
+      .metric-note {
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      .metric-note.scale-low {
+        color: var(--low);
+        font-weight: 700;
+      }
+
+      .metric-note.scale-medium {
+        color: var(--medium);
+        font-weight: 700;
+      }
+
+      .metric-note.scale-high {
+        color: var(--high);
+        font-weight: 700;
+      }
+
+      /* --- Dimensiones e indicadores ---------------------------------------- */
+
+      .dimension-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .dimension-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dimension-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        text-align: left;
+        transition: border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .dimension-card:hover {
+        border-color: var(--primary);
+      }
+
+      .dimension-card.is-active {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+      }
+
+      .dimension-index {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--primary-dark);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .dimension-text {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .dimension-name {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.3;
+        color: var(--ink);
+      }
+
+      .dimension-count {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 1px 7px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        font-size: 11.5px;
+        color: var(--primary-dark);
+      }
+
+      .dimension-card.is-active .dimension-count {
+        background: #ffffff;
+      }
+
+      .dimension-chevron {
+        flex: 0 0 auto;
+        align-self: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        transition: transform 0.2s ease;
+      }
+
+      .dimension-chevron::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-right: 2px solid var(--primary);
+        border-bottom: 2px solid var(--primary);
+        transform: translateY(-2px) rotate(45deg);
+      }
+
+      .dimension-card[aria-expanded='true'] .dimension-chevron {
+        transform: rotate(180deg);
+      }
+
+      /* Lista anidada: el panel cuelga de su dimension con una guia a la izquierda
+         alineada con el numero, y empuja hacia abajo las siguientes. */
+      .dimension-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: 4px 0 4px 24px;
+        padding-left: 10px;
+        border-left: 2px solid var(--primary-soft);
+      }
+
+      .indicators-note {
+        margin-top: 2px;
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .indicator-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 6px;
+        border-radius: var(--radius-sm);
+      }
+
+      .indicator-row:hover {
+        background: var(--surface-soft);
+      }
+
+      .indicator-name {
+        flex: 1;
+        font-size: 13px;
+        line-height: 1.3;
+        color: var(--ink);
+      }
+
+      .indicator-value {
+        margin-left: auto;
+        font-size: 11px;
+        white-space: nowrap;
+        color: var(--ink-soft);
+      }
+
+      /* --- Asistente: elemento principal ------------------------------------ */
+
+      .chat-panel {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        box-shadow: var(--shadow-panel);
+      }
+
+      .chat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .chat-identity {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .chat-avatar {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #14705f, var(--primary-dark));
+        color: #ffffff;
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .chat-identity h2 {
+        font-size: 17px;
+        line-height: 1.15;
+      }
+
+      /* Ancla del panel deslizante de ficha tecnica. */
+      .chat-area {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-body {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-messages {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 18px 20px 10px;
+      }
+
+      /* Conversacion pegada abajo, junto al campo de escritura. Se hace con
+         margin-top auto en el primer mensaje y no con justify-content flex-end,
+         porque esa propiedad recorta los mensajes de arriba al crecer. */
+      .chat-messages > .chat-message:first-child {
+        margin-top: auto;
+      }
+
+      /* El tope en ch manda en pantallas anchas: una linea de mas de ~70
+         caracteres se vuelve incomoda de leer. */
+      .chat-message {
+        display: flex;
+        max-width: min(76%, 72ch);
+      }
+
+      .chat-message--user {
+        align-self: flex-end;
+        justify-content: flex-end;
+      }
+
+      .chat-message--assistant {
+        align-self: flex-start;
+      }
+
+      /* Las respuestas se componen con saltos de linea literales: sin pre-wrap se
+         verian como un unico parrafo. */
+      .chat-bubble {
+        padding: 11px 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--surface-soft);
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--ink);
+        white-space: pre-wrap;
+      }
+
+      .chat-message--assistant .chat-bubble {
+        border-top-left-radius: 4px;
+      }
+
+      .chat-message--user .chat-bubble {
+        border-color: var(--primary);
+        background: var(--primary);
+        border-top-right-radius: 4px;
+        color: #ffffff;
+      }
+
+      .chat-suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 6px 20px 12px;
+      }
+
+      .chat-suggestion {
+        padding: 8px 14px;
+        border: 1.5px solid var(--primary);
+        border-radius: 999px;
+        background: var(--surface);
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--primary-dark);
+        transition: background 0.14s ease, transform 0.12s ease;
+      }
+
+      .chat-suggestion:hover {
+        background: var(--primary);
+        color: #ffffff;
+        transform: translateY(-1px);
+      }
+
+      .chat-form {
+        display: flex;
+        gap: 10px;
+        padding: 14px 20px 18px;
+        border-top: 1px solid var(--line);
+      }
+
+      .chat-input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 16px;
+        border: 1.5px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface-soft);
+        font-family: inherit;
+        font-size: 13.5px;
+        color: var(--ink);
+      }
+
+      .chat-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: var(--surface);
+      }
+
+      .empty-note {
+        padding: 28px 20px;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--ink-soft);
+      }
+
+      /* --- Ficha tecnica: panel deslizante ---------------------------------- */
+
+      .tech-sheet {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        width: min(410px, 100%);
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: -8px 0 32px rgba(23, 36, 31, 0.16);
+        animation: sheet-in 0.22s ease-out;
+      }
+
+      @keyframes sheet-in {
+        from {
+          transform: translateX(16px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* --- Mapa ampliado: panel sobre el asistente ------------------------- */
+
+      /* Cubre todo el ancho del area: el objetivo es un mapa de trabajo, no una
+         columna mas. */
+      .map-panel {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        animation: sheet-in 0.22s ease-out;
+      }
+
+      .map-panel-body {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .map-panel .map-canvas {
+        flex: 1;
+        height: auto;
+        min-height: 0;
+      }
+
+      .sheet-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        background: var(--primary-soft);
+      }
+
+      .sheet-header h2 {
+        font-size: 17px;
+      }
+
+      .sheet-close {
+        flex: 0 0 auto;
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--surface);
+        font-size: 14px;
+        line-height: 1;
+        color: var(--ink-soft);
+        transition: background 0.14s ease, color 0.14s ease;
+      }
+
+      .sheet-close:hover {
+        border-color: var(--high);
+        background: var(--high);
+        color: #ffffff;
+      }
+
+      .sheet-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 14px;
+      }
+
+      .sheet-body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      /* --- Barras de indicadores -------------------------------------------- */
+
+      .bar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .bar-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .bar-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 12.5px;
+      }
+
+      .bar-name {
+        color: var(--ink);
+      }
+
+      .bar-name small,
+      .bar-value small {
+        font-weight: 400;
+        color: var(--ink-soft);
+      }
+
+      .bar-value {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .bar-track {
+        width: 100%;
+        height: 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface-soft);
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--primary);
+        transition: width 0.35s ease;
+      }
+
+      .bar-fill.scale-low {
+        background: var(--low);
+      }
+
+      .bar-fill.scale-medium {
+        background: var(--medium);
+      }
+
+      .bar-fill.scale-high {
+        background: var(--high);
+      }
+
+      .bar-fill.group-A {
+        background: var(--high);
+      }
+
+      .bar-fill.group-B {
+        background: var(--medium);
+      }
+
+      .bar-fill.group-C {
+        background: #7ba7b8;
+      }
+
+      .bar-fill.group-D {
+        background: var(--low);
+      }
+
+      .group-heading {
+        margin: 2px 0 -2px;
+      }
+
+      /* --- Pantalla de acceso ---------------------------------------------- */
+
+      /* Fondo en reticula, la misma del mapa sin cartografia: remite a la
+         herramienta sin anticipar ningun dato antes de autenticarse. */
+      .login-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(to right, rgba(15, 92, 82, 0.07) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 92, 82, 0.07) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+
+      .login-card {
+        width: min(400px, 100%);
+        padding: 28px 28px 22px;
+        border: 1px solid var(--line);
+        border-top: 4px solid var(--primary);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        box-shadow: 0 1px 2px rgba(23, 36, 31, 0.06), 0 12px 40px rgba(23, 36, 31, 0.1);
+      }
+
+      .login-product {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--primary-dark);
+      }
+
+      .login-title {
+        margin-top: 26px;
+        font-size: 24px;
+        line-height: 1.2;
+      }
+
+      .login-notice {
+        margin: 14px 0 0;
+        padding: 10px 12px;
+        border-left: 3px solid var(--accent);
+        border-radius: var(--radius-sm);
+        background: #f7efe4;
+        font-size: 13px;
+        line-height: 1.45;
+        color: var(--ink);
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 20px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .field-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--ink);
+      }
+
+      .field-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: var(--surface);
+        box-shadow: 0 0 0 3px var(--primary-soft);
+      }
+
+      .login-error {
+        margin: 0;
+        padding: 10px 12px;
+        border-left: 3px solid var(--high);
+        border-radius: var(--radius-sm);
+        background: #f8e9e7;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #7c231a;
+      }
+
+      .login-error:empty {
+        display: none;
+      }
+
+      .login-form .btn-block {
+        margin: 4px 0 0;
+        padding: 12px 18px;
+        font-size: 14px;
+      }
+
+      .login-foot {
+        margin: 20px 0 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--ink-soft);
+      }
+
+      .noscript-note {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 12px 16px;
+        background: var(--high);
+        color: #ffffff;
+        text-align: center;
+        font-size: 13.5px;
+      }
+
+      /* --- Barras de desplazamiento ----------------------------------------- */
+
+      .sidebar,
+      .chat-messages,
+      .sheet-content {
+        scrollbar-width: thin;
+        scrollbar-color: #b9c6c0 transparent;
+      }
+
+      .sidebar::-webkit-scrollbar,
+      .chat-messages::-webkit-scrollbar,
+      .sheet-content::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .sidebar::-webkit-scrollbar-track,
+      .chat-messages::-webkit-scrollbar-track,
+      .sheet-content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .sidebar::-webkit-scrollbar-thumb,
+      .chat-messages::-webkit-scrollbar-thumb,
+      .sheet-content::-webkit-scrollbar-thumb {
+        border: 3px solid transparent;
+        border-radius: 999px;
+        background: #b9c6c0;
+        background-clip: content-box;
+      }
+
+      .sidebar::-webkit-scrollbar-thumb:hover,
+      .chat-messages::-webkit-scrollbar-thumb:hover,
+      .sheet-content::-webkit-scrollbar-thumb:hover {
+        background-color: var(--primary);
+      }
+
+      /* --- Pie -------------------------------------------------------------- */
+
+      .app-footer {
+        padding: 8px 24px 14px;
+        text-align: center;
+      }
+
+      .app-footer p {
+        margin: 0;
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      /* --- Responsivo -------------------------------------------------------- */
+
+      @media (min-width: 1081px) {
+        .app {
+          height: 100vh;
+        }
+      }
+
+      @media (max-width: 1080px) {
+        .app-main {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto minmax(520px, 1fr);
+        }
+
+        .sidebar {
+          overflow: visible;
+        }
+
+        .tech-sheet {
+          width: 100%;
+          border-left: none;
+        }
+
+        .session {
+          padding-left: 0;
+          border-left: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app-header {
+          padding: 12px 16px;
+        }
+
+        .header-end {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .session-user {
+          align-items: flex-start;
+        }
+
+        .login-card {
+          padding: 22px 20px 18px;
+        }
+
+        .app-main {
+          gap: 12px;
+          padding: 12px;
+        }
+
+        .metrics {
+          grid-template-columns: 1fr;
+        }
+
+        .chat-message {
+          max-width: 92%;
+        }
+
+        .chat-header {
+          padding: 12px 14px;
+        }
+
+        .chat-messages {
+          padding: 14px 14px 8px;
+        }
+
+        .chat-form {
+          padding: 12px 14px 14px;
+        }
+
+        .chat-suggestions {
+          padding: 6px 14px 10px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+
+    <!-- Unico recurso externo al documento: Leaflet, descargado en el repositorio. -->
     <script src="vendor/leaflet/leaflet.js"></script>
   </head>
   <body>
@@ -291,6 +2413,1645 @@
       </footer>
     </div>
 
-    <script type="module" src="js/app.js"></script>
+    <noscript>
+      <p class="noscript-note">SocialData necesita JavaScript activado para iniciar sesión.</p>
+    </noscript>
+
+    <!-- Aplicacion completa en un solo script clasico. Cada capa (modelo, mapa,
+         vista, asistente y controlador) es un modulo en cierre con su propia
+         interfaz publica, con la misma separacion de roles que antes tenian
+         los archivos de js/. -->
+    <script>
+      'use strict';
+
+      const Model = (() => {
+        // Capa de datos. No toca el DOM.
+        // Al conectar el backend solo cambia este archivo: las firmas se mantienen.
+
+        // ---------------------------------------------------------------
+        // Configuracion de la API
+        // ---------------------------------------------------------------
+        // Base de la API del backend. Es el unico valor que cambia entre entornos.
+        const API_URL = 'http://localhost:8000/api/v1';
+
+        // Nombres de los campos que espera POST /auth/login. Si el esquema del backend
+        // usa otros nombres, se ajustan aqui y en ningun otro sitio.
+        const LOGIN_FIELDS = { email: 'correo', password: 'contrasena' };
+
+        // Duracion de la sesion en el backend (JWT_MINUTOS). Solo se usa si el token no
+        // trae el claim exp, para no dejar una sesion sin caducidad en el cliente.
+        const SESSION_MINUTES = 480;
+
+        // sessionStorage y no localStorage: la sesion muere al cerrar la pestaña.
+        const SESSION_KEY = 'socialdata.sesion';
+        const EXPIRED_KEY = 'socialdata.sesion-expirada';
+
+        // ---------------------------------------------------------------
+        // Sesion
+        // ---------------------------------------------------------------
+
+        // Error de autenticacion con un motivo que la vista traduce a un mensaje.
+        // Motivos: invalid (401), disabled (403), locked (429), network, server.
+        class AuthError extends Error {
+          constructor(reason, status = null) {
+            super(reason);
+            this.name = 'AuthError';
+            this.reason = reason;
+            this.status = status;
+          }
+        }
+
+        const REASON_BY_STATUS = { 401: 'invalid', 403: 'disabled', 429: 'locked' };
+
+        function readStorage(key) {
+          try {
+            return window.sessionStorage.getItem(key);
+          } catch (error) {
+            return null;
+          }
+        }
+
+        function writeStorage(key, value) {
+          try {
+            if (value === null) window.sessionStorage.removeItem(key);
+            else window.sessionStorage.setItem(key, value);
+          } catch (error) {
+            // Sin almacenamiento (modo privado estricto) la sesion vive solo en memoria
+            // hasta la siguiente recarga, que es el comportamiento mas seguro posible.
+          }
+        }
+
+        let memorySession = null;
+
+        // Lee los claims del JWT sin verificar la firma. La verificacion la hace el
+        // backend; aqui solo interesan la caducidad y los datos de presentacion.
+        function readClaims(token) {
+          try {
+            const part = token.split('.')[1];
+            const base64 = part.replace(/-/g, '+').replace(/_/g, '/')
+              .padEnd(Math.ceil(part.length / 4) * 4, '=');
+            const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+            return JSON.parse(new TextDecoder().decode(bytes));
+          } catch (error) {
+            return {};
+          }
+        }
+
+        function textOf(value) {
+          if (value === null || value === undefined) return '';
+          if (typeof value === 'object') return String(value.nombre || value.name || '');
+          return String(value);
+        }
+
+        // Normaliza la respuesta del login. Acepta el usuario dentro del cuerpo o, si
+        // no viene, lo toma de los claims del token.
+        function sessionFrom(body) {
+          const token = body.access_token || body.token;
+          if (!token) throw new AuthError('server');
+
+          const claims = readClaims(token);
+          const user = body.usuario || body.user || {};
+          const expiresAt = claims.exp
+            ? claims.exp * 1000
+            : Date.now() + SESSION_MINUTES * 60 * 1000;
+
+          return {
+            token,
+            expiresAt,
+            user: {
+              name: textOf(user.nombre || user.nombre_completo || user.name || claims.nombre) ||
+                    textOf(user.correo || user.email || claims.sub),
+              role: textOf(user.rol || user.role || claims.rol || claims.role)
+            }
+          };
+        }
+
+        function saveSession(session) {
+          memorySession = session;
+          writeStorage(SESSION_KEY, JSON.stringify(session));
+        }
+
+        // La contraseña solo existe como argumento de esta funcion: se envia en el
+        // cuerpo del POST y no se guarda en ninguna variable de modulo ni almacenamiento.
+        async function login(email, password) {
+          let response;
+
+          try {
+            response = await fetch(`${API_URL}/auth/login`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ [LOGIN_FIELDS.email]: email, [LOGIN_FIELDS.password]: password })
+            });
+          } catch (error) {
+            throw new AuthError('network');
+          }
+
+          if (!response.ok) {
+            throw new AuthError(REASON_BY_STATUS[response.status] || 'server', response.status);
+          }
+
+          let body;
+          try {
+            body = await response.json();
+          } catch (error) {
+            throw new AuthError('server', response.status);
+          }
+
+          const session = sessionFrom(body);
+          saveSession(session);
+          writeStorage(EXPIRED_KEY, null);
+          return session;
+        }
+
+        // Sesion vigente o null. Una sesion caducada se descarta al leerla.
+        function getSession() {
+          let session = memorySession;
+
+          if (!session) {
+            const raw = readStorage(SESSION_KEY);
+            if (!raw) return null;
+            try {
+              session = JSON.parse(raw);
+            } catch (error) {
+              writeStorage(SESSION_KEY, null);
+              return null;
+            }
+          }
+
+          if (!session || !session.token || !session.expiresAt || Date.now() >= session.expiresAt) {
+            logout({ expired: Boolean(session && session.token) });
+            return null;
+          }
+
+          memorySession = session;
+          return session;
+        }
+
+        function getToken() {
+          const session = getSession();
+          return session ? session.token : null;
+        }
+
+        // Borra el token. Con expired se deja constancia para que la pantalla de login
+        // explique por que se volvio a ella.
+        function logout({ expired = false } = {}) {
+          memorySession = null;
+          writeStorage(SESSION_KEY, null);
+          writeStorage(EXPIRED_KEY, expired ? '1' : null);
+        }
+
+        // Devuelve si la ultima sesion termino por caducidad y consume el aviso.
+        function takeExpiredNotice() {
+          const expired = readStorage(EXPIRED_KEY) === '1';
+          writeStorage(EXPIRED_KEY, null);
+          return expired;
+        }
+
+        let unauthorizedHandler = () => {};
+
+        function onUnauthorized(handler) {
+          unauthorizedHandler = handler;
+        }
+
+        // Punto unico por el que pasan las peticiones autenticadas a la API. El token
+        // viaja siempre en la cabecera Authorization, nunca en la URL.
+        async function request(path, options = {}) {
+          const token = getToken();
+          const headers = { ...(options.headers || {}) };
+          if (token) headers.Authorization = `Bearer ${token}`;
+
+          const response = await fetch(API_URL + path, { ...options, headers });
+
+          if (response.status === 401) {
+            logout({ expired: true });
+            unauthorizedHandler();
+            throw new Error('Sesión expirada');
+          }
+
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.status === 204 ? null : response.json();
+        }
+
+        // ---------------------------------------------------------------
+        // Datos de indicadores
+        // ---------------------------------------------------------------
+
+        let data = null;
+
+        // Corte local de los indicadores. Pasara a request('/...') cuando el backend
+        // publique los endpoints de datos; el resto de funciones no cambia.
+        async function loadData() {
+          const response = await fetch('api/data.json');
+
+          if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+          }
+
+          data = await response.json();
+          return data;
+        }
+
+        function getSummary() {
+          return data.resumen;
+        }
+
+        function getCatalog() {
+          return data.catalogo;
+        }
+
+        function getModelCard() {
+          return data.modelo;
+        }
+
+        function getZones() {
+          return data.zonas;
+        }
+
+        function getZoneById(zoneId) {
+          return data.zonas.find((zone) => zone.zona_id === Number(zoneId));
+        }
+
+        function getDeprivations(zoneId) {
+          return data.detalle[String(zoneId)].privaciones;
+        }
+
+        function getPrediction(zoneId) {
+          return data.detalle[String(zoneId)].prediccion;
+        }
+
+        function getExplanation(zoneId) {
+          return data.detalle[String(zoneId)].explicacion;
+        }
+
+        // Zonas ordenadas de mayor a menor pobreza extrema.
+        function getZonesRanked() {
+          return [...data.zonas].sort((a, b) => Number(b.pct_grupo_a) - Number(a.pct_grupo_a));
+        }
+
+        return { API_URL, AuthError, login, getSession, getToken, logout, takeExpiredNotice, onUnauthorized, request, loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations, getPrediction, getExplanation, getZonesRanked };
+      })();
+
+      const MapView = (() => {
+        // Mapa de las ocho zonas (Leaflet). Cada municipio aporta su cabecera urbana,
+        // dibujada como circulo en sus coordenadas reales, y su centro poblado y rural
+        // disperso, dibujado como anillo. El anillo es esquematico: el Sisben no
+        // publica geometrias por zona, asi que no hay poligono real que trazar.
+
+        let map = null;
+        let markerLayer = null;
+        let framed = false;
+
+        // Modo ampliado: rueda activa, los cuatro rotulos fijos y un nivel mas de
+        // acercamiento. Se guardan los argumentos del ultimo dibujo para poder
+        // redibujar las zonas al cambiar de modo sin pasar por el controlador.
+        let largeMode = false;
+        let lastDraw = null;
+
+        const METRO_BOUNDS = [[6.93, -73.26], [7.19, -72.99]];
+
+        // Cartografia base, en orden de preferencia. Ninguna exige clave de API.
+        // Se descarto CARTO: desde 2024 marca sus teselas con "API KEY REQUIRED" si la
+        // aplicacion no esta registrada.
+        const BASE_LAYERS = [
+          {
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+            labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+            options: {
+              maxZoom: 16,
+              attribution: '&copy; <a href="https://www.esri.com/">Esri</a> &middot; &copy; OSM'
+            }
+          },
+          {
+            url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            options: {
+              maxZoom: 19,
+              attribution: '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }
+          }
+        ];
+
+        // Casco urbano de cada municipio. El zoom de acercamiento es 12 y no 13 porque
+        // el mapa ocupa un recuadro compacto en la barra lateral; ampliado sube a 13.
+        const TOWN_CENTERS = {
+          '68001': { lat: 7.1193, lng: -73.1227, zoom: 12 },
+          '68276': { lat: 7.0631, lng: -73.0854, zoom: 12 },
+          '68307': { lat: 7.0680, lng: -73.1698, zoom: 12 },
+          '68547': { lat: 6.9908, lng: -73.0508, zoom: 12 }
+        };
+
+        // Umbrales derivados del rango real observado entre las ocho zonas
+        // (de 12,9 % a 60,9 % de hogares en el grupo A).
+        const MEDIUM_THRESHOLD = 25;
+        const HIGH_THRESHOLD = 45;
+
+        const SCALE_COLORS = {
+          low: '#3F8F63',
+          medium: '#D9A441',
+          high: '#B23A2E',
+          'no-data': '#9AA6A2'
+        };
+
+        function scaleOf(value) {
+          if (value === null || value === undefined) return 'no-data';
+          if (value < MEDIUM_THRESHOLD) return 'low';
+          if (value < HIGH_THRESHOLD) return 'medium';
+          return 'high';
+        }
+
+        function colorOf(value) {
+          return SCALE_COLORS[scaleOf(value)];
+        }
+
+        function centerOf(townCode) {
+          return TOWN_CENTERS[String(townCode)] || { lat: 7.07, lng: -73.12, zoom: 12 };
+        }
+
+        function townName(zone) {
+          return String(zone.zona_nombre || '').split(' - ')[0];
+        }
+
+        // Degradacion en cascada: si pasados unos segundos el proveedor no ha pintado
+        // ninguna tesela, se prueba el siguiente; agotados todos, queda la reticula.
+        function addBaseLayer(containerEl, index = 0) {
+          if (index >= BASE_LAYERS.length) {
+            containerEl.classList.add('no-basemap');
+            return;
+          }
+
+          const source = BASE_LAYERS[index];
+          const layer = L.tileLayer(source.url, source.options).addTo(map);
+
+          // Los toponimos van en un panel propio por encima de las zonas, con
+          // pointer-events none para no interceptar los clics dirigidos a ellas.
+          let labelLayer = null;
+          if (source.labels) {
+            if (!map.getPane('labels')) {
+              const pane = map.createPane('labels');
+              pane.style.zIndex = 450;
+              pane.style.pointerEvents = 'none';
+            }
+            labelLayer = L.tileLayer(source.labels, {
+              ...source.options, attribution: '', pane: 'labels'
+            }).addTo(map);
+          }
+
+          let loaded = false;
+          layer.on('load', () => { loaded = true; });
+
+          // No sirve descartar al proveedor al primer tileerror: Leaflet tambien lo
+          // emite cuando el mapa cancela teselas a medio descargar al reencuadrar.
+          setTimeout(() => {
+            const layerEl = layer.getContainer();
+            if (loaded || (layerEl && layerEl.querySelector('.leaflet-tile-loaded'))) return;
+            map.removeLayer(layer);
+            if (labelLayer) map.removeLayer(labelLayer);
+            addBaseLayer(containerEl, index + 1);
+          }, 5000);
+        }
+
+        // fitBounds sobre un contenedor de 0 px hace que Leaflet caiga en maxZoom, que
+        // era la causa de que el mapa abriera pegado a un solo municipio.
+        function frameMetroArea() {
+          if (!map) return false;
+          map.invalidateSize({ animate: false });
+          const size = map.getSize();
+          if (size.x < 40 || size.y < 40) return false;
+          map.fitBounds(METRO_BOUNDS, { padding: [14, 14] });
+          framed = true;
+          return true;
+        }
+
+        function initMap(containerId) {
+          const containerEl = document.getElementById(containerId);
+          if (!containerEl) throw new Error(`No existe el contenedor #${containerId}`);
+
+          // Leaflet se carga como recurso local (vendor/leaflet). Si falta, se lanza
+          // un error que el controlador recoge para seguir sin mapa.
+          if (!window.L) throw new Error('Leaflet no está disponible');
+
+          // scrollWheelZoom desactivado: el mapa vive dentro de una barra lateral con
+          // desplazamiento propio y capturaria la rueda al intentar bajar por ella.
+          map = L.map(containerEl, {
+            zoomControl: true, scrollWheelZoom: false, minZoom: 10, maxZoom: 16
+          });
+          addBaseLayer(containerEl);
+          L.control.scale({ imperial: false, metric: true }).addTo(map);
+          markerLayer = L.layerGroup().addTo(map);
+
+          // El panel se dimensiona con flexbox, asi que su alto puede no estar resuelto
+          // todavia. Se reintenta cuando el navegador termine el primer reflow.
+          if (!frameMetroArea()) {
+            requestAnimationFrame(() => frameMetroArea());
+            window.addEventListener('load', () => { if (!framed) frameMetroArea(); }, { once: true });
+          }
+
+          if (window.ResizeObserver) {
+            new ResizeObserver(() => {
+              if (framed) map.invalidateSize({ animate: false });
+              else frameMetroArea();
+            }).observe(containerEl);
+          }
+
+          return map;
+        }
+
+        function radiusOf(value) {
+          if (value === null || value === undefined) return 10;
+          const ratio = Math.min(Math.max(value, 0), 100) / 100;
+          return 12 + ratio * 18;
+        }
+
+        function popupHtml(zone, value, valueLabel) {
+          const text = value === null || value === undefined ? 'Sin datos' : `${value.toFixed(1)}%`;
+          return `<p class="popup-title">${zone.zona_nombre}</p>` +
+                 `<p class="popup-value">${valueLabel}: <strong>${text}</strong></p>` +
+                 `<p class="popup-value">${Number(zone.total_hogares).toLocaleString('es-CO')} hogares</p>` +
+                 `<p class="popup-action">Clic para ver el detalle ›</p>`;
+        }
+
+        function drawZones(zones, valueOf, onSelect, highlightedId = null, valueLabel = 'Hogares en grupo A') {
+          lastDraw = [zones, valueOf, onSelect, highlightedId, valueLabel];
+          if (!map) return;
+          markerLayer.clearLayers();
+
+          // Primero los anillos rurales, para que las cabeceras queden encima.
+          const rural = zones.filter((zone) => Number(zone.zona) === 2);
+          const urban = zones.filter((zone) => Number(zone.zona) !== 2);
+
+          rural.forEach((zone) => {
+            const value = valueOf(zone);
+            const center = centerOf(zone.cod_mpio);
+            const highlighted = highlightedId && zone.zona_id === highlightedId;
+
+            const ring = L.circle([center.lat, center.lng], {
+              radius: 4200,
+              fillColor: colorOf(value),
+              fillOpacity: highlighted ? 0.34 : 0.2,
+              color: colorOf(value),
+              weight: highlighted ? 3 : 1.5,
+              dashArray: '6 5',
+              className: 'rural-ring'
+            });
+
+            ring.bindPopup(popupHtml(zone, value, valueLabel) +
+              '<p class="popup-action">Área esquemática: el Sisbén no publica geometrías por zona.</p>');
+            ring.on('click', () => onSelect(zone));
+            ring.addTo(markerLayer);
+          });
+
+          urban.forEach((zone) => {
+            const value = valueOf(zone);
+            const center = centerOf(zone.cod_mpio);
+            const highlighted = highlightedId && zone.zona_id === highlightedId;
+
+            const marker = L.circleMarker([center.lat, center.lng], {
+              radius: radiusOf(value),
+              fillColor: colorOf(value),
+              fillOpacity: 0.85,
+              color: highlighted ? '#17241F' : '#ffffff',
+              weight: highlighted ? 3 : 1.5,
+              className: 'zone-marker'
+            });
+
+            marker.bindPopup(popupHtml(zone, value, valueLabel));
+            // En el recuadro compacto cuatro rotulos fijos se solapan entre si y con
+            // los toponimos de la cartografia base. Solo queda fijo el de la zona
+            // seleccionada; los demas aparecen al pasar el puntero. Con el mapa
+            // ampliado caben los cuatro y quedan todos fijos.
+            marker.bindTooltip(townName(zone), {
+              permanent: largeMode || Boolean(highlighted),
+              direction: 'right', offset: [8, 0], className: 'town-label'
+            });
+            marker.on('click', () => onSelect(zone));
+            marker.addTo(markerLayer);
+          });
+        }
+
+        function framePadding() {
+          return largeMode ? [36, 36] : [14, 14];
+        }
+
+        function flyToZone(townCode) {
+          const center = centerOf(townCode);
+          const zoom = center.zoom + (largeMode ? 1 : 0);
+          if (map) map.flyTo([center.lat, center.lng], zoom, { duration: 0.8 });
+        }
+
+        function fitMetroArea() {
+          if (map) map.flyToBounds(METRO_BOUNDS, { padding: framePadding(), duration: 0.8 });
+        }
+
+        // Cambia entre el recuadro compacto y el tamaño de trabajo. Se llama despues de
+        // que el controlador haya movido o redimensionado el contenedor.
+        //
+        // invalidateSize a mano porque el ResizeObserver de initMap no siempre se
+        // entera: si el nodo se mueve a otro contenedor con el mismo alto final, no hay
+        // cambio de tamaño que observar pero Leaflet conserva medidas antiguas y deja
+        // franjas grises. Se repite en el siguiente fotograma por si el navegador aun
+        // no habia resuelto la maqueta del panel.
+        function setLargeMode(on) {
+          if (!map) return;
+          largeMode = Boolean(on);
+
+          // La rueda solo hace zoom con el mapa ampliado; en la barra lateral debe
+          // seguir desplazando la columna.
+          if (largeMode) map.scrollWheelZoom.enable();
+          else map.scrollWheelZoom.disable();
+
+          if (lastDraw) drawZones(...lastDraw);
+
+          const reframe = () => {
+            map.invalidateSize({ animate: false });
+            const size = map.getSize();
+            if (size.x < 40 || size.y < 40) return;
+            map.fitBounds(METRO_BOUNDS, { padding: framePadding(), animate: false });
+            framed = true;
+          };
+
+          reframe();
+          requestAnimationFrame(reframe);
+        }
+
+        function isLargeMode() {
+          return largeMode;
+        }
+
+        return { scaleOf, colorOf, initMap, drawZones, flyToZone, fitMetroArea, setLargeMode, isLargeMode };
+      })();
+
+      const View = (() => {
+        const { scaleOf } = MapView;
+
+        // Renderizado del DOM. No consulta el modelo ni decide nada: recibe datos ya
+        // resueltos y los pinta.
+
+
+        const SCALE_LABELS = {
+          low: 'Prevalencia baja',
+          medium: 'Prevalencia media',
+          high: 'Prevalencia alta',
+          'no-data': 'Sin datos'
+        };
+
+        const GROUPS = ['A', 'B', 'C', 'D'];
+
+        const GROUP_NAMES = {
+          A: 'Pobreza extrema',
+          B: 'Pobreza moderada',
+          C: 'Vulnerable',
+          D: 'No pobre ni vulnerable'
+        };
+
+        function formatRatio(value) {
+          return `${(Number(value) * 100).toFixed(1).replace('.', ',')}%`;
+        }
+
+        function formatPercent(value) {
+          return `${Number(value).toFixed(1).replace('.', ',')}%`;
+        }
+
+        function escapeHtml(text) {
+          const div = document.createElement('div');
+          div.textContent = text;
+          return div.innerHTML;
+        }
+
+        function renderSummary(summaryEl, summary) {
+          summaryEl.textContent =
+            `${summary.total_hogares.toLocaleString('es-CO')} hogares · ` +
+            `${summary.total_personas.toLocaleString('es-CO')} personas · ` +
+            `${formatRatio(summary.pct_pobreza_extrema)} en grupo A`;
+        }
+
+        function renderBreadcrumb(breadcrumbEl, trail, onNavigate) {
+          breadcrumbEl.textContent = '';
+
+          trail.forEach((step, index) => {
+            const last = index === trail.length - 1;
+            const item = document.createElement('li');
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.classList.add('crumb');
+            if (last) button.classList.add('is-active');
+            button.textContent = step.name;
+            if (!last) button.addEventListener('click', () => onNavigate(step));
+
+            item.appendChild(button);
+            breadcrumbEl.appendChild(item);
+          });
+        }
+
+        // Cada dimension es un desplegable: su boton y, justo debajo, el panel con sus
+        // indicadores. Abrir una empuja hacia abajo las siguientes.
+        //
+        // La tarjeta no lleva la clase accordion-button a proposito: el manejador
+        // delegado de los acordeones la conmutaria una segunda vez en el mismo clic.
+        //
+        // Devuelve el panel de cada dimension para que el controlador lo rellene.
+        function renderDimensions(listEl, dimensions, openDimensions, onToggle) {
+          listEl.textContent = '';
+
+          return dimensions.map((dimension, index) => {
+            const open = openDimensions.includes(dimension.dimension);
+            const panelId = `dimension-panel-${index + 1}`;
+
+            const item = document.createElement('div');
+            item.classList.add('dimension-item');
+            item.setAttribute('role', 'listitem');
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.classList.add('dimension-card');
+            button.setAttribute('aria-controls', panelId);
+            button.innerHTML = `
+              <span class="dimension-index">${index + 1}</span>
+              <span class="dimension-text">
+                <span class="dimension-name">${escapeHtml(dimension.dimension)}</span>
+                <span class="dimension-count">${dimension.n} indicadores</span>
+              </span>
+              <span class="dimension-chevron" aria-hidden="true"></span>`;
+
+            const panel = document.createElement('div');
+            panel.id = panelId;
+            panel.classList.add('dimension-panel');
+            panel.setAttribute('role', 'list');
+            panel.setAttribute('aria-label', `Indicadores de ${dimension.dimension}`);
+
+            setDimensionExpanded(button, panel, open);
+            button.addEventListener('click', () => onToggle(dimension.dimension, button, panel));
+
+            item.append(button, panel);
+            listEl.appendChild(item);
+
+            return { dimension: dimension.dimension, panel };
+          });
+        }
+
+        function setDimensionExpanded(buttonEl, panelEl, open) {
+          buttonEl.setAttribute('aria-expanded', String(open));
+          buttonEl.classList.toggle('is-active', open);
+          panelEl.hidden = !open;
+        }
+
+        // Aviso bajo el titulo del acordeon: la prevalencia depende de la zona.
+        function renderIndicatorsNote(noteEl, deprivations) {
+          noteEl.textContent = deprivations
+            ? `Prevalencia en ${deprivations.zona_nombre}`
+            : 'Selecciona una zona en el mapa para ver la prevalencia de cada indicador';
+        }
+
+        // Rellena el panel de una dimension. Sin zona seleccionada la prevalencia se
+        // muestra como raya.
+        function renderIndicators(panelEl, indicators, deprivations) {
+          panelEl.textContent = '';
+
+          const rates = new Map();
+          if (deprivations) {
+            deprivations.dimensiones.forEach((group) => {
+              group.indicadores.forEach((item) => rates.set(item.codigo, item.prevalencia));
+            });
+          }
+
+          indicators.forEach((indicator) => {
+            const value = rates.has(indicator.codigo) ? rates.get(indicator.codigo) * 100 : null;
+            const row = document.createElement('div');
+
+            row.classList.add('indicator-row');
+            row.setAttribute('role', 'listitem');
+            row.innerHTML = `
+              <span class="indicator-name" title="${escapeHtml(indicator.descripcion || '')}">${escapeHtml(indicator.nombre)}</span>
+              <span class="indicator-value">${value === null ? '—' : formatPercent(value)}</span>`;
+
+            panelEl.appendChild(row);
+          });
+        }
+
+        function renderCollapseButton(buttonEl, anyOpen) {
+          buttonEl.disabled = !anyOpen;
+        }
+
+        function renderMetrics(refs, zone, prediction) {
+          const groupA = Number(zone.pct_grupo_a) * 100;
+
+          refs.groupAValueEl.textContent = formatPercent(groupA);
+          refs.householdsValueEl.textContent = Number(zone.total_hogares).toLocaleString('es-CO');
+
+          const scale = scaleOf(groupA);
+          refs.scaleLabelEl.textContent = SCALE_LABELS[scale];
+          refs.scaleLabelEl.className = `metric-note scale-${scale}`;
+
+          if (!prediction) {
+            refs.predictedValueEl.textContent = '—';
+            refs.predictedNoteEl.textContent = 'Predicción no disponible';
+            return;
+          }
+
+          const predicted = prediction.predicho;
+          const top = GROUPS.reduce((a, b) => (predicted[a] >= predicted[b] ? a : b));
+          refs.predictedValueEl.textContent = `${top} · ${formatRatio(predicted[top])}`;
+          refs.predictedNoteEl.textContent = `${GROUP_NAMES[top]} (grupo mayoritario estimado)`;
+        }
+
+        function clearMetrics(refs) {
+          refs.householdsValueEl.textContent = '—';
+          refs.groupAValueEl.textContent = '—';
+          refs.scaleLabelEl.textContent = 'Sin zona seleccionada';
+          refs.scaleLabelEl.className = 'metric-note';
+          refs.predictedValueEl.textContent = '—';
+          refs.predictedNoteEl.textContent = '—';
+        }
+
+        function barRow(name, value, fillClass, note = '') {
+          const item = document.createElement('div');
+
+          item.classList.add('bar-row');
+          item.innerHTML = `
+            <div class="bar-head">
+              <span class="bar-name">${name}</span>
+              <span class="bar-value">${formatPercent(value)}${note}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill ${fillClass}" style="width: ${Math.min(value, 100)}%"></div>
+            </div>`;
+
+          return item;
+        }
+
+        function renderDistribution(listEl, zone, prediction) {
+          listEl.textContent = '';
+
+          GROUPS.forEach((group) => {
+            const observed = Number(zone[`pct_grupo_${group.toLowerCase()}`]) * 100;
+            const estimated = prediction ? Number(prediction.predicho[group]) * 100 : null;
+            const note = estimated === null ? '' : ` <small>(modelo ${formatPercent(estimated)})</small>`;
+
+            listEl.appendChild(
+              barRow(`Grupo ${group} · ${GROUP_NAMES[group]}`, observed, `group-${group}`, note));
+          });
+        }
+
+        function renderExplanation(listEl, noteEl, explanation) {
+          listEl.textContent = '';
+
+          if (!explanation || !explanation.contribuciones || !explanation.contribuciones.length) {
+            noteEl.textContent = 'Explicabilidad no disponible para esta zona.';
+            return;
+          }
+
+          explanation.contribuciones.slice(0, 8).forEach((item) => {
+            const weight = Math.abs(item.contribucion);
+            const sign = item.contribucion > 0 ? '+' : '';
+            const row = document.createElement('div');
+
+            row.classList.add('bar-row');
+            row.innerHTML = `
+              <div class="bar-head">
+                <span class="bar-name">${escapeHtml(item.etiqueta)} <small>· ${escapeHtml(item.dimension)}</small></span>
+                <span class="bar-value">${sign}${item.contribucion.toFixed(3).replace('.', ',')}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill ${item.contribucion > 0 ? 'scale-high' : 'scale-low'}"
+                     style="width: ${Math.min(weight * 90, 100)}%"></div>
+              </div>`;
+
+            listEl.appendChild(row);
+          });
+
+          noteEl.textContent =
+            `Contribuciones SHAP del hogar representativo de la zona al grupo ${explanation.grupo_predicho}. ` +
+            'Explican en qué se apoya el modelo, no relaciones causales.';
+        }
+
+        function renderDeprivations(listEl, deprivations) {
+          listEl.textContent = '';
+          if (!deprivations) return;
+
+          deprivations.dimensiones.forEach((group) => {
+            const heading = document.createElement('p');
+            heading.classList.add('panel-subtitle', 'group-heading');
+            heading.textContent = group.dimension;
+            listEl.appendChild(heading);
+
+            group.indicadores.forEach((indicator) => {
+              const value = indicator.prevalencia * 100;
+              listEl.appendChild(
+                barRow(escapeHtml(indicator.nombre), value, `scale-${scaleOf(value)}`));
+            });
+          });
+        }
+
+        function renderMessages(listEl, messages) {
+          listEl.textContent = '';
+
+          messages.forEach((message) => {
+            const row = document.createElement('div');
+            const bubble = document.createElement('div');
+
+            row.classList.add('chat-message', `chat-message--${message.author}`);
+            bubble.classList.add('chat-bubble');
+            bubble.textContent = message.text;
+
+            row.appendChild(bubble);
+            listEl.appendChild(row);
+          });
+
+          listEl.scrollTop = listEl.scrollHeight;
+        }
+
+        function renderSuggestions(listEl, suggestions, onPick) {
+          listEl.textContent = '';
+
+          suggestions.forEach((text) => {
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.classList.add('chat-suggestion');
+            button.textContent = text;
+            button.addEventListener('click', () => onPick(text));
+
+            listEl.appendChild(button);
+          });
+        }
+
+        // ---------------------------------------------------------------
+        // Inicio de sesion
+        // ---------------------------------------------------------------
+
+        // El mensaje de credenciales invalidas es deliberadamente generico: no dice si
+        // fallo el correo o la contraseña (RF-01, flujo alternativo 1).
+        const LOGIN_MESSAGES = {
+          empty: 'Escribe tu correo y tu contraseña.',
+          invalid: 'Correo o contraseña incorrectos.',
+          disabled: 'Tu usuario está desactivado. Contacta al administrador.',
+          locked: 'Demasiados intentos. Espera 15 minutos antes de volver a intentarlo.',
+          network: 'No se pudo conectar con el servidor. Comprueba que el backend esté en ejecución.',
+          server: 'No se pudo iniciar sesión por un error del servidor. Inténtalo de nuevo.'
+        };
+
+        function renderLoginError(errorEl, reason) {
+          errorEl.textContent = reason ? (LOGIN_MESSAGES[reason] || LOGIN_MESSAGES.server) : '';
+        }
+
+        function renderLoginNotice(noticeEl, expired) {
+          noticeEl.textContent = expired ? 'Tu sesión expiró. Inicia sesión de nuevo para continuar.' : '';
+          noticeEl.hidden = !expired;
+        }
+
+        function setLoginBusy(buttonEl, busy) {
+          buttonEl.disabled = busy;
+          buttonEl.setAttribute('aria-busy', String(busy));
+          buttonEl.textContent = busy ? 'Verificando…' : 'Iniciar sesión';
+        }
+
+        const ROLE_NAMES = {
+          administrador: 'Administrador',
+          admin: 'Administrador',
+          analista: 'Analista'
+        };
+
+        function renderSession(nameEl, roleEl, user) {
+          const role = String(user.role || '').trim();
+          nameEl.textContent = user.name || 'Usuario';
+          roleEl.textContent = ROLE_NAMES[role.toLowerCase()] ||
+            (role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Sin rol');
+        }
+
+        return { formatRatio, formatPercent, escapeHtml, renderSummary, renderBreadcrumb, renderDimensions, setDimensionExpanded, renderIndicatorsNote, renderIndicators, renderCollapseButton, renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations, renderMessages, renderSuggestions, renderLoginError, renderLoginNotice, setLoginBusy, renderSession };
+      })();
+
+      const Chat = (() => {
+        const { getDeprivations, getExplanation, getPrediction, getZonesRanked, getModelCard } = Model;
+
+        // Asistente analitico. Compone las respuestas con plantillas sobre cifras que
+        // ya estan calculadas: no calcula nada por su cuenta y no emite ningun numero
+        // que no venga de los datos de la zona.
+
+
+        const history = new Map();
+
+        function messagesOf(zoneId) {
+          if (!history.has(zoneId)) history.set(zoneId, []);
+          return history.get(zoneId);
+        }
+
+        function push(zoneId, author, text) {
+          messagesOf(zoneId).push({ author, text });
+        }
+
+        function ratio(value) {
+          return `${(Number(value) * 100).toFixed(1).replace('.', ',')} %`;
+        }
+
+        function withoutAccents(text) {
+          return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        // Lineas de intervencion asociadas a cada privacion, con la entidad que
+        // habitualmente las lidera en el orden territorial colombiano.
+        const ACTIONS = {
+          'Trabajo informal':
+            'rutas de formalización laboral y empresarial con la Cámara de Comercio y el SENA, y esquemas de aseguramiento para trabajadores independientes',
+          'Desempleo de larga duración':
+            'intermediación laboral a través de la Agencia Pública de Empleo y formación orientada a la demanda del sector productivo regional',
+          'Trabajo infantil':
+            'estrategias de erradicación del trabajo infantil articuladas con el ICBF y transferencias condicionadas a la asistencia escolar',
+          'Bajo logro educativo':
+            'programas de educación para adultos y validación de la básica y la media',
+          'Analfabetismo':
+            'campañas de alfabetización de adultos con la Secretaría de Educación',
+          'Inasistencia escolar':
+            'búsqueda activa de menores desescolarizados, matrícula extraordinaria y transporte escolar',
+          'Rezago escolar':
+            'programas de nivelación y aceleración del aprendizaje',
+          'Sin aseguramiento en salud':
+            'jornadas de afiliación al régimen subsidiado y depuración de las bases de datos de afiliación',
+          'Barreras de acceso a servicios de salud':
+            'brigadas de salud extramurales y rutas integrales de atención en zonas de difícil acceso',
+          'Barreras de acceso a cuidado de primera infancia':
+            'ampliación de cobertura de Centros de Desarrollo Infantil y de la modalidad familiar del ICBF',
+          'Sin acceso a fuente de agua mejorada':
+            'ampliación de redes de acueducto y soluciones alternativas en zona rural dispersa, como captación de agua lluvia y plantas modulares',
+          'Inadecuada eliminación de excretas':
+            'ampliación del alcantarillado y pozos sépticos donde la red no llega',
+          'Material inadecuado de pisos':
+            'subsidios de mejoramiento de vivienda en sitio propio y programas de pisos saludables',
+          'Material inadecuado de paredes exteriores':
+            'subsidios de mejoramiento de vivienda en sitio propio',
+          'Hacinamiento crítico':
+            'mejoramiento de vivienda con ampliación de cuartos y programas de vivienda de interés prioritario'
+        };
+
+        // Privaciones de la zona, de mayor a menor prevalencia.
+        function deprivationsOf(zone) {
+          return getDeprivations(zone.zona_id).dimensiones
+            .flatMap((group) => group.indicadores.map((item) => ({ ...item, dimension: group.dimension })))
+            .sort((a, b) => b.prevalencia - a.prevalencia);
+        }
+
+        function rankOf(zone) {
+          const ranked = getZonesRanked();
+          return { position: ranked.findIndex((z) => z.zona_id === zone.zona_id) + 1, total: ranked.length };
+        }
+
+        function overview(zone) {
+          const worst = deprivationsOf(zone).slice(0, 3);
+          const rank = rankOf(zone);
+
+          return `En ${zone.zona_nombre} hay ${Number(zone.total_hogares).toLocaleString('es-CO')} ` +
+            `hogares registrados en el Sisbén, de los cuales el ${ratio(zone.pct_grupo_a)} está en el ` +
+            `grupo A (pobreza extrema) y el ${ratio(Number(zone.pct_grupo_a) + Number(zone.pct_grupo_b))} ` +
+            `entre los grupos A y B. Ocupa el puesto ${rank.position} de ${rank.total} entre las zonas del ` +
+            `área metropolitana ordenadas por pobreza extrema.\n\n` +
+            `Las privaciones más extendidas son ${worst[0].nombre.toLowerCase()} (${ratio(worst[0].prevalencia)}), ` +
+            `${worst[1].nombre.toLowerCase()} (${ratio(worst[1].prevalencia)}) y ` +
+            `${worst[2].nombre.toLowerCase()} (${ratio(worst[2].prevalencia)}).`;
+        }
+
+        function critical(zone) {
+          const worst = deprivationsOf(zone)[0];
+          const drivers = getExplanation(zone.zona_id).contribuciones;
+          const driver = drivers.find((item) => item.contribucion > 0) || drivers[0];
+
+          return `La privación más extendida es ${worst.nombre.toLowerCase()}, presente en el ` +
+            `${ratio(worst.prevalencia)} de los hogares de la zona, dentro de la dimensión de ` +
+            `${worst.dimension.toLowerCase()}.\n\n` +
+            `Conviene distinguir dos cosas: qué es más frecuente y qué pesa más en la clasificación. ` +
+            `El factor que más empuja hacia el grupo estimado es ${driver.etiqueta.toLowerCase()} ` +
+            `(${driver.dimension.toLowerCase()}). Una privación puede ser muy común y aun así influir poco ` +
+            `en el grupo del Sisbén, porque este clasifica por capacidad de generar ingresos.`;
+        }
+
+        function recommend(zone) {
+          const deprivations = deprivationsOf(zone);
+          const drivers = getExplanation(zone.zona_id).contribuciones;
+          const picks = [];
+
+          const labour = drivers.find((item) => item.dimension === 'Trabajo' && item.contribucion > 0);
+          if (labour && ACTIONS[labour.etiqueta]) {
+            picks.push({ name: labour.etiqueta, reason: 'es el factor laboral que más pesa en el modelo' });
+          }
+
+          deprivations.slice(0, 4).forEach((item) => {
+            if (ACTIONS[item.nombre] && !picks.some((pick) => pick.name === item.nombre)) {
+              picks.push({ name: item.nombre, reason: `afecta al ${ratio(item.prevalencia)} de los hogares` });
+            }
+          });
+
+          let text = `Líneas de intervención pertinentes para ${zone.zona_nombre}, ordenadas por el peso ` +
+            `que tienen en esta zona:\n`;
+
+          picks.slice(0, 4).forEach((pick, index) => {
+            text += `\n${index + 1}. ${pick.name}: ${ACTIONS[pick.name]}. Se prioriza porque ${pick.reason}.`;
+          });
+
+          text += `\n\nUna advertencia para leer esto bien: mejorar la infraestructura de servicios ` +
+            `públicos eleva la calidad de vida, pero no siempre cambia el grupo del Sisbén, porque ese ` +
+            `grupo depende sobre todo de la capacidad del hogar de generar ingresos. Son dos objetivos ` +
+            `distintos y ambos legítimos.`;
+
+          return text;
+        }
+
+        function byDimension(zone, dimension) {
+          const rows = deprivationsOf(zone)
+            .filter((item) => withoutAccents(item.dimension).includes(withoutAccents(dimension)));
+
+          if (!rows.length) return overview(zone);
+
+          let text = `Dimensión de ${rows[0].dimension.toLowerCase()} en ${zone.zona_nombre}:\n`;
+          rows.forEach((item) => { text += `\n• ${item.nombre}: ${ratio(item.prevalencia)} de los hogares`; });
+
+          const worst = rows[0];
+          if (ACTIONS[worst.nombre]) {
+            text += `\n\nEl indicador más crítico de esta dimensión es ${worst.nombre.toLowerCase()}. ` +
+              `La línea de intervención habitual son ${ACTIONS[worst.nombre]}.`;
+          }
+
+          return text;
+        }
+
+        function compare(zone) {
+          const ranked = getZonesRanked();
+          let text = 'Zonas del área metropolitana ordenadas por hogares en el grupo A:\n';
+
+          ranked.forEach((item, index) => {
+            const mark = item.zona_id === zone.zona_id ? '  ←  zona seleccionada' : '';
+            text += `\n${index + 1}. ${item.zona_nombre}: ${ratio(item.pct_grupo_a)}${mark}`;
+          });
+
+          const rural = ranked.filter((item) => Number(item.zona) === 2);
+          const urban = ranked.filter((item) => Number(item.zona) === 1);
+          const average = (list) => list.reduce((sum, item) => sum + Number(item.pct_grupo_a), 0) / list.length;
+
+          text += `\n\nEn los cuatro municipios la zona rural presenta más pobreza extrema que su ` +
+            `cabecera urbana: ${ratio(average(rural))} frente a ${ratio(average(urban))} en promedio.`;
+
+          return text;
+        }
+
+        function modelAnswer(zone) {
+          const card = getModelCard();
+          const metrics = card.metricas;
+          const predicted = getPrediction(zone.zona_id).predicho;
+          const top = ['A', 'B', 'C', 'D'].reduce((a, b) => (predicted[a] >= predicted[b] ? a : b));
+
+          return `Para esta zona el modelo estima que el grupo mayoritario es el ${top}, con un ` +
+            `${ratio(predicted[top])} de los hogares, frente al ${ratio(zone['pct_grupo_' + top.toLowerCase()])} ` +
+            `observado en el dataset.\n\n` +
+            `El modelo es ${card.algoritmo}, entrenado sobre ${card.n_variables} variables ` +
+            `y evaluado con ${card.validacion.toLowerCase()}. Alcanza ` +
+            `${metrics.accuracy.toFixed(3).replace('.', ',')} de exactitud y ` +
+            `${metrics.f1_macro.toFixed(3).replace('.', ',')} de F1 macro, frente a 0,410 de un clasificador ` +
+            `que asignara siempre el grupo mayoritario.`;
+        }
+
+        const RULES = [
+          { keys: ['recomend', 'interven', 'que hacer', 'que deberia', 'accion', 'priorizar', 'invertir', 'proyecto'], answer: recommend },
+          { keys: ['critic', 'principal problema', 'peor', 'mas grave', 'mayor problema', 'problema'], answer: critical },
+          { keys: ['compar', 'otras zonas', 'ranking', 'rural', 'urbana', 'peores'], answer: compare },
+          { keys: ['modelo', 'predic', 'prediccion', 'precision', 'exactitud', 'algoritmo', 'ia'], answer: modelAnswer },
+          { keys: ['educacion', 'escolar', 'analfabet', 'estudi'], answer: (zone) => byDimension(zone, 'Educacion') },
+          { keys: ['salud', 'aseguramiento', 'eps'], answer: (zone) => byDimension(zone, 'Salud') },
+          { keys: ['trabajo', 'empleo', 'laboral', 'pension', 'informal'], answer: (zone) => byDimension(zone, 'Trabajo') },
+          { keys: ['vivienda', 'agua', 'acueducto', 'alcantarill', 'hacinam', 'piso', 'pared', 'servicio'], answer: (zone) => byDimension(zone, 'Vivienda') }
+        ];
+
+        function reply(zone, question) {
+          const text = withoutAccents(question);
+          const rule = RULES.find((item) => item.keys.some((key) => text.includes(key)));
+          return rule ? rule.answer(zone) : overview(zone);
+        }
+
+        const SUGGESTIONS = [
+          '¿Cuál es el principal problema de esta zona?',
+          '¿Qué intervenciones recomiendas?',
+          '¿Cómo se compara con las demás zonas?',
+          '¿Qué dice el modelo sobre esta zona?'
+        ];
+
+        function greet(zone) {
+          if (messagesOf(zone.zona_id).length) return;
+          push(zone.zona_id, 'assistant', overview(zone));
+        }
+
+        function ask(zone, question) {
+          push(zone.zona_id, 'user', question);
+          push(zone.zona_id, 'assistant', reply(zone, question));
+        }
+
+        function getMessages(zoneId) {
+          return messagesOf(zoneId);
+        }
+
+        // Borra toda la conversacion en memoria. Se usa al cerrar sesion: el historial
+        // contiene cifras de las zonas consultadas.
+        function resetChat() {
+          history.clear();
+        }
+
+        return { SUGGESTIONS, greet, ask, getMessages, resetChat };
+      })();
+
+      (() => {
+        // Controlador. Cablea los eventos, guarda el estado y reparte el trabajo entre
+        // el modelo, la vista, el mapa y el asistente.
+
+        const {
+          loadData, getSummary, getCatalog, getZones, getZonesRanked,
+          getDeprivations, getPrediction, getExplanation,
+          login, logout, getSession, takeExpiredNotice, onUnauthorized
+        } = Model;
+
+        const { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode } = MapView;
+        const { greet, ask, getMessages, resetChat, SUGGESTIONS } = Chat;
+
+        const {
+          renderSummary, renderBreadcrumb, renderDimensions, renderIndicators,
+          setDimensionExpanded, renderIndicatorsNote, renderCollapseButton,
+          renderMetrics, clearMetrics, renderDistribution,
+          renderExplanation, renderDeprivations, renderMessages, renderSuggestions,
+          renderLoginError, renderLoginNotice, setLoginBusy, renderSession
+        } = View;
+
+        const refs = {
+          loginScreenEl: document.getElementById('login-screen'),
+          loginForm: document.getElementById('login-form'),
+          loginEmail: document.getElementById('login-email'),
+          loginPassword: document.getElementById('login-password'),
+          loginSubmit: document.getElementById('login-submit'),
+          loginErrorEl: document.getElementById('login-error'),
+          loginNoticeEl: document.getElementById('login-notice'),
+
+          appEl: document.getElementById('app'),
+          sessionNameEl: document.getElementById('session-name'),
+          sessionRoleEl: document.getElementById('session-role'),
+          logoutBtn: document.getElementById('logout'),
+
+          mapEl: document.getElementById('map'),
+          mapPlaceholderEl: document.getElementById('map-placeholder'),
+          mapBtn: document.getElementById('toggle-map'),
+          mapBtnTextEl: document.getElementById('toggle-map-text'),
+          mapPanelEl: document.getElementById('map-panel'),
+          mapPanelBodyEl: document.getElementById('map-panel-body'),
+          mapPanelLayerEl: document.getElementById('map-panel-layer'),
+          closeMapBtn: document.getElementById('close-map'),
+
+          breadcrumbEl: document.getElementById('breadcrumb'),
+          summaryEl: document.getElementById('map-summary'),
+          layerNameEl: document.getElementById('layer-name'),
+
+          dimensionsEl: document.getElementById('dimension-list'),
+          indicatorsNoteEl: document.getElementById('indicators-note'),
+          collapseBtn: document.getElementById('collapse-dimensions'),
+
+          householdsValueEl: document.getElementById('households-value'),
+          groupAValueEl: document.getElementById('group-a-value'),
+          scaleLabelEl: document.getElementById('scale-label'),
+          predictedValueEl: document.getElementById('predicted-value'),
+          predictedNoteEl: document.getElementById('predicted-note'),
+
+          zoneNameEl: document.getElementById('zone-name'),
+          sheetZoneEl: document.getElementById('sheet-zone'),
+          sheetEl: document.getElementById('tech-sheet'),
+          sheetBtn: document.getElementById('toggle-sheet'),
+          sheetBtnTextEl: document.getElementById('toggle-sheet-text'),
+          closeSheetBtn: document.getElementById('close-sheet'),
+          sheetEmptyEl: document.getElementById('sheet-empty'),
+          sheetBodyEl: document.getElementById('sheet-body'),
+          distributionEl: document.getElementById('distribution-list'),
+          driversEl: document.getElementById('drivers-list'),
+          driversNoteEl: document.getElementById('drivers-note'),
+          deprivationsEl: document.getElementById('deprivations-list'),
+
+          chatEmptyEl: document.getElementById('chat-empty'),
+          chatBodyEl: document.getElementById('chat-body'),
+          messagesEl: document.getElementById('chat-messages'),
+          suggestionsEl: document.getElementById('chat-suggestions'),
+          chatForm: document.getElementById('chat-form'),
+          chatInput: document.getElementById('chat-input')
+        };
+
+        const DEFAULT_LAYER = 'Hogares en grupo A (pobreza extrema)';
+
+        const state = {
+          // Dimensiones abiertas, en el orden en que se abrieron. Se permiten varias a
+          // la vez; la ultima abierta da nombre a la capa activa.
+          openDimensions: [],
+          selectedZone: null,
+          deprivations: null,
+          // Mapa ampliado y, si lo esta, si vive en el panel o crece en su sitio.
+          mapLarge: false,
+          mapInPanel: false,
+          started: false
+        };
+
+        // Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel
+        // del asistente queda fuera de la vista: el mapa crece en su sitio.
+        const compactLayout = window.matchMedia('(max-width: 1080px)');
+
+        const valueOf = (zone) => Number(zone.pct_grupo_a) * 100;
+
+        // ---------------------------------------------------------------
+        // Barra lateral: dimensiones como desplegables anidados
+        // ---------------------------------------------------------------
+        function refreshLayerName() {
+          const last = state.openDimensions[state.openDimensions.length - 1];
+          const name = last || DEFAULT_LAYER;
+          refs.layerNameEl.textContent = name;
+          refs.mapPanelLayerEl.textContent = name;
+        }
+
+        function refreshDimensions() {
+          const catalog = getCatalog();
+          const panels = renderDimensions(
+            refs.dimensionsEl, catalog.dimensiones, state.openDimensions, selectDimension);
+
+          panels.forEach(({ dimension, panel }) => {
+            const indicators = catalog.indicadores.filter((item) => item.dimension === dimension);
+            renderIndicators(panel, indicators, state.deprivations);
+          });
+
+          renderIndicatorsNote(refs.indicatorsNoteEl, state.deprivations);
+          renderCollapseButton(refs.collapseBtn, state.openDimensions.length > 0);
+          refreshLayerName();
+        }
+
+        // Pulsar una dimension abierta la cierra. Se conmuta en sitio, sin volver a
+        // pintar la lista, para no perder el foco del boton pulsado. No se llama a
+        // revealSection: saltaria la vista en cada clic.
+        function selectDimension(dimension, buttonEl, panelEl) {
+          const open = !state.openDimensions.includes(dimension);
+
+          state.openDimensions = open
+            ? [...state.openDimensions, dimension]
+            : state.openDimensions.filter((item) => item !== dimension);
+
+          setDimensionExpanded(buttonEl, panelEl, open);
+          renderCollapseButton(refs.collapseBtn, state.openDimensions.length > 0);
+          refreshLayerName();
+
+          if (open) buttonEl.closest('.dimension-item').scrollIntoView({ block: 'nearest' });
+        }
+
+        refs.collapseBtn.addEventListener('click', () => {
+          state.openDimensions = [];
+          refreshDimensions();
+        });
+
+        // ---------------------------------------------------------------
+        // Acordeones: un mismo boton abre y cierra su seccion
+        // ---------------------------------------------------------------
+        function toggleAccordion(button) {
+          const bodyEl = document.getElementById(button.getAttribute('aria-controls'));
+          if (!bodyEl) return;
+
+          const open = button.getAttribute('aria-expanded') === 'true';
+          button.setAttribute('aria-expanded', String(!open));
+          bodyEl.hidden = open;
+
+          if (open) return;
+
+          const section = button.closest('.accordion');
+          // Sin requestAnimationFrame: leer getBoundingClientRect ya obliga a recalcular
+          // la maqueta, y asi no depende de que se llegue a pintar un fotograma.
+          if (section) revealSection(section);
+        }
+
+        // Primer ancestro que realmente puede desplazarse.
+        function scrollableParent(element) {
+          for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+            const overflow = getComputedStyle(parent).overflowY;
+            if ((overflow === 'auto' || overflow === 'scroll') && parent.scrollHeight > parent.clientHeight) {
+              return parent;
+            }
+          }
+          return null;
+        }
+
+        // Desplazamiento inmediato y no behavior smooth: hay navegadores que ignoran el
+        // desplazamiento suave dentro de un contenedor anidado y no hacen nada.
+        function revealSection(section) {
+          const container = scrollableParent(section);
+
+          if (container) {
+            const delta = section.getBoundingClientRect().top - container.getBoundingClientRect().top;
+            container.scrollTop += delta;
+            return;
+          }
+
+          section.scrollIntoView({ block: 'nearest' });
+        }
+
+        // Las tarjetas de dimension tienen su propio manejador y no llevan la clase
+        // accordion-button; la exclusion explicita evita una doble conmutacion si en el
+        // futuro alguien se la añade.
+        document.addEventListener('click', (event) => {
+          const button = event.target.closest('.accordion-button');
+          if (button && !button.classList.contains('dimension-card')) toggleAccordion(button);
+        });
+
+        // ---------------------------------------------------------------
+        // Ficha tecnica: el mismo boton la abre y la cierra
+        // ---------------------------------------------------------------
+        function toggleSheet(show) {
+          const open = show === undefined ? refs.sheetBtn.getAttribute('aria-expanded') !== 'true' : show;
+
+          refs.sheetBtn.setAttribute('aria-expanded', String(open));
+          refs.sheetBtn.classList.toggle('is-active', open);
+          refs.sheetBtnTextEl.textContent = open ? 'Ocultar ficha técnica' : 'Ver ficha técnica';
+          refs.sheetEl.hidden = !open;
+
+          // Ficha y mapa ampliado comparten el area del asistente: solo uno a la vez.
+          if (open && state.mapInPanel) setMapLarge(false);
+          if (open) refs.closeSheetBtn.focus();
+        }
+
+        refs.sheetBtn.addEventListener('click', () => toggleSheet());
+
+        refs.closeSheetBtn.addEventListener('click', () => {
+          toggleSheet(false);
+          refs.sheetBtn.focus();
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+
+          if (!refs.sheetEl.hidden) {
+            toggleSheet(false);
+            refs.sheetBtn.focus();
+          } else if (state.mapLarge) {
+            setMapLarge(false);
+            refs.mapBtn.focus();
+          }
+        });
+
+        // ---------------------------------------------------------------
+        // Mapa ampliado: el mismo boton lo amplia y lo reduce
+        // ---------------------------------------------------------------
+        // En escritorio el nodo del mapa se mueve a un panel sobre el asistente, igual
+        // que la ficha tecnica. En pantallas compactas crece en su sitio, porque el
+        // asistente queda debajo de la barra y el panel no estaria a la vista. En los
+        // dos casos el estado de la aplicacion no se toca: la zona seleccionada, las
+        // dimensiones abiertas y la conversacion siguen como estaban.
+        function setMapLarge(on) {
+          if (on === state.mapLarge) return;
+
+          if (on) toggleSheet(false);
+
+          state.mapLarge = on;
+          state.mapInPanel = on && !compactLayout.matches;
+
+          if (state.mapInPanel) {
+            refs.mapPanelBodyEl.appendChild(refs.mapEl);
+            refs.mapPanelEl.hidden = false;
+            refs.mapPlaceholderEl.hidden = false;
+            refs.mapBtn.setAttribute('aria-controls', 'map-panel');
+          } else {
+            if (refs.mapEl.parentElement !== refs.mapPlaceholderEl.parentElement) {
+              refs.mapPlaceholderEl.before(refs.mapEl);
+            }
+            refs.mapPanelEl.hidden = true;
+            refs.mapPlaceholderEl.hidden = true;
+            refs.mapEl.classList.toggle('is-large', on);
+            refs.mapBtn.setAttribute('aria-controls', 'map');
+          }
+
+          refs.mapBtn.setAttribute('aria-expanded', String(on));
+          refs.mapBtn.classList.toggle('is-active', on);
+          refs.mapBtnTextEl.textContent = on ? 'Reducir' : 'Ampliar';
+          refs.mapBtn.setAttribute('aria-label', on ? 'Reducir el mapa' : 'Ampliar el mapa');
+
+          // Tras mover o redimensionar el contenedor: invalidateSize, reencuadre,
+          // rueda y rotulos.
+          setLargeMode(on);
+        }
+
+        refs.mapBtn.addEventListener('click', () => setMapLarge(!state.mapLarge));
+
+        refs.closeMapBtn.addEventListener('click', () => {
+          setMapLarge(false);
+          refs.mapBtn.focus();
+        });
+
+        // Si la ventana cruza el punto de corte con el mapa ampliado, se reduce: el
+        // modo que se eligio al abrir ya no corresponde a la maqueta actual.
+        compactLayout.addEventListener('change', () => {
+          if (state.mapLarge) setMapLarge(false);
+        });
+
+        // ---------------------------------------------------------------
+        // Mapa y navegacion
+        // ---------------------------------------------------------------
+        function refreshMap() {
+          drawZones(
+            getZones(), valueOf, selectZone,
+            state.selectedZone ? state.selectedZone.zona_id : null,
+            'Hogares en grupo A');
+        }
+
+        function refreshBreadcrumb() {
+          const trail = [{ name: 'Área Metropolitana' }];
+          if (state.selectedZone) trail.push({ name: state.selectedZone.zona_nombre });
+          renderBreadcrumb(refs.breadcrumbEl, trail, showMetroArea);
+        }
+
+        function showMetroArea() {
+          state.selectedZone = null;
+          state.deprivations = null;
+
+          refs.zoneNameEl.textContent = 'Área Metropolitana de Bucaramanga';
+          refs.sheetZoneEl.textContent = 'Área Metropolitana de Bucaramanga';
+          refs.chatEmptyEl.hidden = false;
+          refs.chatBodyEl.hidden = true;
+          refs.sheetEmptyEl.hidden = false;
+          refs.sheetBodyEl.hidden = true;
+
+          clearMetrics(refs);
+          fitMetroArea();
+          refreshBreadcrumb();
+          refreshMap();
+          refreshDimensions();
+        }
+
+        function selectZone(zone, zoomIn = true) {
+          state.selectedZone = zone;
+          state.deprivations = getDeprivations(zone.zona_id);
+
+          refreshBreadcrumb();
+          refreshMap();
+          if (zoomIn) flyToZone(zone.cod_mpio);
+
+          refs.zoneNameEl.textContent = zone.zona_nombre;
+          refs.sheetZoneEl.textContent = zone.zona_nombre;
+          refs.chatEmptyEl.hidden = true;
+          refs.chatBodyEl.hidden = false;
+          refs.sheetEmptyEl.hidden = true;
+          refs.sheetBodyEl.hidden = false;
+
+          greet(zone);
+          renderMessages(refs.messagesEl, getMessages(zone.zona_id));
+          renderSuggestions(refs.suggestionsEl, SUGGESTIONS, send);
+
+          const prediction = getPrediction(zone.zona_id);
+          const explanation = getExplanation(zone.zona_id);
+
+          renderMetrics(refs, zone, prediction);
+          renderDistribution(refs.distributionEl, zone, prediction);
+          renderExplanation(refs.driversEl, refs.driversNoteEl, explanation);
+          renderDeprivations(refs.deprivationsEl, state.deprivations);
+          refreshDimensions();
+        }
+
+        // ---------------------------------------------------------------
+        // Asistente
+        // ---------------------------------------------------------------
+        function send(question) {
+          const zone = state.selectedZone;
+          if (!zone || !question.trim()) return;
+
+          ask(zone, question.trim());
+          renderMessages(refs.messagesEl, getMessages(zone.zona_id));
+        }
+
+        refs.chatForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          send(refs.chatInput.value);
+          refs.chatInput.value = '';
+        });
+
+        // ---------------------------------------------------------------
+        // Sesion
+        // ---------------------------------------------------------------
+
+        // Cierra la sesion de verdad: borra el token, el historial del asistente y
+        // recarga la pagina para descartar todo el estado en memoria (mapa, zona,
+        // cifras). replace y no assign, para no dejar la pagina autenticada en el
+        // historial del navegador.
+        function endSession(expired = false) {
+          resetChat();
+          logout({ expired });
+          window.location.replace(window.location.pathname);
+        }
+
+        refs.logoutBtn.addEventListener('click', () => endSession(false));
+
+        // Un 401 de la API significa token vencido o revocado.
+        onUnauthorized(() => endSession(true));
+
+        // Los datos se sirven hoy desde el corte local, asi que ninguna peticion al
+        // backend detectaria la caducidad. El cliente la vigila por su cuenta con la
+        // fecha exp del token, tambien al volver a la pestaña tras suspender el equipo.
+        function watchExpiry(session) {
+          const remaining = session.expiresAt - Date.now();
+          if (remaining <= 0) {
+            endSession(true);
+            return;
+          }
+
+          setTimeout(() => endSession(true), Math.min(remaining, 2 ** 31 - 1));
+
+          document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && !getSession()) endSession(true);
+          });
+        }
+
+        function showLogin(expired) {
+          refs.appEl.hidden = true;
+          refs.loginScreenEl.hidden = false;
+          renderLoginNotice(refs.loginNoticeEl, expired);
+          refs.loginSubmit.disabled = false;
+          refs.loginEmail.focus();
+        }
+
+        function enterApp(session) {
+          refs.loginScreenEl.hidden = true;
+          refs.appEl.hidden = false;
+          renderSession(refs.sessionNameEl, refs.sessionRoleEl, session.user);
+          watchExpiry(session);
+
+          // La aplicacion se hace visible antes de arrancar: Leaflet necesita que el
+          // contenedor del mapa tenga medidas reales al crearse.
+          if (!state.started) {
+            state.started = true;
+            start();
+          }
+        }
+
+        // La contraseña se lee del campo, se entrega a login() y el campo se vacia
+        // siempre, haya exito o error. No se guarda en ninguna variable persistente.
+        refs.loginForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+
+          const email = refs.loginEmail.value.trim();
+          if (!email || !refs.loginPassword.value) {
+            renderLoginError(refs.loginErrorEl, 'empty');
+            (email ? refs.loginPassword : refs.loginEmail).focus();
+            return;
+          }
+
+          renderLoginError(refs.loginErrorEl, null);
+          renderLoginNotice(refs.loginNoticeEl, false);
+          setLoginBusy(refs.loginSubmit, true);
+
+          try {
+            const session = await login(email, refs.loginPassword.value);
+            refs.loginPassword.value = '';
+            enterApp(session);
+          } catch (error) {
+            refs.loginPassword.value = '';
+            renderLoginError(refs.loginErrorEl, error.reason || 'server');
+            refs.loginPassword.focus();
+          } finally {
+            setLoginBusy(refs.loginSubmit, false);
+          }
+        });
+
+        // ---------------------------------------------------------------
+        // Arranque
+        // ---------------------------------------------------------------
+        // ---------------------------------------------------------------
+        // Arranque
+        // ---------------------------------------------------------------
+        async function start() {
+          try {
+            await loadData();
+          } catch (error) {
+            refs.summaryEl.textContent = 'No se pudieron cargar los datos.';
+            refs.chatEmptyEl.textContent =
+              'No se pudieron cargar los indicadores (api/data.json). Comprueba que la carpeta api esté publicada.';
+            return;
+          }
+
+          // Sin mapa la aplicacion sigue siendo util: metricas, indicadores, ficha y
+          // asistente no dependen de el.
+          try {
+            initMap('map');
+          } catch (error) {
+            refs.mapEl.classList.add('map-unavailable');
+            refs.mapEl.textContent = 'No se pudo cargar el mapa. Comprueba que la carpeta vendor/leaflet esté publicada.';
+            refs.mapBtn.disabled = true;
+          }
+
+          renderSummary(refs.summaryEl, getSummary());
+          refreshDimensions();
+          refreshBreadcrumb();
+          refreshMap();
+
+          // Se abre sobre la zona con mayor pobreza extrema, sin acercar, para que la
+          // vista inicial conserve toda el area metropolitana.
+          selectZone(getZonesRanked()[0], false);
+        }
+
+        // Sin sesion vigente solo se muestra el login; start() espera a que haya token.
+        function boot() {
+          const session = getSession();
+          if (session) enterApp(session);
+          else showLogin(takeExpiredNotice());
+        }
+
+        boot();
+      })();
+    </script>
   </body>
 </html>

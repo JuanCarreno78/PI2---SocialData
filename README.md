@@ -3,12 +3,15 @@
 Interfaz de consulta de indicadores de vulnerabilidad socioeconómica del Área
 Metropolitana de Bucaramanga: Bucaramanga, Floridablanca, Girón y Piedecuesta.
 
-Sitio estático con módulos ES. No necesita build ni contenedor.
+Sitio estático autocontenido: toda la interfaz (estructura, estilos y lógica)
+está en `index.html`. No necesita build ni contenedor, y no enlaza hojas de
+estilo ni scripts de terceros por CDN.
 
 ## Cómo verlo
 
-Necesita un servidor local: los módulos ES y `fetch` no funcionan con `file://`,
-así que **no basta con hacer doble clic en `index.html`**.
+Necesita un servidor local: el navegador no permite leer `api/data.json` con
+`fetch` desde `file://`, así que **no basta con hacer doble clic en
+`index.html`**.
 
 Con la extensión Live Server de VS Code: clic derecho sobre `index.html` → *Open
 with Live Server*. O desde la raíz del proyecto:
@@ -20,34 +23,56 @@ python -m http.server 5173 --directory frontend
 y abrir `http://localhost:5173`.
 
 La aplicación exige iniciar sesión, por lo que el backend debe estar en
-ejecución y accesible en la dirección configurada en `js/model.js` (por defecto
+ejecución y accesible en la dirección configurada en el script de `index.html` (por defecto
 `http://localhost:8000/api/v1`). Los usuarios de demostración se definen en
 `db/init/02_seed.sql`.
 
-Tras modificar cualquier archivo conviene forzar la recarga con
-**Ctrl+Shift+R**: el navegador tiende a conservar en caché la versión anterior
-de los módulos y los cambios pueden parecer no aplicados.
+Tras publicar cambios conviene forzar la recarga con **Ctrl+Shift+R**. GitHub
+Pages sirve los archivos con unos diez minutos de caché, y la publicación tarda
+además uno o dos minutos en propagarse.
 
 ## Estructura
 
 ```
 frontend/
-|--- index.html               pantalla de acceso + aplicación
-|--- css/styles.css
+|--- index.html               interfaz completa: HTML, <style> y <script>
 |--- api/
      |--- data.json          corte real de los indicadores
-|--- js/
-     |--- model.js           datos y sesión, no toca el DOM
-     |--- view.js            pinta el DOM, no conoce al modelo
-     |--- map.js             mapa (Leaflet)
-     |--- chat.js            asistente por reglas
-     |--- app.js             controlador, punto de entrada
-|--- vendor/leaflet/         Leaflet 1.9.4, incluido en el repositorio
+|--- vendor/leaflet/         Leaflet 1.9.4, descargado en el repositorio
 ```
 
-Separación por rol, igual que en los laboratorios de Diseño Web: `model.js` no
-usa `document`, `view.js` no consulta el modelo y `app.js` es el único que cablea
-eventos y guarda estado.
+`index.html` es el único archivo propio de la interfaz. Contiene un bloque
+`<style>` con los estilos de la aplicación y los de Leaflet, y un único
+`<script>` clásico con toda la lógica. Del exterior del documento solo carga dos
+recursos locales: `vendor/leaflet/leaflet.js` y `api/data.json`. La cartografía
+base (teselas de Esri u OpenStreetMap) es el único contenido que se descarga en
+línea.
+
+Esta disposición responde a un problema observado en la publicación: con los
+estilos y los scripts en archivos separados, el navegador llegó a combinar un
+`index.html` nuevo con hojas de estilo y scripts antiguos conservados en caché,
+y la pantalla de acceso se mostraba sin estilos y sin respuesta. Con todo
+dentro del mismo documento, cada carga es coherente consigo misma.
+
+### Organización del script
+
+El script mantiene la separación por rol de los laboratorios de Diseño Web. Cada
+capa es un módulo en cierre (`const Nombre = (() => { … })()`) que solo expone
+su interfaz pública:
+
+| Módulo | Rol |
+|---|---|
+| `Model` | Datos y sesión. No usa `document`. |
+| `MapView` | Mapa con Leaflet. |
+| `View` | Pinta el DOM. No consulta el modelo. |
+| `Chat` | Asistente por reglas. |
+| Controlador (último bloque) | Cablea eventos, guarda el estado y reparte el trabajo. Es el único que conoce a todos los demás. |
+
+El script también tolera la ausencia de recursos. Si `leaflet.js` no llega a
+cargar, el mapa muestra un aviso y el resto de la aplicación funciona. Si
+`api/data.json` no está disponible, la interfaz lo indica en lugar de quedar en
+blanco. El formulario de acceso se habilita siempre, con independencia de esos
+recursos.
 
 ## Qué se puede hacer
 
@@ -95,7 +120,7 @@ El comportamiento depende del ancho de la ventana:
 Si la ventana cruza el punto de corte con el mapa ampliado, el mapa vuelve a su
 tamaño normal para no quedar en un modo que ya no corresponde a la maqueta.
 
-La función `setLargeMode(on)` de `js/map.js` concentra lo que Leaflet necesita
+La función `setLargeMode(on)` del módulo `MapView` concentra lo que Leaflet necesita
 en cada cambio de tamaño:
 
 - **`invalidateSize()` y reencuadre.** Se invoca de forma explícita tras mover
@@ -160,7 +185,7 @@ secuencia de inicio de sesión entregados en los UML Parte 2 del Sprint 3.
 
 ### Flujo
 
-1. `app.js` no arranca la aplicación directamente. Comprueba primero si existe
+1. El controlador no arranca la aplicación directamente. Comprueba primero si existe
    una sesión guardada y vigente; si no la hay, muestra la pantalla de acceso y
    espera.
 2. Con credenciales válidas, `model.login()` guarda la sesión, la pantalla de
@@ -179,7 +204,7 @@ secuencia de inicio de sesión entregados en los UML Parte 2 del Sprint 3.
   se usa `localStorage`, que persiste indefinidamente y amplía la ventana de
   robo ante un posible XSS.
 - **El token nunca viaja en la URL.** Todas las peticiones autenticadas pasan por
-  `request()` en `model.js`, que lo añade en la cabecera
+  `request()` del módulo `Model`, que lo añade en la cabecera
   `Authorization: Bearer`. Ni el token ni la contraseña se escriben en consola.
 - **Formulario inerte sin JavaScript.** Los campos no tienen atributo `name`, el
   formulario usa `method="post"` y el botón arranca deshabilitado hasta que el
@@ -212,7 +237,7 @@ sesión vencida o revocada y devuelve a la pantalla de acceso.
 
 ### Configuración
 
-Los parámetros de conexión están concentrados al principio de `js/model.js`:
+Los parámetros de conexión están concentrados al principio del módulo `Model`, en el script de `index.html`:
 
 | Constante | Valor | Uso |
 |---|---|---|
@@ -243,9 +268,10 @@ La versión publicada se sirve por HTTPS y el backend se ejecuta en
 `http://localhost:8000`. Para que el inicio de sesión funcione desde la URL
 pública, el equipo del usuario debe tener el backend en ejecución y este debe
 admitir por CORS el origen de GitHub Pages. Algunos navegadores aplican además
-restricciones al acceso desde páginas públicas a direcciones de la red local,
-por lo que el funcionamiento debe comprobarse en el navegador de destino antes
-de presentarlo.
+restricciones al acceso desde páginas públicas a direcciones de la red local y
+muestran un aviso de permiso, que debe aceptarse para que el inicio de sesión
+llegue al backend. El funcionamiento debe comprobarse en el navegador de
+destino antes de presentarlo.
 
 ## Cartografía base
 
@@ -286,7 +312,7 @@ backend.
 
 Pendiente para las siguientes iteraciones:
 
-- Conectar las funciones de datos de `js/model.js` a la API del proyecto. Las
+- Conectar las funciones de datos del módulo `Model` a la API del proyecto. Las
   firmas ya son las definitivas y el helper `request()` ya añade el token, así
   que solo cambia el cuerpo de cada función: en vez de leer el JSON local, hará
   `request()` contra `/api/v1`. Con ese cambio el control de acceso cubre
