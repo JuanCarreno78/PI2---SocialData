@@ -1,0 +1,2024 @@
+{
+  "generado": "2026-09-14",
+  "resumen": {
+    "total_hogares": 10288,
+    "total_personas": 28656,
+    "pct_pobreza_extrema": 0.4104,
+    "pct_pobreza_total": 0.7153,
+    "distribucion_grupos": {
+      "A": 4222,
+      "B": 3137,
+      "C": 2249,
+      "D": 680
+    },
+    "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+    "cobertura": "Bucaramanga, Floridablanca, Girón y Piedecuesta"
+  },
+  "catalogo": {
+    "dimensiones": [
+      {
+        "dimension": "Educación",
+        "n": 4
+      },
+      {
+        "dimension": "Salud",
+        "n": 3
+      },
+      {
+        "dimension": "Trabajo",
+        "n": 3
+      },
+      {
+        "dimension": "Vivienda y servicios",
+        "n": 5
+      }
+    ],
+    "indicadores": [
+      {
+        "codigo": "IPM-01",
+        "nombre": "Bajo logro educativo",
+        "dimension": "Educación",
+        "descripcion": "Ningún miembro del hogar alcanzó el nivel educativo mínimo esperado",
+        "columna": "i1"
+      },
+      {
+        "codigo": "IPM-02",
+        "nombre": "Analfabetismo",
+        "dimension": "Educación",
+        "descripcion": "Presencia de personas de 15 años o más que no saben leer ni escribir",
+        "columna": "i2"
+      },
+      {
+        "codigo": "IPM-03",
+        "nombre": "Inasistencia escolar",
+        "dimension": "Educación",
+        "descripcion": "Menores en edad escolar que no asisten a una institución educativa",
+        "columna": "i3"
+      },
+      {
+        "codigo": "IPM-04",
+        "nombre": "Rezago escolar",
+        "dimension": "Educación",
+        "descripcion": "Estudiantes con edad mayor a la esperada para el grado que cursan",
+        "columna": "i4"
+      },
+      {
+        "codigo": "IPM-05",
+        "nombre": "Barreras de acceso a cuidado de primera infancia",
+        "dimension": "Salud",
+        "descripcion": "Menores de 5 años sin acceso a servicios de cuidado, salud o nutrición",
+        "columna": "i5"
+      },
+      {
+        "codigo": "IPM-06",
+        "nombre": "Trabajo infantil",
+        "dimension": "Trabajo",
+        "descripcion": "Personas entre 12 y 17 años que trabajan",
+        "columna": "i6"
+      },
+      {
+        "codigo": "IPM-07",
+        "nombre": "Desempleo de larga duración",
+        "dimension": "Trabajo",
+        "descripcion": "Algún miembro económicamente activo desempleado por más de 12 meses",
+        "columna": "i7"
+      },
+      {
+        "codigo": "IPM-08",
+        "nombre": "Trabajo informal",
+        "dimension": "Trabajo",
+        "descripcion": "Ocupados sin afiliación a pensiones",
+        "columna": "i8"
+      },
+      {
+        "codigo": "IPM-09",
+        "nombre": "Sin aseguramiento en salud",
+        "dimension": "Salud",
+        "descripcion": "Personas mayores de 5 años no afiliadas al sistema de seguridad social en salud",
+        "columna": "i9"
+      },
+      {
+        "codigo": "IPM-10",
+        "nombre": "Barreras de acceso a servicios de salud",
+        "dimension": "Salud",
+        "descripcion": "Personas que ante una enfermedad no accedieron a servicio institucional",
+        "columna": "i10"
+      },
+      {
+        "codigo": "IPM-11",
+        "nombre": "Sin acceso a fuente de agua mejorada",
+        "dimension": "Vivienda y servicios",
+        "descripcion": "El hogar no cuenta con servicio de acueducto o fuente de agua adecuada",
+        "columna": "i11"
+      },
+      {
+        "codigo": "IPM-12",
+        "nombre": "Inadecuada eliminación de excretas",
+        "dimension": "Vivienda y servicios",
+        "descripcion": "El hogar no cuenta con servicio de alcantarillado o sanitario adecuado",
+        "columna": "i12"
+      },
+      {
+        "codigo": "IPM-13",
+        "nombre": "Material inadecuado de pisos",
+        "dimension": "Vivienda y servicios",
+        "descripcion": "Piso en tierra o arena",
+        "columna": "i13"
+      },
+      {
+        "codigo": "IPM-14",
+        "nombre": "Material inadecuado de paredes exteriores",
+        "dimension": "Vivienda y servicios",
+        "descripcion": "Paredes en materiales precarios o sin paredes",
+        "columna": "i14"
+      },
+      {
+        "codigo": "IPM-15",
+        "nombre": "Hacinamiento crítico",
+        "dimension": "Vivienda y servicios",
+        "descripcion": "Tres o más personas por cuarto para dormir",
+        "columna": "i15"
+      }
+    ]
+  },
+  "modelo": {
+    "nombre": "clasificador_grupo_sisben",
+    "version": "1.0",
+    "algoritmo": "XGBoost (gradient boosting, multiclase)",
+    "target": "Grupo Sisbén IV (A/B/C/D)",
+    "n_variables": 82,
+    "entrenado_con": "10.288 hogares del Sisbén IV — Bucaramanga, Floridablanca, Girón y Piedecuesta",
+    "fuente": "DNP, muestra anonimizada Sisbén IV corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+    "metricas": {
+      "accuracy": 0.7964,
+      "balanced_accuracy": 0.769,
+      "f1_macro": 0.7798,
+      "f1_weighted": 0.7966,
+      "roc_auc_ovr": 0.9511,
+      "kappa": 0.7023,
+      "acierto_tolerancia_1_grupo": 0.9961
+    },
+    "validacion": "Validación cruzada estratificada 5-fold",
+    "advertencia": "Entrenado sobre población registrada en el Sisbén, no sobre población general. Es una herramienta de apoyo a la decisión: no reemplaza la clasificación oficial del DNP."
+  },
+  "zonas": [
+    {
+      "zona_id": 1,
+      "cod_mpio": 68001.0,
+      "municipio": "Bucaramanga",
+      "zona": 1,
+      "zona_nombre": "Bucaramanga - Cabecera urbana",
+      "total_hogares": 922,
+      "total_personas": 2517,
+      "pct_grupo_a": 0.1291,
+      "pct_grupo_b": 0.3677,
+      "pct_grupo_c": 0.4013,
+      "pct_grupo_d": 0.102,
+      "prom_personas_dormitorio": 1.871,
+      "pct_sin_acueducto": 0.1594,
+      "pct_sin_alcantarillado": 0.1377,
+      "pct_hacinamiento": 0.2332,
+      "pct_trabajo_informal": 0.7213,
+      "pct_sin_seg_social": 0.1129,
+      "pct_analfabeta": 0.055,
+      "pct_cotiza_pension": 0.0899
+    },
+    {
+      "zona_id": 2,
+      "cod_mpio": 68001.0,
+      "municipio": "Bucaramanga",
+      "zona": 2,
+      "zona_nombre": "Bucaramanga - Centro poblado y rural disperso",
+      "total_hogares": 1052,
+      "total_personas": 3084,
+      "pct_grupo_a": 0.3203,
+      "pct_grupo_b": 0.3603,
+      "pct_grupo_c": 0.2395,
+      "pct_grupo_d": 0.0798,
+      "prom_personas_dormitorio": 2.031,
+      "pct_sin_acueducto": 0.9392,
+      "pct_sin_alcantarillado": 0.8916,
+      "pct_hacinamiento": 0.1122,
+      "pct_trabajo_informal": 0.635,
+      "pct_sin_seg_social": 0.132,
+      "pct_analfabeta": 0.086,
+      "pct_cotiza_pension": 0.0594
+    },
+    {
+      "zona_id": 3,
+      "cod_mpio": 68276.0,
+      "municipio": "Floridablanca",
+      "zona": 1,
+      "zona_nombre": "Floridablanca - Cabecera urbana",
+      "total_hogares": 1514,
+      "total_personas": 4224,
+      "pct_grupo_a": 0.5423,
+      "pct_grupo_b": 0.3025,
+      "pct_grupo_c": 0.1354,
+      "pct_grupo_d": 0.0198,
+      "prom_personas_dormitorio": 2.461,
+      "pct_sin_acueducto": 0.0674,
+      "pct_sin_alcantarillado": 0.074,
+      "pct_hacinamiento": 0.4022,
+      "pct_trabajo_informal": 0.5026,
+      "pct_sin_seg_social": 0.0875,
+      "pct_analfabeta": 0.0759,
+      "pct_cotiza_pension": 0.0619
+    },
+    {
+      "zona_id": 4,
+      "cod_mpio": 68276.0,
+      "municipio": "Floridablanca",
+      "zona": 2,
+      "zona_nombre": "Floridablanca - Centro poblado y rural disperso",
+      "total_hogares": 1221,
+      "total_personas": 3491,
+      "pct_grupo_a": 0.5463,
+      "pct_grupo_b": 0.208,
+      "pct_grupo_c": 0.1646,
+      "pct_grupo_d": 0.0811,
+      "prom_personas_dormitorio": 2.445,
+      "pct_sin_acueducto": 0.7363,
+      "pct_sin_alcantarillado": 0.8165,
+      "pct_hacinamiento": 0.2326,
+      "pct_trabajo_informal": 0.5545,
+      "pct_sin_seg_social": 0.0845,
+      "pct_analfabeta": 0.0812,
+      "pct_cotiza_pension": 0.0558
+    },
+    {
+      "zona_id": 5,
+      "cod_mpio": 68307.0,
+      "municipio": "Girón",
+      "zona": 1,
+      "zona_nombre": "Girón - Cabecera urbana",
+      "total_hogares": 1217,
+      "total_personas": 3393,
+      "pct_grupo_a": 0.2975,
+      "pct_grupo_b": 0.4067,
+      "pct_grupo_c": 0.2498,
+      "pct_grupo_d": 0.046,
+      "prom_personas_dormitorio": 2.045,
+      "pct_sin_acueducto": 0.1578,
+      "pct_sin_alcantarillado": 0.0838,
+      "pct_hacinamiento": 0.2777,
+      "pct_trabajo_informal": 0.5629,
+      "pct_sin_seg_social": 0.0727,
+      "pct_analfabeta": 0.0581,
+      "pct_cotiza_pension": 0.1214
+    },
+    {
+      "zona_id": 6,
+      "cod_mpio": 68307.0,
+      "municipio": "Girón",
+      "zona": 2,
+      "zona_nombre": "Girón - Centro poblado y rural disperso",
+      "total_hogares": 1807,
+      "total_personas": 5061,
+      "pct_grupo_a": 0.6093,
+      "pct_grupo_b": 0.2075,
+      "pct_grupo_c": 0.1256,
+      "pct_grupo_d": 0.0576,
+      "prom_personas_dormitorio": 2.557,
+      "pct_sin_acueducto": 0.8246,
+      "pct_sin_alcantarillado": 0.8777,
+      "pct_hacinamiento": 0.2441,
+      "pct_trabajo_informal": 0.4887,
+      "pct_sin_seg_social": 0.0509,
+      "pct_analfabeta": 0.0656,
+      "pct_cotiza_pension": 0.0619
+    },
+    {
+      "zona_id": 7,
+      "cod_mpio": 68547.0,
+      "municipio": "Piedecuesta",
+      "zona": 1,
+      "zona_nombre": "Piedecuesta - Cabecera urbana",
+      "total_hogares": 1020,
+      "total_personas": 2465,
+      "pct_grupo_a": 0.1931,
+      "pct_grupo_b": 0.3716,
+      "pct_grupo_c": 0.349,
+      "pct_grupo_d": 0.0863,
+      "prom_personas_dormitorio": 1.713,
+      "pct_sin_acueducto": 0.0275,
+      "pct_sin_alcantarillado": 0.0265,
+      "pct_hacinamiento": 0.1833,
+      "pct_trabajo_informal": 0.6235,
+      "pct_sin_seg_social": 0.1141,
+      "pct_analfabeta": 0.0407,
+      "pct_cotiza_pension": 0.1334
+    },
+    {
+      "zona_id": 8,
+      "cod_mpio": 68547.0,
+      "municipio": "Piedecuesta",
+      "zona": 2,
+      "zona_nombre": "Piedecuesta - Centro poblado y rural disperso",
+      "total_hogares": 1535,
+      "total_personas": 4421,
+      "pct_grupo_a": 0.4026,
+      "pct_grupo_b": 0.2984,
+      "pct_grupo_c": 0.2176,
+      "pct_grupo_d": 0.0814,
+      "prom_personas_dormitorio": 2.24,
+      "pct_sin_acueducto": 0.8033,
+      "pct_sin_alcantarillado": 0.9316,
+      "pct_hacinamiento": 0.1648,
+      "pct_trabajo_informal": 0.6997,
+      "pct_sin_seg_social": 0.1254,
+      "pct_analfabeta": 0.0893,
+      "pct_cotiza_pension": 0.054
+    }
+  ],
+  "detalle": {
+    "1": {
+      "privaciones": {
+        "zona_id": 1,
+        "zona_nombre": "Bucaramanga - Cabecera urbana",
+        "total_hogares": 922,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.615
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.0759
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0369
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.1898
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.1931
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.1746
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0325
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0011
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.2527
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.7213
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.1594
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.1377
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.0239
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.0369
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.2332
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 1,
+          "nombre": "Bucaramanga - Cabecera urbana",
+          "municipio": "Bucaramanga"
+        },
+        "n_hogares": 922,
+        "observado": {
+          "A": 0.1291,
+          "B": 0.3677,
+          "C": 0.4013,
+          "D": 0.102
+        },
+        "predicho": {
+          "A": 0.1247,
+          "B": 0.3807,
+          "C": 0.3948,
+          "D": 0.0998
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 1,
+        "n_hogares_zona": 922,
+        "grupo_predicho": "D",
+        "descripcion": "No pobre ni vulnerable",
+        "confianza": 0.9625,
+        "probabilidades": {
+          "A": 0.0,
+          "B": 0.0006,
+          "C": 0.0369,
+          "D": 0.9625
+        },
+        "contribuciones": [
+          {
+            "variable": "pct_cotiza_pension",
+            "etiqueta": "Proporción que cotiza a pensión",
+            "dimension": "Trabajo",
+            "valor": 1.0,
+            "contribucion": 3.17301,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "cod_mpio",
+            "etiqueta": "Municipio",
+            "dimension": "Territorio",
+            "valor": "68001",
+            "contribucion": 1.60466,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "zona",
+            "etiqueta": "Zona (urbana / rural)",
+            "dimension": "Territorio",
+            "valor": "1",
+            "contribucion": -1.03708,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "i1",
+            "etiqueta": "Bajo logro educativo",
+            "dimension": "Educación",
+            "valor": 0,
+            "contribucion": 1.00213,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": 0.84665,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "hog001",
+            "etiqueta": "Tenencia de la vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": "4",
+            "contribucion": 0.6824,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "viv003",
+            "etiqueta": "Material predominante de pisos",
+            "dimension": "Vivienda y servicios",
+            "valor": "3",
+            "contribucion": -0.67266,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "i8",
+            "etiqueta": "Trabajo informal",
+            "dimension": "Trabajo",
+            "valor": 0,
+            "contribucion": -0.58497,
+            "empuja_hacia": "en contra de este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "2": {
+      "privaciones": {
+        "zona_id": 2,
+        "zona_nombre": "Bucaramanga - Centro poblado y rural disperso",
+        "total_hogares": 1052,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.6454
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.1255
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0285
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.1759
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.2329
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.2186
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0228
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.001
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.3707
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.635
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.7025
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.3679
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.0894
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.0095
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.1122
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 2,
+          "nombre": "Bucaramanga - Centro poblado y rural disperso",
+          "municipio": "Bucaramanga"
+        },
+        "n_hogares": 1052,
+        "observado": {
+          "A": 0.3203,
+          "B": 0.3603,
+          "C": 0.2395,
+          "D": 0.0798
+        },
+        "predicho": {
+          "A": 0.3165,
+          "B": 0.365,
+          "C": 0.2386,
+          "D": 0.0798
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 2,
+        "n_hogares_zona": 1052,
+        "grupo_predicho": "B",
+        "descripcion": "Pobreza moderada",
+        "confianza": 0.5211,
+        "probabilidades": {
+          "A": 0.4673,
+          "B": 0.5211,
+          "C": 0.0116,
+          "D": 0.0
+        },
+        "contribuciones": [
+          {
+            "variable": "hog005",
+            "etiqueta": "Ubicación del sanitario",
+            "dimension": "Vivienda y servicios",
+            "valor": "2",
+            "contribucion": -0.2494,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "jefe_pos_ocupacional",
+            "etiqueta": "Posición ocupacional del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "99",
+            "contribucion": 0.22094,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "pct_sin_seg_social",
+            "etiqueta": "Proporción sin seguridad social",
+            "dimension": "Salud",
+            "valor": 1.0,
+            "contribucion": 0.19619,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "personas_por_cuarto",
+            "etiqueta": "Personas por cuarto",
+            "dimension": "Vivienda y servicios",
+            "valor": 1.0,
+            "contribucion": 0.14104,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "hog004",
+            "etiqueta": "Tipo de sanitario",
+            "dimension": "Vivienda y servicios",
+            "valor": "4",
+            "contribucion": 0.12834,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "viv009",
+            "etiqueta": "Número de cuartos de la vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": 3,
+            "contribucion": 0.12483,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": -0.11598,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "jefe_estado_civil",
+            "etiqueta": "Estado civil del jefe de hogar",
+            "dimension": "Demografía",
+            "valor": "2",
+            "contribucion": -0.0962,
+            "empuja_hacia": "en contra de este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "3": {
+      "privaciones": {
+        "zona_id": 3,
+        "zona_nombre": "Floridablanca - Cabecera urbana",
+        "total_hogares": 1514,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.6321
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.1123
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0383
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.1572
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.1651
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.1446
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0106
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.3316
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.5026
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.0674
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.074
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.0746
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.0343
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.4022
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 3,
+          "nombre": "Floridablanca - Cabecera urbana",
+          "municipio": "Floridablanca"
+        },
+        "n_hogares": 1514,
+        "observado": {
+          "A": 0.5423,
+          "B": 0.3025,
+          "C": 0.1354,
+          "D": 0.0198
+        },
+        "predicho": {
+          "A": 0.5456,
+          "B": 0.3032,
+          "C": 0.1314,
+          "D": 0.0198
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 3,
+        "n_hogares_zona": 1514,
+        "grupo_predicho": "C",
+        "descripcion": "Vulnerable",
+        "confianza": 0.9731,
+        "probabilidades": {
+          "A": 0.0001,
+          "B": 0.0135,
+          "C": 0.9731,
+          "D": 0.0132
+        },
+        "contribuciones": [
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": 0.91313,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "hog001",
+            "etiqueta": "Tenencia de la vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": "1",
+            "contribucion": -0.5942,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "edad_rango_prom",
+            "etiqueta": "Rango de edad promedio",
+            "dimension": "Demografía",
+            "valor": 5.0,
+            "contribucion": 0.55497,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "viv003",
+            "etiqueta": "Material predominante de pisos",
+            "dimension": "Vivienda y servicios",
+            "valor": "2",
+            "contribucion": 0.48443,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "i8",
+            "etiqueta": "Trabajo informal",
+            "dimension": "Trabajo",
+            "valor": 1,
+            "contribucion": 0.37812,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "jefe_pos_ocupacional",
+            "etiqueta": "Posición ocupacional del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "5",
+            "contribucion": 0.36941,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "zona",
+            "etiqueta": "Zona (urbana / rural)",
+            "dimension": "Territorio",
+            "valor": "1",
+            "contribucion": -0.29111,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "pct_cotiza_pension",
+            "etiqueta": "Proporción que cotiza a pensión",
+            "dimension": "Trabajo",
+            "valor": 0.0,
+            "contribucion": -0.28843,
+            "empuja_hacia": "en contra de este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "4": {
+      "privaciones": {
+        "zona_id": 4,
+        "zona_nombre": "Floridablanca - Centro poblado y rural disperso",
+        "total_hogares": 1221,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.7199
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.131
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0401
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.199
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.1507
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.1286
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0123
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0025
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.3391
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.5545
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.4758
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.3587
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.3186
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.0516
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.2326
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 4,
+          "nombre": "Floridablanca - Centro poblado y rural disperso",
+          "municipio": "Floridablanca"
+        },
+        "n_hogares": 1221,
+        "observado": {
+          "A": 0.5463,
+          "B": 0.208,
+          "C": 0.1646,
+          "D": 0.0811
+        },
+        "predicho": {
+          "A": 0.5528,
+          "B": 0.2031,
+          "C": 0.163,
+          "D": 0.0811
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 4,
+        "n_hogares_zona": 1221,
+        "grupo_predicho": "A",
+        "descripcion": "Pobreza extrema",
+        "confianza": 0.9869,
+        "probabilidades": {
+          "A": 0.9869,
+          "B": 0.0128,
+          "C": 0.0003,
+          "D": 0.0
+        },
+        "contribuciones": [
+          {
+            "variable": "i8",
+            "etiqueta": "Trabajo informal",
+            "dimension": "Trabajo",
+            "valor": 0,
+            "contribucion": 1.00212,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "hog001",
+            "etiqueta": "Tenencia de la vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": "1",
+            "contribucion": 0.63739,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "jefe_actividad",
+            "etiqueta": "Actividad principal del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "3",
+            "contribucion": 0.57822,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "viv003",
+            "etiqueta": "Material predominante de pisos",
+            "dimension": "Vivienda y servicios",
+            "valor": "3",
+            "contribucion": 0.54167,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": -0.53105,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "hog017",
+            "etiqueta": "Combustible para cocinar",
+            "dimension": "Vivienda y servicios",
+            "valor": "6",
+            "contribucion": 0.48143,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "cod_mpio",
+            "etiqueta": "Municipio",
+            "dimension": "Territorio",
+            "valor": "68276",
+            "contribucion": 0.47022,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "jefe_pos_ocupacional",
+            "etiqueta": "Posición ocupacional del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "99",
+            "contribucion": 0.45525,
+            "empuja_hacia": "hacia este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "5": {
+      "privaciones": {
+        "zona_id": 5,
+        "zona_nombre": "Girón - Cabecera urbana",
+        "total_hogares": 1217,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.5193
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.0707
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0362
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.1758
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.1561
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.1265
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0173
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.2687
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.5629
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.1578
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.0838
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.0263
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.0263
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.2777
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 5,
+          "nombre": "Girón - Cabecera urbana",
+          "municipio": "Girón"
+        },
+        "n_hogares": 1217,
+        "observado": {
+          "A": 0.2975,
+          "B": 0.4067,
+          "C": 0.2498,
+          "D": 0.046
+        },
+        "predicho": {
+          "A": 0.2876,
+          "B": 0.4215,
+          "C": 0.2449,
+          "D": 0.046
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 5,
+        "n_hogares_zona": 1217,
+        "grupo_predicho": "B",
+        "descripcion": "Pobreza moderada",
+        "confianza": 0.6293,
+        "probabilidades": {
+          "A": 0.0009,
+          "B": 0.6293,
+          "C": 0.3695,
+          "D": 0.0004
+        },
+        "contribuciones": [
+          {
+            "variable": "jefe_pos_ocupacional",
+            "etiqueta": "Posición ocupacional del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "99",
+            "contribucion": 0.29741,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "zona",
+            "etiqueta": "Zona (urbana / rural)",
+            "dimension": "Territorio",
+            "valor": "1",
+            "contribucion": 0.19256,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": -0.17729,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "personas_por_cuarto",
+            "etiqueta": "Personas por cuarto",
+            "dimension": "Vivienda y servicios",
+            "valor": 1.0,
+            "contribucion": 0.17516,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "hog015",
+            "etiqueta": "Lugar de preparación de alimentos",
+            "dimension": "Vivienda y servicios",
+            "valor": "4",
+            "contribucion": 0.14317,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "edad_rango_prom",
+            "etiqueta": "Rango de edad promedio",
+            "dimension": "Demografía",
+            "valor": 6.0,
+            "contribucion": -0.13112,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "viv003",
+            "etiqueta": "Material predominante de pisos",
+            "dimension": "Vivienda y servicios",
+            "valor": "2",
+            "contribucion": -0.12576,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "jefe_estado_civil",
+            "etiqueta": "Estado civil del jefe de hogar",
+            "dimension": "Demografía",
+            "valor": "2",
+            "contribucion": -0.12414,
+            "empuja_hacia": "en contra de este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "6": {
+      "privaciones": {
+        "zona_id": 6,
+        "zona_nombre": "Girón - Centro poblado y rural disperso",
+        "total_hogares": 1807,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.6951
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.098
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0487
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.1776
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.1162
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.0819
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0116
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0011
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.2944
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.4887
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.6242
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.1776
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.1505
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.016
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.2441
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 6,
+          "nombre": "Girón - Centro poblado y rural disperso",
+          "municipio": "Girón"
+        },
+        "n_hogares": 1807,
+        "observado": {
+          "A": 0.6093,
+          "B": 0.2075,
+          "C": 0.1256,
+          "D": 0.0576
+        },
+        "predicho": {
+          "A": 0.6132,
+          "B": 0.207,
+          "C": 0.1223,
+          "D": 0.0576
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 6,
+        "n_hogares_zona": 1807,
+        "grupo_predicho": "C",
+        "descripcion": "Vulnerable",
+        "confianza": 0.6626,
+        "probabilidades": {
+          "A": 0.0482,
+          "B": 0.2856,
+          "C": 0.6626,
+          "D": 0.0036
+        },
+        "contribuciones": [
+          {
+            "variable": "i7",
+            "etiqueta": "Desempleo de larga duración",
+            "dimension": "Trabajo",
+            "valor": 1,
+            "contribucion": -0.84408,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "viv003",
+            "etiqueta": "Material predominante de pisos",
+            "dimension": "Vivienda y servicios",
+            "valor": "3",
+            "contribucion": -0.55874,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "hog001",
+            "etiqueta": "Tenencia de la vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": "3",
+            "contribucion": 0.55789,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": 0.44088,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "jefe_pos_ocupacional",
+            "etiqueta": "Posición ocupacional del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "99",
+            "contribucion": -0.41842,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "jefe_actividad",
+            "etiqueta": "Actividad principal del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "1",
+            "contribucion": 0.38093,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "zona",
+            "etiqueta": "Zona (urbana / rural)",
+            "dimension": "Territorio",
+            "valor": "2",
+            "contribucion": 0.36419,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "pct_regimen_subsidiado",
+            "etiqueta": "Proporción en régimen subsidiado",
+            "dimension": "Salud",
+            "valor": 0.0,
+            "contribucion": 0.3195,
+            "empuja_hacia": "hacia este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "7": {
+      "privaciones": {
+        "zona_id": 7,
+        "zona_nombre": "Piedecuesta - Cabecera urbana",
+        "total_hogares": 1020,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.452
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.051
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0284
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.1559
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.1892
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.1745
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0225
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0039
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.2676
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.6235
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.0275
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.0265
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.0029
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.002
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.1833
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 7,
+          "nombre": "Piedecuesta - Cabecera urbana",
+          "municipio": "Piedecuesta"
+        },
+        "n_hogares": 1020,
+        "observado": {
+          "A": 0.1931,
+          "B": 0.3716,
+          "C": 0.349,
+          "D": 0.0863
+        },
+        "predicho": {
+          "A": 0.1843,
+          "B": 0.3873,
+          "C": 0.3422,
+          "D": 0.0863
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 7,
+        "n_hogares_zona": 1020,
+        "grupo_predicho": "A",
+        "descripcion": "Pobreza extrema",
+        "confianza": 0.8973,
+        "probabilidades": {
+          "A": 0.8973,
+          "B": 0.1015,
+          "C": 0.0012,
+          "D": 0.0001
+        },
+        "contribuciones": [
+          {
+            "variable": "i8",
+            "etiqueta": "Trabajo informal",
+            "dimension": "Trabajo",
+            "valor": 0,
+            "contribucion": 1.55463,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "nivel_educativo_prom",
+            "etiqueta": "Nivel educativo promedio del hogar",
+            "dimension": "Educación",
+            "valor": 2.5,
+            "contribucion": -1.53189,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 7,
+            "contribucion": 1.06549,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "viv003",
+            "etiqueta": "Material predominante de pisos",
+            "dimension": "Vivienda y servicios",
+            "valor": "2",
+            "contribucion": -0.8819,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "hog001",
+            "etiqueta": "Tenencia de la vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": "1",
+            "contribucion": 0.71856,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "personas_por_cuarto",
+            "etiqueta": "Personas por cuarto",
+            "dimension": "Vivienda y servicios",
+            "valor": 1.75,
+            "contribucion": 0.62372,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "edad_rango_prom",
+            "etiqueta": "Rango de edad promedio",
+            "dimension": "Demografía",
+            "valor": 4.714285714285714,
+            "contribucion": -0.51477,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "jefe_actividad",
+            "etiqueta": "Actividad principal del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "3",
+            "contribucion": 0.47885,
+            "empuja_hacia": "hacia este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    },
+    "8": {
+      "privaciones": {
+        "zona_id": 8,
+        "zona_nombre": "Piedecuesta - Centro poblado y rural disperso",
+        "total_hogares": 1535,
+        "dimensiones": [
+          {
+            "dimension": "Educación",
+            "n_indicadores": 4,
+            "indicadores": [
+              {
+                "codigo": "IPM-01",
+                "nombre": "Bajo logro educativo",
+                "prevalencia": 0.6893
+              },
+              {
+                "codigo": "IPM-02",
+                "nombre": "Analfabetismo",
+                "prevalencia": 0.142
+              },
+              {
+                "codigo": "IPM-03",
+                "nombre": "Inasistencia escolar",
+                "prevalencia": 0.0384
+              },
+              {
+                "codigo": "IPM-04",
+                "nombre": "Rezago escolar",
+                "prevalencia": 0.2195
+              }
+            ]
+          },
+          {
+            "dimension": "Salud",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-05",
+                "nombre": "Barreras de acceso a cuidado de primera infancia",
+                "prevalencia": 0.2091
+              },
+              {
+                "codigo": "IPM-09",
+                "nombre": "Sin aseguramiento en salud",
+                "prevalencia": 0.1941
+              },
+              {
+                "codigo": "IPM-10",
+                "nombre": "Barreras de acceso a servicios de salud",
+                "prevalencia": 0.0332
+              }
+            ]
+          },
+          {
+            "dimension": "Trabajo",
+            "n_indicadores": 3,
+            "indicadores": [
+              {
+                "codigo": "IPM-06",
+                "nombre": "Trabajo infantil",
+                "prevalencia": 0.0039
+              },
+              {
+                "codigo": "IPM-07",
+                "nombre": "Desempleo de larga duración",
+                "prevalencia": 0.2534
+              },
+              {
+                "codigo": "IPM-08",
+                "nombre": "Trabajo informal",
+                "prevalencia": 0.6997
+              }
+            ]
+          },
+          {
+            "dimension": "Vivienda y servicios",
+            "n_indicadores": 5,
+            "indicadores": [
+              {
+                "codigo": "IPM-11",
+                "nombre": "Sin acceso a fuente de agua mejorada",
+                "prevalencia": 0.6293
+              },
+              {
+                "codigo": "IPM-12",
+                "nombre": "Inadecuada eliminación de excretas",
+                "prevalencia": 0.2098
+              },
+              {
+                "codigo": "IPM-13",
+                "nombre": "Material inadecuado de pisos",
+                "prevalencia": 0.2541
+              },
+              {
+                "codigo": "IPM-14",
+                "nombre": "Material inadecuado de paredes exteriores",
+                "prevalencia": 0.0384
+              },
+              {
+                "codigo": "IPM-15",
+                "nombre": "Hacinamiento crítico",
+                "prevalencia": 0.1648
+              }
+            ]
+          }
+        ],
+        "fuente": "Sisbén IV, DNP, corte marzo 2022 (datos.gov.co, CC BY-SA 4.0)",
+        "nota": "Prevalencia observada de las privaciones publicadas por el DNP en el conjunto del Sisbén IV. No constituye una medición del IPM oficial."
+      },
+      "prediccion": {
+        "zona": {
+          "id": 8,
+          "nombre": "Piedecuesta - Centro poblado y rural disperso",
+          "municipio": "Piedecuesta"
+        },
+        "n_hogares": 1535,
+        "observado": {
+          "A": 0.4026,
+          "B": 0.2984,
+          "C": 0.2176,
+          "D": 0.0814
+        },
+        "predicho": {
+          "A": 0.4072,
+          "B": 0.2964,
+          "C": 0.2169,
+          "D": 0.0795
+        },
+        "modelo": "clasificador_grupo_sisben v1.0"
+      },
+      "explicacion": {
+        "zona_id": 8,
+        "n_hogares_zona": 1535,
+        "grupo_predicho": "B",
+        "descripcion": "Pobreza moderada",
+        "confianza": 0.8073,
+        "probabilidades": {
+          "A": 0.1522,
+          "B": 0.8073,
+          "C": 0.0404,
+          "D": 0.0001
+        },
+        "contribuciones": [
+          {
+            "variable": "viv001",
+            "etiqueta": "Tipo de vivienda",
+            "dimension": "Vivienda y servicios",
+            "valor": "4",
+            "contribucion": 0.39352,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "pct_trabajando",
+            "etiqueta": "Proporción trabajando",
+            "dimension": "Trabajo",
+            "valor": 1.0,
+            "contribucion": 0.3645,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "jefe_pos_ocupacional",
+            "etiqueta": "Posición ocupacional del jefe de hogar",
+            "dimension": "Trabajo",
+            "valor": "99",
+            "contribucion": 0.29684,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "zona",
+            "etiqueta": "Zona (urbana / rural)",
+            "dimension": "Territorio",
+            "valor": "2",
+            "contribucion": -0.21844,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "n_personas",
+            "etiqueta": "Personas en el hogar",
+            "dimension": "Demografía",
+            "valor": 1,
+            "contribucion": -0.17738,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "viv002",
+            "etiqueta": "Material predominante de paredes",
+            "dimension": "Vivienda y servicios",
+            "valor": "7",
+            "contribucion": 0.16506,
+            "empuja_hacia": "hacia este grupo"
+          },
+          {
+            "variable": "jefe_estado_civil",
+            "etiqueta": "Estado civil del jefe de hogar",
+            "dimension": "Demografía",
+            "valor": "2",
+            "contribucion": -0.12441,
+            "empuja_hacia": "en contra de este grupo"
+          },
+          {
+            "variable": "edad_rango_prom",
+            "etiqueta": "Rango de edad promedio",
+            "dimension": "Demografía",
+            "valor": 5.0,
+            "contribucion": 0.11123,
+            "empuja_hacia": "hacia este grupo"
+          }
+        ],
+        "modelo_version": "1.0"
+      }
+    }
+  }
+}
