@@ -777,7 +777,10 @@
         gap: 14px;
       }
 
+      /* flex-shrink 0: el logotipo nunca cede ancho aunque el texto de al lado
+         no quepa. */
       .brand-mark {
+        flex-shrink: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -2025,14 +2028,6 @@
         color: #7a4c16;
       }
 
-      .mode-badge {
-        padding: 1px 8px;
-        border: 1px dashed #b9c6c0;
-        border-radius: 999px;
-        font-size: 11px;
-        color: var(--ink-soft);
-        cursor: help;
-      }
 
       /* --- Botones secundarios ----------------------------------------------- */
 
@@ -2276,19 +2271,6 @@
         grid-column: 1 / -1;
       }
 
-      .admin-note {
-        padding: 12px 14px;
-        border: 1px dashed #b9c6c0;
-        border-radius: var(--radius-sm);
-        font-size: 12px;
-        line-height: 1.45;
-        color: var(--ink-soft);
-      }
-
-      .admin-note p {
-        margin: 0 0 6px;
-      }
-
       /* --- Reporte de zona para imprimir o guardar como PDF ------------------ */
 
       /* Invisible en pantalla. Al imprimir es lo unico que se muestra. */
@@ -2415,7 +2397,10 @@
           flex-wrap: nowrap;
         }
 
-        .tagline,
+        /* Solo en la cabecera. Aplicado a toda .tagline tambien alcanzaba a la
+           tarjeta de acceso, donde el lema no podia partirse, se salia de la
+           tarjeta y aplastaba el logotipo. */
+        .app-header .tagline,
         .crumb {
           overflow: hidden;
           text-overflow: ellipsis;
@@ -2573,8 +2558,6 @@
             <span class="session-name" id="session-name"></span>
             <span class="session-meta">
               <span class="role-badge" id="session-role"></span>
-              <span class="mode-badge" id="session-mode" hidden
-                    title="Sesión validada en este navegador porque el backend no está disponible. No es un control de acceso real: ver README.">demostración</span>
             </span>
           </div>
           <button type="button" id="toggle-admin" class="btn-secondary"
@@ -2694,8 +2677,8 @@
                   Exportar reporte
                 </button>
                 <div class="menu" id="export-menu" role="menu" aria-label="Formato del reporte" hidden>
-                  <button type="button" class="menu-item" role="menuitem" data-format="csv">
-                    <span class="menu-item-title">Excel (.csv)</span>
+                  <button type="button" class="menu-item" role="menuitem" data-format="xlsx">
+                    <span class="menu-item-title">Excel (.xlsx)</span>
                     <span class="menu-item-note">Tablas de la zona para analizar en una hoja de cálculo</span>
                   </button>
                   <button type="button" class="menu-item" role="menuitem" data-format="pdf">
@@ -2800,16 +2783,6 @@
                     </div>
                   </form>
                 </section>
-
-                <div class="admin-note" id="admin-demo-note" hidden>
-                  <p>
-                    Modo demostración: el backend no está disponible, así que los cambios
-                    se guardan solo en este navegador y no afectan a otros equipos.
-                  </p>
-                  <button type="button" id="reset-users" class="btn-quiet">
-                    Restablecer usuarios de demostración
-                  </button>
-                </div>
               </div>
             </section>
 
@@ -3358,12 +3331,6 @@
           return { ...user, activo: active };
         }
 
-        function resetLocalUsers() {
-          requireAdmin();
-          localStorage.removeItem(USERS_KEY);
-          localStorage.removeItem(LOCKS_KEY);
-        }
-
         // ---------------------------------------------------------------
         // Reporte de zona (HU-12)
         // ---------------------------------------------------------------
@@ -3404,7 +3371,7 @@
           loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations,
           getPrediction, getExplanation, getZonesRanked,
           login, getSession, logout, takeNotice,
-          listUsers, createUser, setUserActive, resetLocalUsers,
+          listUsers, createUser, setUserActive,
           buildZoneReport
         };
       })();
@@ -4014,7 +3981,6 @@
           els.sessionNameEl.textContent = session.name;
           els.sessionRoleEl.textContent = roleLabel(session.role);
           els.sessionRoleEl.classList.toggle('is-admin', admin);
-          els.sessionModeEl.hidden = session.mode !== 'local';
           els.adminBtn.hidden = !admin;
         }
 
@@ -4092,64 +4058,238 @@
           return `${report.exportedBy.name} (${roleLabel(report.exportedBy.role)})`;
         }
 
-        // Separador ';' y coma decimal: es lo que espera Excel en espanol. El BOM
-        // hace que Excel lea el archivo como UTF-8 y respete las tildes.
-        function csvText(value) {
-          const text = String(value === null || value === undefined ? '' : value);
-          // Un texto que empieza por = + - @ lo abriria Excel como formula. Los
-          // nombres de usuario los escribe un administrador, asi que se neutralizan.
-          const safe = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
-          return /[;"\n\r]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
+        // ---------------------------------------------------------------
+        // Excel (.xlsx)
+        // ---------------------------------------------------------------
+        // Antes se exportaba CSV, pero un CSV depende de la configuracion regional:
+        // con ';' se abre bien en un Excel en espanol y en una sola columna en uno en
+        // ingles, en Google Sheets o en LibreOffice, y con ',' al reves. Un .xlsx
+        // guarda celdas y numeros tipados y se ve igual en cualquier equipo.
+        //
+        // Un .xlsx es un ZIP con unos pocos XML. Se arma aqui mismo, sin librerias:
+        // el documento no carga nada de un CDN.
+
+        const XLSX_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+        // Estilos definidos en styles.xml, por posicion.
+        const CELL = { normal: 0, title: 1, bold: 2, header: 3, percent: 4, shap: 5, integer: 6 };
+
+        const CRC_TABLE = (() => {
+          const table = new Uint32Array(256);
+          for (let n = 0; n < 256; n += 1) {
+            let c = n;
+            for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+            table[n] = c >>> 0;
+          }
+          return table;
+        })();
+
+        function crc32(bytes) {
+          let crc = 0xffffffff;
+          for (let i = 0; i < bytes.length; i += 1) crc = CRC_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+          return (crc ^ 0xffffffff) >>> 0;
         }
 
-        function csvNumber(value, decimals = 1) {
-          return Number(value).toFixed(decimals).replace('.', ',');
+        // ZIP sin compresion (metodo "store"): valido para Excel y mucho mas simple.
+        function zip(files) {
+          const encoder = new TextEncoder();
+          const chunks = [];
+          const directory = [];
+          let offset = 0;
+
+          files.forEach(({ name, text }) => {
+            const nameBytes = encoder.encode(name);
+            const data = encoder.encode(text);
+            const crc = crc32(data);
+
+            const local = new DataView(new ArrayBuffer(30));
+            local.setUint32(0, 0x04034b50, true);    // firma de cabecera local
+            local.setUint16(4, 20, true);            // version necesaria
+            local.setUint16(6, 0x0800, true);        // nombres en UTF-8
+            local.setUint16(12, 0x21, true);         // fecha 1980-01-01
+            local.setUint32(14, crc, true);
+            local.setUint32(18, data.length, true);
+            local.setUint32(22, data.length, true);
+            local.setUint16(26, nameBytes.length, true);
+            chunks.push(new Uint8Array(local.buffer), nameBytes, data);
+
+            const entry = new DataView(new ArrayBuffer(46));
+            entry.setUint32(0, 0x02014b50, true);    // firma del directorio central
+            entry.setUint16(4, 20, true);
+            entry.setUint16(6, 20, true);
+            entry.setUint16(8, 0x0800, true);
+            entry.setUint16(14, 0x21, true);
+            entry.setUint32(16, crc, true);
+            entry.setUint32(20, data.length, true);
+            entry.setUint32(24, data.length, true);
+            entry.setUint16(28, nameBytes.length, true);
+            entry.setUint32(42, offset, true);
+            directory.push(new Uint8Array(entry.buffer), nameBytes);
+
+            offset += 30 + nameBytes.length + data.length;
+          });
+
+          const size = directory.reduce((sum, part) => sum + part.length, 0);
+          const end = new DataView(new ArrayBuffer(22));
+          end.setUint32(0, 0x06054b50, true);        // fin del directorio central
+          end.setUint16(8, files.length, true);
+          end.setUint16(10, files.length, true);
+          end.setUint32(12, size, true);
+          end.setUint32(16, offset, true);
+
+          return [...chunks, ...directory, new Uint8Array(end.buffer)];
         }
 
-        function reportToCsv(report) {
+        // Texto seguro para XML. Tambien quita caracteres de control, que un nombre
+        // escrito por un administrador podria traer y que harian ilegible el libro.
+        // En un .xlsx el texto va como cadena, nunca como formula: un nombre que
+        // empiece por '=' no se ejecuta.
+        function xmlText(value) {
+          return String(value === null || value === undefined ? '' : value)
+            .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function columnName(index) {
+          return String.fromCharCode(65 + index);
+        }
+
+        const text = (value, style = CELL.normal) => ({ type: 'text', value, style });
+        const number = (value, style) =>
+          (value === null || value === undefined || Number.isNaN(Number(value))
+            ? null : { type: 'number', value: Number(value), style });
+
+        function sheetXml(rows) {
+          const body = rows.map((cells, r) => {
+            const xml = cells.map((cell, c) => {
+              if (!cell) return '';
+              const ref = `${columnName(c)}${r + 1}`;
+              if (cell.type === 'number') return `<c r="${ref}" s="${cell.style}"><v>${cell.value}</v></c>`;
+              return `<c r="${ref}" s="${cell.style}" t="inlineStr"><is><t xml:space="preserve">${xmlText(cell.value)}</t></is></c>`;
+            }).join('');
+            return `<row r="${r + 1}">${xml}</row>`;
+          }).join('');
+
+          return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+            '<cols><col min="1" max="1" width="36" customWidth="1"/><col min="2" max="2" width="42" customWidth="1"/>' +
+            '<col min="3" max="3" width="40" customWidth="1"/><col min="4" max="4" width="26" customWidth="1"/></cols>' +
+            `<sheetData>${body}</sheetData></worksheet>`;
+        }
+
+        const STYLES_XML =
+          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+          '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+          '<numFmts count="2"><numFmt numFmtId="164" formatCode="0.0%"/><numFmt numFmtId="165" formatCode="+0.000;-0.000;0.000"/></numFmts>' +
+          '<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font>' +
+          '<font><b/><sz val="11"/><name val="Calibri"/></font>' +
+          '<font><b/><sz val="14"/><color rgb="FF0A3F38"/><name val="Calibri"/></font></fonts>' +
+          '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>' +
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFE3EEEB"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+          '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+          '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+          '<cellXfs count="7">' +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+          '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+          '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+          '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+          '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+          '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+          '<xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+          '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' +
+          '</styleSheet>';
+
+        // Mismo contenido que el reporte en PDF. Los porcentajes se guardan como
+        // proporcion (0,609) con formato de porcentaje: Excel los muestra como 60,9 %
+        // y siguen siendo numeros con los que se puede calcular.
+        function reportRows(report) {
           const rows = [];
-          const row = (...cells) => rows.push(cells.join(';'));
+          const label = (name) => text(name, CELL.bold);
 
-          row(csvText('SocialData - Reporte de zona'));
-          row(csvText('Zona'), csvText(report.zone));
-          row(csvText('Municipio'), csvText(report.municipality));
-          row(csvText('Hogares registrados'), String(report.households));
-          row(csvText('Personas'), String(report.people));
-          row(csvText('Fuente y periodo'), csvText(report.source));
-          row(csvText('Fecha del corte publicado'), csvText(report.dataDate));
-          row(csvText('Exportado por'), csvText(exportedByText(report)));
-          row(csvText('Fecha de exportación'), csvText(formatDateTime(report.exportedAt)));
-          row('');
+          rows.push([text('SocialData - Reporte de zona', CELL.title)]);
+          rows.push([label('Zona'), text(report.zone)]);
+          rows.push([label('Municipio'), text(report.municipality)]);
+          rows.push([label('Hogares registrados'), number(report.households, CELL.integer)]);
+          rows.push([label('Personas'), number(report.people, CELL.integer)]);
+          rows.push([label('Fuente y periodo'), text(report.source)]);
+          rows.push([label('Fecha del corte publicado'), text(report.dataDate)]);
+          rows.push([label('Exportado por'), text(exportedByText(report))]);
+          rows.push([label('Fecha de exportación'), text(formatDateTime(report.exportedAt))]);
+          rows.push([]);
 
-          row(csvText('Distribución por grupo del Sisbén'));
-          row(csvText('Grupo'), csvText('Descripción'), csvText('Observado (%)'), csvText('Estimado por el modelo (%)'));
+          rows.push([text('Distribución por grupo del Sisbén', CELL.bold)]);
+          rows.push([text('Grupo', CELL.header), text('Descripción', CELL.header),
+            text('Observado', CELL.header), text('Estimado por el modelo', CELL.header)]);
           GROUPS.forEach((group) => {
-            row(csvText(group), csvText(GROUP_NAMES[group]),
-              csvNumber(report.observed[group] * 100),
-              report.predicted ? csvNumber(report.predicted[group] * 100) : '');
+            rows.push([text(group), text(GROUP_NAMES[group]),
+              number(report.observed[group], CELL.percent),
+              report.predicted ? number(report.predicted[group], CELL.percent) : text('No disponible')]);
           });
-          row('');
+          rows.push([]);
 
-          row(csvText('Prevalencia de privaciones observadas'));
-          row(csvText('Dimensión'), csvText('Código'), csvText('Indicador'), csvText('Prevalencia (%)'));
+          rows.push([text('Prevalencia de privaciones observadas', CELL.bold)]);
+          rows.push([text('Dimensión', CELL.header), text('Código', CELL.header),
+            text('Indicador', CELL.header), text('Prevalencia', CELL.header)]);
           report.indicators.forEach((item) => {
-            row(csvText(item.dimension), csvText(item.code), csvText(item.name),
-              item.rate === null || item.rate === undefined ? '' : csvNumber(item.rate * 100));
+            rows.push([text(item.dimension), text(item.code), text(item.name),
+              number(item.rate, CELL.percent) || text('Sin dato')]);
           });
-          row('');
+          rows.push([]);
 
           if (report.drivers.length) {
-            row(csvText(driversTitle(report)));
-            row(csvText('Factor'), csvText('Dimensión'), csvText('Contribución SHAP'));
+            rows.push([text(driversTitle(report), CELL.bold)]);
+            rows.push([text('Factor', CELL.header), text('Dimensión', CELL.header),
+              text('Contribución SHAP', CELL.header)]);
             report.drivers.forEach((item) => {
-              row(csvText(item.name), csvText(item.dimension), csvNumber(item.weight, 3));
+              rows.push([text(item.name), text(item.dimension), number(item.weight, CELL.shap)]);
             });
-            row('');
+            rows.push([]);
           }
 
-          row(csvText('Nota'), csvText(REPORT_NOTE));
+          rows.push([label('Nota'), text(REPORT_NOTE)]);
+          return rows;
+        }
 
-          return '﻿' + rows.join('\r\n') + '\r\n';
+        function reportToXlsx(report) {
+          const files = [
+            {
+              name: '[Content_Types].xml',
+              text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+                '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+                '<Default Extension="xml" ContentType="application/xml"/>' +
+                '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+                '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+                '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+                '</Types>'
+            },
+            {
+              name: '_rels/.rels',
+              text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+                '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
+                '</Relationships>'
+            },
+            {
+              name: 'xl/workbook.xml',
+              text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+                'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+                '<sheets><sheet name="Reporte" sheetId="1" r:id="rId1"/></sheets></workbook>'
+            },
+            {
+              name: 'xl/_rels/workbook.xml.rels',
+              text: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+                '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+                '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+                '</Relationships>'
+            },
+            { name: 'xl/worksheets/sheet1.xml', text: sheetXml(reportRows(report)) },
+            { name: 'xl/styles.xml', text: STYLES_XML }
+          ];
+
+          return new Blob(zip(files), { type: XLSX_TYPE });
         }
 
         // Las contribuciones SHAP son del hogar representativo de la zona, no de la
@@ -4268,7 +4408,7 @@
           renderMessages, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
-          reportToCsv, reportFileName, renderPrintReport, downloadFile
+          reportToXlsx, reportFileName, renderPrintReport, downloadFile
         };
       })();
 
@@ -4527,7 +4667,7 @@
           loadData, getSummary, getCatalog, getZones, getZonesRanked,
           getDeprivations, getPrediction, getExplanation,
           login, getSession, logout, takeNotice,
-          listUsers, createUser, setUserActive, resetLocalUsers,
+          listUsers, createUser, setUserActive,
           buildZoneReport
         } = Model;
 
@@ -4541,7 +4681,7 @@
           renderExplanation, renderDeprivations, renderMessages, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
-          reportToCsv, reportFileName, renderPrintReport, downloadFile
+          reportToXlsx, reportFileName, renderPrintReport, downloadFile
         } = View;
 
         const refs = {
@@ -4557,7 +4697,6 @@
 
           sessionNameEl: document.getElementById('session-name'),
           sessionRoleEl: document.getElementById('session-role'),
-          sessionModeEl: document.getElementById('session-mode'),
           adminBtn: document.getElementById('toggle-admin'),
           logoutBtn: document.getElementById('logout'),
 
@@ -4572,8 +4711,6 @@
           newPasswordInput: document.getElementById('new-password'),
           newRoleInput: document.getElementById('new-role'),
           createUserBtn: document.getElementById('create-user'),
-          adminDemoNoteEl: document.getElementById('admin-demo-note'),
-          resetUsersBtn: document.getElementById('reset-users'),
 
           exportBtn: document.getElementById('toggle-export'),
           exportMenuEl: document.getElementById('export-menu'),
@@ -4948,8 +5085,8 @@
 
           const report = buildZoneReport(zone.zona_id);
 
-          if (format === 'csv') {
-            downloadFile(reportFileName(report, 'csv'), reportToCsv(report), 'text/csv;charset=utf-8');
+          if (format === 'xlsx') {
+            downloadFile(reportFileName(report, 'xlsx'), reportToXlsx(report), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           } else {
             // El navegador ofrece «Guardar como PDF» en el dialogo de impresion; asi
             // no hace falta ninguna libreria externa.
@@ -5005,7 +5142,6 @@
 
           if (!open) return;
 
-          refs.adminDemoNoteEl.hidden = state.session.mode !== 'local';
           renderAdminMessage(refs.adminMessageEl, '');
           // En pantallas compactas el area del asistente queda debajo de la barra.
           if (compactLayout.matches) refs.adminPanelEl.scrollIntoView({ block: 'start' });
@@ -5076,22 +5212,6 @@
           } finally {
             refs.createUserBtn.disabled = false;
           }
-        });
-
-        refs.resetUsersBtn.addEventListener('click', async () => {
-          const ok = window.confirm(
-            'Se borrarán los usuarios creados, los desactivados y los bloqueos guardados en este navegador. ¿Continuar?');
-          if (!ok) return;
-
-          resetLocalUsers();
-          const users = await refreshUsers();
-
-          // Si quien restablece era un usuario creado localmente, ya no existe.
-          if (!users.some((user) => user.email === state.session.email)) {
-            endSession('logout');
-            return;
-          }
-          renderAdminMessage(refs.adminMessageEl, 'Usuarios de demostración restablecidos.', 'ok');
         });
 
         // ---------------------------------------------------------------

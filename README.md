@@ -94,7 +94,7 @@ recursos.
   del modelo y factores que más pesan en esa estimación.
 - **Preguntar al asistente** sobre la zona, con preguntas propias o con las
   sugerencias que aparecen bajo la conversación.
-- **Exportar el reporte de la zona** en Excel (.csv) o PDF. Ambos roles.
+- **Exportar el reporte de la zona** en Excel (.xlsx) o PDF. Ambos roles.
 - **Administrar usuarios**: crear, desactivar y reactivar. Solo el
   administrador.
 
@@ -227,8 +227,9 @@ pública que llama a `http://localhost` hace que el navegador pida al visitante
 permiso para acceder a su red local, algo que no debe ver quien evalúa el
 prototipo.
 
-La cabecera muestra la etiqueta **demostración** junto al rol cuando la sesión es
-de ese modo.
+La interfaz no distingue los dos modos: es el mismo producto con o sin backend.
+Para saber en cuál se está, `sessionStorage` guarda la sesión con `mode: 'api'` o
+`mode: 'local'`.
 
 ### Qué protege cada modo, sin exagerar
 
@@ -340,12 +341,12 @@ Permite:
 | Modo | Dónde se guardan los cambios |
 |---|---|
 | Backend | `GET` y `POST /auth/usuarios`, `PATCH /auth/usuarios/{id}/estado`, protegidos por `solo_administrador` |
-| Demostración | `localStorage` de este navegador. No afectan a otros equipos. El panel ofrece **Restablecer usuarios de demostración** |
+| Demostración | `localStorage` de este navegador. No afectan a otros equipos. Para volver a los dos usuarios iniciales, borra los datos del sitio en el navegador. |
 
 Los nombres y correos los escribe una persona, así que se tratan como datos no
-confiables: en pantalla siempre pasan por `escapeHtml` o `textContent`, y en el
-CSV se neutralizan los que empiezan por `=`, `+`, `-` o `@` para que Excel no
-los ejecute como fórmula.
+confiables: en pantalla siempre pasan por `escapeHtml` o `textContent`. En el
+Excel van como celdas de texto (`inlineStr`), que Excel nunca evalúa, así que un
+nombre como `=HYPERLINK(...)` se ve tal cual y no se ejecuta como fórmula.
 
 La ruta del modo backend se probó en el navegador contra
 `pruebas/backend_de_prueba.py` (listar, crear, duplicado con el 409 del backend,
@@ -362,7 +363,7 @@ deshabilita cuando no hay zona seleccionada.
 
 | Formato | Cómo se genera |
 |---|---|
-| **Excel (.csv)** | Se descarga directamente. Separador `;`, coma decimal y marca BOM UTF-8: es lo que espera Excel en español para abrirlo en columnas y con tildes. |
+| **Excel (.xlsx)** | Se descarga directamente. Es un libro de Excel real, generado en el navegador sin librerías (un ZIP con las hojas en XML). Las cifras van como números con formato (`60,9 %`, `1.807`, `+0,364`), no como texto, así que se pueden ordenar y operar. Se eligió en lugar de CSV porque un CSV depende de la configuración regional: en un equipo con coma como separador de listas salía todo en una columna y parecía corrupto. |
 | **PDF** | Abre el diálogo de impresión con un reporte maquetado para A4; se elige «Guardar como PDF». No usa librerías externas. |
 
 Contenido: zona, municipio, hogares y personas; fuente y periodo del corte;
@@ -379,7 +380,7 @@ Dos precisiones que el reporte deja escritas:
   parezca contradecirse.
 
 El nombre del archivo lleva la zona y la fecha local:
-`SocialData_Giron-Centro-poblado-y-rural-disperso_2026-09-22.csv`.
+`SocialData_Giron-Centro-poblado-y-rural-disperso_2026-09-22.xlsx`.
 
 ## Cartografía base
 
