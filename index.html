@@ -1858,11 +1858,576 @@
         color: var(--ink-soft);
       }
 
+      /* --- Acceso ------------------------------------------------------------ */
+
+      /* Cubre toda la ventana mientras no hay sesion. La aplicacion sigue oculta
+         debajo y sin montar. */
+      .login-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        background:
+          radial-gradient(circle at 15% 10%, rgba(15, 92, 82, 0.12), transparent 42%),
+          radial-gradient(circle at 88% 90%, rgba(181, 118, 44, 0.1), transparent 40%),
+          var(--bg);
+      }
+
+      .login-card {
+        width: min(400px, 100%);
+        padding: 28px 28px 22px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--surface);
+        box-shadow: 0 2px 4px rgba(23, 36, 31, 0.05), 0 12px 40px rgba(23, 36, 31, 0.1);
+      }
+
+      .login-card .brand {
+        margin-bottom: 22px;
+      }
+
+      .login-card h2 {
+        font-size: 20px;
+      }
+
+      .login-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 16px;
+      }
+
+      .login-field label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .login-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--ink);
+      }
+
+      .login-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: var(--surface);
+      }
+
+      .password-field {
+        position: relative;
+      }
+
+      .password-field .login-input {
+        padding-right: 84px;
+      }
+
+      .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        transform: translateY(-50%);
+        padding: 6px 10px;
+        border: none;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .password-toggle:hover {
+        background: var(--primary-soft);
+      }
+
+      .login-notice {
+        margin: 14px 0 0;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        background: var(--primary-soft);
+        font-size: 13px;
+        color: var(--primary-dark);
+      }
+
+      .login-error {
+        min-height: 20px;
+        margin: 14px 0 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--high);
+      }
+
+      .login-submit {
+        width: 100%;
+      }
+
+      .login-foot {
+        margin: 18px 0 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      /* --- Sesion en la cabecera --------------------------------------------- */
+
+      /* El margen automatico lleva la ruta de navegacion junto al bloque de sesion,
+         a la derecha, en lugar de dejarla flotando en el centro. */
+      .app-header > nav {
+        margin-left: auto;
+      }
+
+      .session {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .session-user {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.2;
+      }
+
+      .session-name {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .session-meta {
+        display: flex;
+        gap: 6px;
+        margin-top: 3px;
+      }
+
+      .role-badge {
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .role-badge.is-admin {
+        background: #f7eddf;
+        color: #7a4c16;
+      }
+
+      .mode-badge {
+        padding: 1px 8px;
+        border: 1px dashed #b9c6c0;
+        border-radius: 999px;
+        font-size: 11px;
+        color: var(--ink-soft);
+        cursor: help;
+      }
+
+      /* --- Botones secundarios ----------------------------------------------- */
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 14px;
+        border: 1.5px solid var(--primary);
+        border-radius: 999px;
+        background: var(--surface);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        transition: background 0.14s ease, color 0.14s ease, transform 0.12s ease;
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary-soft);
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary.is-active {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .btn-secondary:disabled {
+        opacity: 0.45;
+        cursor: default;
+        transform: none;
+        background: var(--surface);
+        color: var(--primary-dark);
+      }
+
+      .btn-quiet {
+        padding: 8px 10px;
+        border: none;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink-soft);
+      }
+
+      .btn-quiet:hover {
+        background: var(--surface-soft);
+        color: var(--high);
+      }
+
+      /* --- Exportar reporte: menu desplegable ------------------------------- */
+
+      .chat-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .menu-wrap {
+        position: relative;
+      }
+
+      .menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        z-index: 40;
+        min-width: 250px;
+        padding: 6px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        box-shadow: 0 8px 28px rgba(23, 36, 31, 0.16);
+      }
+
+      .menu-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        width: 100%;
+        padding: 9px 12px;
+        border: none;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        text-align: left;
+      }
+
+      .menu-item:hover,
+      .menu-item:focus-visible {
+        background: var(--primary-soft);
+      }
+
+      .menu-item-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .menu-item-note {
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      /* --- Administracion: panel sobre el asistente ------------------------- */
+
+      .admin-panel {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        animation: sheet-in 0.22s ease-out;
+      }
+
+      .admin-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 16px 18px 22px;
+        scrollbar-width: thin;
+        scrollbar-color: #b9c6c0 transparent;
+      }
+
+      .admin-section h3 {
+        font-size: 15px;
+      }
+
+      .admin-message {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .admin-message:empty {
+        display: none;
+      }
+
+      .admin-message.is-error {
+        color: var(--high);
+      }
+
+      .admin-message.is-ok {
+        color: var(--low);
+      }
+
+      .user-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .user-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+      }
+
+      .user-row.is-inactive .user-id {
+        opacity: 0.6;
+      }
+
+      .user-id {
+        min-width: 0;
+      }
+
+      .user-name {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--ink);
+        overflow-wrap: anywhere;
+      }
+
+      .user-name small {
+        font-weight: 400;
+        color: var(--ink-soft);
+      }
+
+      .user-email {
+        display: block;
+        font-size: 12px;
+        color: var(--ink-soft);
+        overflow-wrap: anywhere;
+      }
+
+      .user-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .state-badge {
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: #e5f2ea;
+        font-size: 11px;
+        font-weight: 700;
+        color: #2c6b48;
+      }
+
+      .state-badge.is-off {
+        background: #f8e6e3;
+        color: #8e2c22;
+      }
+
+      .user-action {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .user-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .user-form .login-field {
+        margin-top: 0;
+      }
+
+      .form-actions {
+        grid-column: 1 / -1;
+      }
+
+      .admin-note {
+        padding: 12px 14px;
+        border: 1px dashed #b9c6c0;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      .admin-note p {
+        margin: 0 0 6px;
+      }
+
+      /* --- Reporte de zona para imprimir o guardar como PDF ------------------ */
+
+      /* Invisible en pantalla. Al imprimir es lo unico que se muestra. */
+      .print-report {
+        display: none;
+        font-family: var(--font-body);
+        font-size: 10.5pt;
+        color: #17241f;
+      }
+
+      .report-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 8px;
+        margin-bottom: 14px;
+        border-bottom: 2px solid #0f5c52;
+      }
+
+      .report-head h1 {
+        font-size: 18pt;
+      }
+
+      .report-head p {
+        margin: 2px 0 0;
+        color: #52655f;
+      }
+
+      .report-section {
+        margin-top: 16px;
+        break-inside: avoid;
+      }
+
+      .report-section h2 {
+        margin-bottom: 6px;
+        font-size: 12.5pt;
+      }
+
+      .report-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .report-table th,
+      .report-table td {
+        padding: 4px 6px;
+        border-bottom: 1px solid #ccd6d1;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .report-table thead th {
+        background: #e3eeeb;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .report-table .num {
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .report-meta th {
+        width: 30%;
+        font-weight: 600;
+        color: #52655f;
+      }
+
+      .report-note {
+        margin-top: 18px;
+        font-size: 9pt;
+        color: #52655f;
+      }
+
+      @media print {
+        @page {
+          size: A4;
+          margin: 16mm 14mm;
+        }
+
+        body {
+          background: #ffffff;
+        }
+
+        .login-screen,
+        .app {
+          display: none !important;
+        }
+
+        .print-report {
+          display: block;
+        }
+      }
+
       /* --- Responsivo -------------------------------------------------------- */
 
       @media (min-width: 1081px) {
         .app {
           height: 100vh;
+        }
+
+        /* Con el bloque de sesion la cabecera no cabe en una linea en portatiles:
+           en vez de partirse en dos filas, el lema y la ruta ceden espacio y se
+           recortan con puntos suspensivos. La sesion no se recorta nunca. */
+        .app-header {
+          flex-wrap: nowrap;
+        }
+
+        .app-header > .brand,
+        .app-header > nav,
+        .app-header .brand > div,
+        .breadcrumb li:last-child {
+          min-width: 0;
+        }
+
+        .app-header > .brand,
+        .app-header > nav {
+          flex: 0 1 auto;
+        }
+
+        .app-header > .session {
+          flex: 0 0 auto;
+          flex-wrap: nowrap;
+        }
+
+        .tagline,
+        .crumb {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .breadcrumb {
+          flex-wrap: nowrap;
+        }
+
+        .crumb {
+          max-width: 100%;
         }
       }
 
@@ -1910,6 +2475,23 @@
         .chat-suggestions {
           padding: 6px 14px 10px;
         }
+
+        .login-card {
+          padding: 22px 18px 18px;
+        }
+
+        .session-user {
+          align-items: flex-start;
+        }
+
+        .user-row,
+        .user-form {
+          grid-template-columns: 1fr;
+        }
+
+        .user-tags {
+          justify-content: flex-start;
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -1924,7 +2506,55 @@
     <script src="vendor/leaflet/leaflet.js"></script>
   </head>
   <body>
-    <div class="app" id="app">
+    <!-- Pantalla de acceso (RF-01). Visible al cargar; la aplicacion queda oculta
+         y sin montar hasta que hay sesion. Los campos no llevan atributo name y el
+         boton arranca deshabilitado: si el script no carga, no se envia nada. -->
+    <div class="login-screen" id="login-screen">
+      <form class="login-card" id="login-form" method="post" novalidate>
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">SD</span>
+          <div>
+            <h1>SocialData</h1>
+            <p class="tagline">Vulnerabilidad socioeconómica · Área Metropolitana de Bucaramanga</p>
+          </div>
+        </div>
+
+        <h2>Iniciar sesión</h2>
+        <p class="panel-subtitle">Accede con el correo y la contraseña de tu usuario.</p>
+
+        <p class="login-notice" id="login-notice" role="status" hidden></p>
+
+        <div class="login-field">
+          <label for="login-email">Correo electrónico</label>
+          <input type="email" id="login-email" class="login-input"
+                 autocomplete="username" spellcheck="false" required />
+        </div>
+
+        <div class="login-field">
+          <label for="login-password">Contraseña</label>
+          <div class="password-field">
+            <input type="password" id="login-password" class="login-input"
+                   autocomplete="current-password" required />
+            <button type="button" id="toggle-password" class="password-toggle"
+                    aria-pressed="false" aria-controls="login-password">Mostrar</button>
+          </div>
+        </div>
+
+        <p class="login-error" id="login-error" role="alert"></p>
+
+        <button type="submit" id="login-submit" class="btn-primary login-submit" disabled>
+          Iniciar sesión
+        </button>
+
+        <p class="login-foot">
+          Acceso restringido a usuarios autorizados. Tras cinco intentos fallidos el
+          usuario queda bloqueado durante 15 minutos. Tratamiento de datos conforme a
+          la Ley 1581 de 2012.
+        </p>
+      </form>
+    </div>
+
+    <div class="app" id="app" hidden>
       <header class="app-header">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">SD</span>
@@ -1937,6 +2567,23 @@
         <nav aria-label="Ruta de navegación geográfica">
           <ol id="breadcrumb" class="breadcrumb"></ol>
         </nav>
+
+        <div class="session" aria-label="Sesión">
+          <div class="session-user">
+            <span class="session-name" id="session-name"></span>
+            <span class="session-meta">
+              <span class="role-badge" id="session-role"></span>
+              <span class="mode-badge" id="session-mode" hidden
+                    title="Sesión validada en este navegador porque el backend no está disponible. No es un control de acceso real: ver README.">demostración</span>
+            </span>
+          </div>
+          <button type="button" id="toggle-admin" class="btn-secondary"
+                  aria-expanded="false" aria-controls="admin-panel" hidden>
+            <span class="btn-icon" aria-hidden="true">⚙</span>
+            Administración
+          </button>
+          <button type="button" id="logout" class="btn-quiet">Cerrar sesión</button>
+        </div>
       </header>
 
       <main class="app-main">
@@ -2038,11 +2685,32 @@
               </div>
             </div>
 
-            <button type="button" id="toggle-sheet" class="btn-primary"
-                    aria-expanded="false" aria-controls="tech-sheet">
-              <span class="btn-icon" aria-hidden="true">▤</span>
-              <span id="toggle-sheet-text">Ver ficha técnica</span>
-            </button>
+            <div class="chat-actions">
+              <!-- Exportar reporte de la zona (HU-12): disponible para ambos roles. -->
+              <div class="menu-wrap">
+                <button type="button" id="toggle-export" class="btn-secondary"
+                        aria-haspopup="menu" aria-expanded="false" aria-controls="export-menu" disabled>
+                  <span class="btn-icon" aria-hidden="true">⤓</span>
+                  Exportar reporte
+                </button>
+                <div class="menu" id="export-menu" role="menu" aria-label="Formato del reporte" hidden>
+                  <button type="button" class="menu-item" role="menuitem" data-format="csv">
+                    <span class="menu-item-title">Excel (.csv)</span>
+                    <span class="menu-item-note">Tablas de la zona para analizar en una hoja de cálculo</span>
+                  </button>
+                  <button type="button" class="menu-item" role="menuitem" data-format="pdf">
+                    <span class="menu-item-title">PDF</span>
+                    <span class="menu-item-note">Abre la impresión: elige «Guardar como PDF»</span>
+                  </button>
+                </div>
+              </div>
+
+              <button type="button" id="toggle-sheet" class="btn-primary"
+                      aria-expanded="false" aria-controls="tech-sheet">
+                <span class="btn-icon" aria-hidden="true">▤</span>
+                <span id="toggle-sheet-text">Ver ficha técnica</span>
+              </button>
+            </div>
           </header>
 
           <!-- Ancla del panel deslizante: la ficha cubre la conversación pero
@@ -2078,6 +2746,71 @@
                         aria-label="Reducir mapa">✕</button>
               </header>
               <div class="map-panel-body" id="map-panel-body"></div>
+            </section>
+
+            <!-- Administracion de usuarios (RF-09, HU-08). Solo para el rol
+                 administrador. Mismo patron de panel que el mapa ampliado; ficha,
+                 mapa ampliado y administracion son excluyentes. -->
+            <section class="admin-panel" id="admin-panel" aria-label="Administración de usuarios" hidden>
+              <header class="sheet-header">
+                <div>
+                  <h2>Administración de usuarios</h2>
+                  <p class="panel-subtitle" id="admin-summary">Gestión de usuarios y roles</p>
+                </div>
+                <button type="button" id="close-admin" class="sheet-close"
+                        aria-label="Cerrar administración">✕</button>
+              </header>
+
+              <div class="admin-content">
+                <p class="admin-message" id="admin-message" role="status"></p>
+
+                <section class="admin-section" aria-labelledby="users-title">
+                  <h3 id="users-title">Usuarios</h3>
+                  <p class="panel-subtitle">
+                    Un usuario desactivado no puede iniciar sesión. No puedes desactivar tu propio usuario.
+                  </p>
+                  <div id="user-list" class="user-list" role="list"></div>
+                </section>
+
+                <section class="admin-section" aria-labelledby="new-user-title">
+                  <h3 id="new-user-title">Nuevo usuario</h3>
+                  <form id="user-form" class="user-form" novalidate autocomplete="off">
+                    <div class="login-field">
+                      <label for="new-name">Nombre</label>
+                      <input type="text" id="new-name" class="login-input" maxlength="120" required />
+                    </div>
+                    <div class="login-field">
+                      <label for="new-email">Correo</label>
+                      <input type="email" id="new-email" class="login-input" spellcheck="false" required />
+                    </div>
+                    <div class="login-field">
+                      <label for="new-password">Contraseña inicial</label>
+                      <input type="password" id="new-password" class="login-input"
+                             autocomplete="new-password" required />
+                    </div>
+                    <div class="login-field">
+                      <label for="new-role">Rol</label>
+                      <select id="new-role" class="login-input">
+                        <option value="analista">Analista</option>
+                        <option value="administrador">Administrador</option>
+                      </select>
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" id="create-user" class="btn-primary">Crear usuario</button>
+                    </div>
+                  </form>
+                </section>
+
+                <div class="admin-note" id="admin-demo-note" hidden>
+                  <p>
+                    Modo demostración: el backend no está disponible, así que los cambios
+                    se guardan solo en este navegador y no afectan a otros equipos.
+                  </p>
+                  <button type="button" id="reset-users" class="btn-quiet">
+                    Restablecer usuarios de demostración
+                  </button>
+                </div>
+              </div>
             </section>
 
             <aside class="tech-sheet" id="tech-sheet" aria-label="Ficha técnica de la zona" hidden>
@@ -2150,6 +2883,10 @@
       </footer>
     </div>
 
+    <!-- Reporte de zona para imprimir o guardar como PDF (HU-12). Invisible en
+         pantalla; al imprimir es lo unico que se muestra. -->
+    <article class="print-report" id="print-report" aria-hidden="true"></article>
+
     <!-- Aplicacion completa en un solo script clasico. Cada capa (modelo, mapa,
          vista, asistente y controlador) es un modulo en cierre con su propia
          interfaz publica, con la misma separacion de roles que antes tenian
@@ -2159,8 +2896,9 @@
 
       const Model = (() => {
         // Capa de datos. No toca el DOM.
-        // Lee el corte publicado en api/data.json: la aplicacion funciona sin
-        // backend ni base de datos, directamente desde un alojamiento estatico.
+        // Con una sesion del backend, los indicadores se piden a la API y el
+        // servidor valida el token en cada consulta. En modo de demostracion se lee
+        // el corte publicado en api/data.json, que tiene la misma forma.
 
         // ---------------------------------------------------------------
         // Datos de indicadores
@@ -2168,16 +2906,60 @@
 
         let data = null;
 
-        // Corte de los indicadores publicado junto a la pagina.
         async function loadData() {
+          const session = getSession();
+          data = session && session.mode === 'api' ? await loadFromApi() : await loadFromFile();
+          return data;
+        }
+
+        // Corte de los indicadores publicado junto a la pagina.
+        async function loadFromFile() {
           const response = await fetch('api/data.json');
 
           if (!response.ok) {
             throw new Error('HTTP ' + response.status);
           }
 
-          data = await response.json();
-          return data;
+          return response.json();
+        }
+
+        // Prediccion, explicacion y ficha del modelo dependen de ia-predictor. Si no
+        // responde, la zona se muestra igual sin esas piezas: la vista y el
+        // asistente ya contemplan que falten. Una sesion vencida si se propaga.
+        async function optional(pending) {
+          try {
+            return await pending;
+          } catch (error) {
+            if (error.code === 'expired') throw error;
+            return null;
+          }
+        }
+
+        // Arma el mismo objeto que api/data.json a partir de los endpoints del
+        // backend, que devuelven exactamente esas claves. Las ocho zonas se piden
+        // en paralelo.
+        async function loadFromApi() {
+          const [resumen, zonas, catalogo, modelo] = await Promise.all([
+            request('/indicadores/resumen'),
+            request('/indicadores/zonas'),
+            request('/indicadores/catalogo'),
+            optional(request('/ia/modelo'))
+          ]);
+
+          const detalle = {};
+          await Promise.all(zonas.zonas.map(async (zone) => {
+            const id = zone.zona_id;
+            const [privaciones, prediccion, explicacion] = await Promise.all([
+              request(`/indicadores/zonas/${id}/privaciones`),
+              optional(request(`/ia/prediccion/${id}`)),
+              optional(request(`/ia/explicacion/${id}?top=8`))
+            ]);
+            detalle[String(id)] = { privaciones, prediccion, explicacion };
+          }));
+
+          // generado queda en null: no es un corte publicado sino una consulta en
+          // vivo, y el reporte lo dice asi en vez de inventar una fecha de corte.
+          return { generado: null, resumen, catalogo, modelo, zonas: zonas.zonas, detalle };
         }
 
         function getSummary() {
@@ -2217,7 +2999,414 @@
           return [...data.zonas].sort((a, b) => Number(b.pct_grupo_a) - Number(a.pct_grupo_a));
         }
 
-        return { loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations, getPrediction, getExplanation, getZonesRanked };
+        // ---------------------------------------------------------------
+        // Sesion (RF-01, RNF-02)
+        // ---------------------------------------------------------------
+        // Dos modos. Si la pagina se sirve desde este equipo y el backend responde,
+        // se autentica contra POST /auth/login y la sesion lleva su JWT. Si no hay
+        // backend (por ejemplo en GitHub Pages), se valida en el navegador contra los
+        // usuarios de demostracion. El modo local es una demostracion de la
+        // interfaz, no un control de acceso: quien controle el navegador puede
+        // saltarselo. El control real es el del backend.
+
+        const API_URL = 'http://localhost:8000/api/v1';
+
+        // Desde GitHub Pages ni se intenta: el backend no esta publicado y el
+        // navegador pediria al visitante permiso para acceder a su red local.
+        const BACKEND_ENABLED = ['localhost', '127.0.0.1'].includes(location.hostname);
+        const BACKEND_TIMEOUT_MS = 5000;
+
+        const SESSION_KEY = 'sd.session';
+        const NOTICE_KEY = 'sd.notice';
+        const USERS_KEY = 'sd.users';
+        const LOCKS_KEY = 'sd.locks';
+
+        // Mismos parametros que backend/app/core/config.py.
+        const SESSION_MINUTES = 480;
+        const MAX_ATTEMPTS = 5;
+        const LOCK_MINUTES = 15;
+
+        const PBKDF2_ITERATIONS = 150000;
+
+        // Los usuarios de db/init/02_seed.sql. La contrasena no esta en el codigo:
+        // solo su derivacion PBKDF2-SHA256, con una sal distinta por usuario.
+        const DEMO_USERS = [
+          {
+            id: 1, nombre: 'Administrador SocialData', email: 'admin@socialdata.co', rol: 'administrador',
+            salt: 'nXBGed39PmzXJ9kp1zrqNw==', hash: '+6bSW/bgvGpU/v/UgC4eogYmWPHHvODmW4klyEjzyao='
+          },
+          {
+            id: 2, nombre: 'Analista de la entidad', email: 'analista@socialdata.co', rol: 'analista',
+            salt: 'Iek2KNYZflMnTkYLxPxKCA==', hash: 'pvMc2wBkYFGwY53+DJIwGRKw0I0xHRSfF3drsc8ZCvc='
+          }
+        ];
+
+        class AuthError extends Error {
+          constructor(code, message, extra = {}) {
+            super(message);
+            this.code = code;
+            Object.assign(this, extra);
+          }
+        }
+
+        function readJson(storage, key, fallback) {
+          try {
+            const raw = storage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+          } catch (error) {
+            return fallback;
+          }
+        }
+
+        function writeJson(storage, key, value) {
+          storage.setItem(key, JSON.stringify(value));
+        }
+
+        function toBase64(bytes) {
+          return btoa(String.fromCharCode(...new Uint8Array(bytes)));
+        }
+
+        function fromBase64(text) {
+          return Uint8Array.from(atob(text), (char) => char.charCodeAt(0));
+        }
+
+        async function derive(password, salt) {
+          if (!window.crypto || !window.crypto.subtle) {
+            throw new AuthError('insecure', 'Se requiere un contexto seguro');
+          }
+
+          const key = await crypto.subtle.importKey(
+            'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+          const bits = await crypto.subtle.deriveBits(
+            { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: PBKDF2_ITERATIONS }, key, 256);
+
+          return new Uint8Array(bits);
+        }
+
+        // Comparacion que recorre siempre todos los bytes: no corta en el primero
+        // distinto.
+        function sameBytes(a, b) {
+          if (a.length !== b.length) return false;
+          let diff = 0;
+          for (let i = 0; i < a.length; i += 1) diff |= a[i] ^ b[i];
+          return diff === 0;
+        }
+
+        async function hashPassword(password) {
+          const salt = crypto.getRandomValues(new Uint8Array(16));
+          const hash = await derive(password, salt);
+          return { salt: toBase64(salt), hash: toBase64(hash) };
+        }
+
+        async function checkPassword(password, user) {
+          const hash = await derive(password, fromBase64(user.salt));
+          return sameBytes(hash, fromBase64(user.hash));
+        }
+
+        // Registro local: usuarios creados desde la administracion y lista de
+        // desactivados. Solo existe en este navegador.
+        function localRegistry() {
+          const stored = readJson(localStorage, USERS_KEY, {});
+          return { created: stored.created || [], inactive: stored.inactive || [] };
+        }
+
+        function localUsers() {
+          const registry = localRegistry();
+          return [...DEMO_USERS, ...registry.created]
+            .map((user) => ({ ...user, activo: !registry.inactive.includes(user.email) }));
+        }
+
+        function findLocalUser(email) {
+          return localUsers().find((user) => user.email === email);
+        }
+
+        function lockOf(email) {
+          return readJson(localStorage, LOCKS_KEY, {})[email] || { attempts: 0, until: 0 };
+        }
+
+        function saveLock(email, lock) {
+          const locks = readJson(localStorage, LOCKS_KEY, {});
+          if (lock) locks[email] = lock;
+          else delete locks[email];
+          writeJson(localStorage, LOCKS_KEY, locks);
+        }
+
+        // Mismo orden de comprobaciones que autenticar() del backend: usuario
+        // inexistente, desactivado, bloqueado y, por ultimo, contrasena.
+        async function loginLocal(email, password) {
+          const user = findLocalUser(email);
+
+          // Con un correo inexistente tambien se deriva la clave: si no, la
+          // respuesta llegaria mucho antes y delataria que correos estan registrados.
+          if (!user) {
+            await derive(password, fromBase64(DEMO_USERS[0].salt));
+            throw new AuthError('invalid', 'Credenciales inválidas');
+          }
+          if (!user.activo) throw new AuthError('inactive', 'El usuario está desactivado');
+
+          const lock = lockOf(email);
+          if (lock.until > Date.now()) {
+            throw new AuthError('locked', 'Usuario bloqueado temporalmente',
+              { minutes: Math.ceil((lock.until - Date.now()) / 60000) });
+          }
+
+          if (!(await checkPassword(password, user))) {
+            const attempts = lock.attempts + 1;
+            const until = attempts >= MAX_ATTEMPTS ? Date.now() + LOCK_MINUTES * 60000 : 0;
+            saveLock(email, { attempts, until });
+            throw new AuthError('invalid', 'Credenciales inválidas');
+          }
+
+          saveLock(email, null);
+          return {
+            mode: 'local', email: user.email, name: user.nombre, role: user.rol,
+            exp: Date.now() + SESSION_MINUTES * 60000
+          };
+        }
+
+        function jwtClaims(token) {
+          try {
+            const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            const padded = part + '='.repeat((4 - (part.length % 4)) % 4);
+            return JSON.parse(new TextDecoder().decode(fromBase64(padded)));
+          } catch (error) {
+            return {};
+          }
+        }
+
+        async function loginApi(email, password) {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), BACKEND_TIMEOUT_MS);
+          let response;
+
+          try {
+            response = await fetch(API_URL + '/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              // Nombres de campo del esquema Credenciales del backend.
+              body: JSON.stringify({ email, password }),
+              signal: controller.signal
+            });
+          } finally {
+            clearTimeout(timer);
+          }
+
+          // 422: el backend valida el formato del correo con EmailStr.
+          if (response.status === 401 || response.status === 422) {
+            throw new AuthError('invalid', 'Credenciales inválidas');
+          }
+          if (response.status === 403) throw new AuthError('inactive', 'El usuario está desactivado');
+          if (response.status === 429) {
+            throw new AuthError('locked', 'Usuario bloqueado temporalmente', { minutes: LOCK_MINUTES });
+          }
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+
+          const body = await response.json();
+          const claims = jwtClaims(body.access_token);
+
+          return {
+            mode: 'api', token: body.access_token,
+            email: body.usuario.email, name: body.usuario.nombre, role: body.usuario.rol,
+            exp: claims.exp ? claims.exp * 1000 : Date.now() + SESSION_MINUTES * 60000
+          };
+        }
+
+        async function login(email, password) {
+          const normalized = String(email).trim().toLowerCase();
+          let session = null;
+
+          if (BACKEND_ENABLED) {
+            try {
+              session = await loginApi(normalized, password);
+            } catch (error) {
+              // Solo la falta de respuesta hace pasar al modo local. Un rechazo del
+              // backend (401, 403, 429) o un error suyo se respetan tal cual.
+              if (error instanceof AuthError || /^HTTP /.test(error.message)) throw error;
+            }
+          }
+
+          if (!session) session = await loginLocal(normalized, password);
+
+          writeJson(sessionStorage, SESSION_KEY, session);
+          return session;
+        }
+
+        function getSession() {
+          const session = readJson(sessionStorage, SESSION_KEY, null);
+
+          if (session && session.exp > Date.now()) return session;
+
+          if (session) {
+            sessionStorage.removeItem(SESSION_KEY);
+            sessionStorage.setItem(NOTICE_KEY, 'expired');
+          }
+          return null;
+        }
+
+        function logout(notice = 'logout') {
+          sessionStorage.removeItem(SESSION_KEY);
+          sessionStorage.setItem(NOTICE_KEY, notice);
+        }
+
+        // Aviso que dejo la sesion anterior (cierre o caducidad). Se lee una vez.
+        function takeNotice() {
+          const notice = sessionStorage.getItem(NOTICE_KEY);
+          sessionStorage.removeItem(NOTICE_KEY);
+          return notice;
+        }
+
+        // Toda peticion autenticada pasa por aqui: el token va en la cabecera y
+        // nunca en la URL.
+        async function request(path, options = {}) {
+          const session = getSession();
+          if (!session || session.mode !== 'api') throw new AuthError('expired', 'La sesión expiró');
+
+          const response = await fetch(API_URL + path, {
+            ...options,
+            headers: {
+              'Content-Type': 'application/json',
+              ...(options.headers || {}),
+              Authorization: `Bearer ${session.token}`
+            }
+          });
+
+          if (response.status === 401) throw new AuthError('expired', 'La sesión expiró');
+
+          if (!response.ok) {
+            let detail = 'HTTP ' + response.status;
+            try {
+              const body = await response.json();
+              if (typeof body.detail === 'string') detail = body.detail;
+            } catch (error) {
+              // Sin cuerpo JSON: se queda el codigo HTTP.
+            }
+            throw new Error(detail);
+          }
+
+          return response.json();
+        }
+
+        // ---------------------------------------------------------------
+        // Administracion de usuarios (RF-09, HU-08)
+        // ---------------------------------------------------------------
+        // En modo API manda solo_administrador del backend. En modo local esta
+        // comprobacion es de interfaz.
+        function requireAdmin() {
+          const session = getSession();
+          if (!session) throw new AuthError('expired', 'La sesión expiró');
+          if (session.role !== 'administrador') throw new Error('Acción reservada al administrador.');
+          return session;
+        }
+
+        const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        async function listUsers() {
+          const session = requireAdmin();
+          // La vista del backend envuelve la lista: {"usuarios": [...]}.
+          if (session.mode === 'api') return (await request('/auth/usuarios')).usuarios;
+
+          return localUsers().map(({ id, nombre, email, rol, activo }) => ({ id, nombre, email, rol, activo }));
+        }
+
+        // Mismas reglas que el esquema NuevoUsuario del backend.
+        async function createUser({ nombre, email, password, rol }) {
+          const session = requireAdmin();
+          const user = {
+            nombre: String(nombre).trim(),
+            email: String(email).trim().toLowerCase(),
+            password: String(password),
+            rol
+          };
+
+          if (user.nombre.length < 3 || user.nombre.length > 120) {
+            throw new Error('El nombre debe tener entre 3 y 120 caracteres.');
+          }
+          if (!EMAIL_PATTERN.test(user.email)) throw new Error('Escribe un correo válido.');
+          if (user.password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
+          if (!['analista', 'administrador'].includes(user.rol)) throw new Error('Rol no válido.');
+
+          if (session.mode === 'api') {
+            return request('/auth/usuarios', { method: 'POST', body: JSON.stringify(user) });
+          }
+
+          if (findLocalUser(user.email)) throw new Error('Ya existe un usuario con ese correo.');
+
+          const registry = localRegistry();
+          const id = Math.max(...localUsers().map((item) => item.id)) + 1;
+          const secret = await hashPassword(user.password);
+
+          registry.created.push({ id, nombre: user.nombre, email: user.email, rol: user.rol, ...secret });
+          writeJson(localStorage, USERS_KEY, registry);
+
+          return { id, nombre: user.nombre, email: user.email, rol: user.rol, activo: true };
+        }
+
+        async function setUserActive(user, active) {
+          const session = requireAdmin();
+          if (user.email === session.email) throw new Error('No puedes desactivar tu propio usuario.');
+
+          if (session.mode === 'api') {
+            return request(`/auth/usuarios/${encodeURIComponent(user.id)}/estado?activo=${active}`,
+              { method: 'PATCH' });
+          }
+
+          const registry = localRegistry();
+          registry.inactive = registry.inactive.filter((email) => email !== user.email);
+          if (!active) registry.inactive.push(user.email);
+          writeJson(localStorage, USERS_KEY, registry);
+
+          return { ...user, activo: active };
+        }
+
+        function resetLocalUsers() {
+          requireAdmin();
+          localStorage.removeItem(USERS_KEY);
+          localStorage.removeItem(LOCKS_KEY);
+        }
+
+        // ---------------------------------------------------------------
+        // Reporte de zona (HU-12)
+        // ---------------------------------------------------------------
+        // Solo cifras agregadas por zona: ningun identificador de hogar (RNF-02).
+        function buildZoneReport(zoneId) {
+          const zone = getZoneById(zoneId);
+          const prediction = getPrediction(zoneId);
+          const explanation = getExplanation(zoneId);
+          const session = getSession();
+
+          return {
+            zone: zone.zona_nombre,
+            municipality: zone.municipio,
+            households: Number(zone.total_hogares),
+            people: Number(zone.total_personas),
+            source: data.resumen.fuente,
+            // Sin fecha de corte cuando los datos vienen en vivo del backend.
+            dataDate: data.generado || 'Consulta en vivo a la base de datos del proyecto',
+            exportedBy: session ? { name: session.name, role: session.role } : null,
+            exportedAt: new Date(),
+            observed: {
+              A: Number(zone.pct_grupo_a), B: Number(zone.pct_grupo_b),
+              C: Number(zone.pct_grupo_c), D: Number(zone.pct_grupo_d)
+            },
+            predicted: prediction ? prediction.predicho : null,
+            indicators: getDeprivations(zoneId).dimensiones.flatMap((group) =>
+              group.indicadores.map((item) => ({
+                dimension: group.dimension, code: item.codigo, name: item.nombre, rate: item.prevalencia
+              }))),
+            predictedGroup: explanation ? explanation.grupo_predicho : null,
+            drivers: ((explanation && explanation.contribuciones) || []).slice(0, 8).map((item) => ({
+              name: item.etiqueta, dimension: item.dimension, weight: item.contribucion
+            }))
+          };
+        }
+
+        return {
+          loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations,
+          getPrediction, getExplanation, getZonesRanked,
+          login, getSession, logout, takeNotice,
+          listUsers, createUser, setUserActive, resetLocalUsers,
+          buildZoneReport
+        };
       })();
 
       const MapView = (() => {
@@ -2564,6 +3753,8 @@
             button.classList.add('crumb');
             if (last) button.classList.add('is-active');
             button.textContent = step.name;
+            // En escritorio la ruta puede recortarse: el texto completo queda en el title.
+            button.title = step.name;
             if (!last) button.addEventListener('click', () => onNavigate(step));
 
             item.appendChild(button);
@@ -2643,7 +3834,9 @@
           }
 
           indicators.forEach((indicator) => {
-            const value = rates.has(indicator.codigo) ? rates.get(indicator.codigo) * 100 : null;
+            // null (sin dato en la zona) se muestra como '—' y no como 0 %.
+            const rate = rates.get(indicator.codigo);
+            const value = rate === undefined || rate === null ? null : rate * 100;
             const row = document.createElement('div');
 
             row.classList.add('indicator-row');
@@ -2762,11 +3955,14 @@
             heading.textContent = group.dimension;
             listEl.appendChild(heading);
 
-            group.indicadores.forEach((indicator) => {
-              const value = indicator.prevalencia * 100;
-              listEl.appendChild(
-                barRow(escapeHtml(indicator.nombre), value, `scale-${scaleOf(value)}`));
-            });
+            // Sin dato en la zona no se dibuja la barra: una barra vacia se leeria como 0 %.
+            group.indicadores
+              .filter((indicator) => indicator.prevalencia !== null && indicator.prevalencia !== undefined)
+              .forEach((indicator) => {
+                const value = indicator.prevalencia * 100;
+                listEl.appendChild(
+                  barRow(escapeHtml(indicator.nombre), value, `scale-${scaleOf(value)}`));
+              });
           });
         }
 
@@ -2803,7 +3999,277 @@
           });
         }
 
-        return { formatRatio, formatPercent, escapeHtml, renderSummary, renderBreadcrumb, renderDimensions, setDimensionExpanded, renderIndicatorsNote, renderIndicators, renderCollapseButton, renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations, renderMessages, renderSuggestions };
+        // ---------------------------------------------------------------
+        // Sesion
+        // ---------------------------------------------------------------
+        const ROLE_LABELS = { administrador: 'Administrador', analista: 'Analista' };
+
+        function roleLabel(role) {
+          return ROLE_LABELS[role] || role;
+        }
+
+        function renderSession(els, session) {
+          const admin = session.role === 'administrador';
+
+          els.sessionNameEl.textContent = session.name;
+          els.sessionRoleEl.textContent = roleLabel(session.role);
+          els.sessionRoleEl.classList.toggle('is-admin', admin);
+          els.sessionModeEl.hidden = session.mode !== 'local';
+          els.adminBtn.hidden = !admin;
+        }
+
+        function renderLoginError(errorEl, message) {
+          errorEl.textContent = message || '';
+        }
+
+        function renderLoginNotice(noticeEl, message) {
+          noticeEl.textContent = message || '';
+          noticeEl.hidden = !message;
+        }
+
+        // ---------------------------------------------------------------
+        // Administracion
+        // ---------------------------------------------------------------
+        // Los nombres y correos los escribe un administrador: todo pasa por
+        // escapeHtml o por textContent.
+        function renderUsers(listEl, users, currentEmail, onToggle) {
+          listEl.textContent = '';
+
+          users.forEach((user) => {
+            const self = user.email === currentEmail;
+            const row = document.createElement('div');
+            const button = document.createElement('button');
+
+            row.classList.add('user-row');
+            if (!user.activo) row.classList.add('is-inactive');
+            row.setAttribute('role', 'listitem');
+            row.innerHTML = `
+              <span class="user-id">
+                <span class="user-name">${escapeHtml(user.nombre)}${self ? ' <small>(tú)</small>' : ''}</span>
+                <span class="user-email">${escapeHtml(user.email)}</span>
+              </span>
+              <span class="user-tags">
+                <span class="role-badge${user.rol === 'administrador' ? ' is-admin' : ''}">${escapeHtml(roleLabel(user.rol))}</span>
+                <span class="state-badge${user.activo ? '' : ' is-off'}">${user.activo ? 'Activo' : 'Desactivado'}</span>
+              </span>`;
+
+            button.type = 'button';
+            button.className = 'btn-secondary user-action';
+            button.textContent = user.activo ? 'Desactivar' : 'Activar';
+            button.setAttribute('aria-label', `${button.textContent} a ${user.nombre}`);
+
+            if (self) {
+              button.disabled = true;
+              button.title = 'No puedes desactivar tu propio usuario';
+            } else {
+              button.addEventListener('click', () => onToggle(user, button));
+            }
+
+            row.appendChild(button);
+            listEl.appendChild(row);
+          });
+        }
+
+        function renderAdminSummary(summaryEl, users) {
+          const active = users.filter((user) => user.activo).length;
+          summaryEl.textContent = `${users.length} usuarios · ${active} activos · gestión de usuarios y roles (RF-09)`;
+        }
+
+        function renderAdminMessage(messageEl, text, kind) {
+          messageEl.textContent = text || '';
+          messageEl.className = 'admin-message' + (kind ? ` is-${kind}` : '');
+        }
+
+        // ---------------------------------------------------------------
+        // Reporte de zona (HU-12)
+        // ---------------------------------------------------------------
+        function formatDateTime(date) {
+          return date.toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' });
+        }
+
+        function exportedByText(report) {
+          if (!report.exportedBy) return '—';
+          return `${report.exportedBy.name} (${roleLabel(report.exportedBy.role)})`;
+        }
+
+        // Separador ';' y coma decimal: es lo que espera Excel en espanol. El BOM
+        // hace que Excel lea el archivo como UTF-8 y respete las tildes.
+        function csvText(value) {
+          const text = String(value === null || value === undefined ? '' : value);
+          // Un texto que empieza por = + - @ lo abriria Excel como formula. Los
+          // nombres de usuario los escribe un administrador, asi que se neutralizan.
+          const safe = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+          return /[;"\n\r]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
+        }
+
+        function csvNumber(value, decimals = 1) {
+          return Number(value).toFixed(decimals).replace('.', ',');
+        }
+
+        function reportToCsv(report) {
+          const rows = [];
+          const row = (...cells) => rows.push(cells.join(';'));
+
+          row(csvText('SocialData - Reporte de zona'));
+          row(csvText('Zona'), csvText(report.zone));
+          row(csvText('Municipio'), csvText(report.municipality));
+          row(csvText('Hogares registrados'), String(report.households));
+          row(csvText('Personas'), String(report.people));
+          row(csvText('Fuente y periodo'), csvText(report.source));
+          row(csvText('Fecha del corte publicado'), csvText(report.dataDate));
+          row(csvText('Exportado por'), csvText(exportedByText(report)));
+          row(csvText('Fecha de exportación'), csvText(formatDateTime(report.exportedAt)));
+          row('');
+
+          row(csvText('Distribución por grupo del Sisbén'));
+          row(csvText('Grupo'), csvText('Descripción'), csvText('Observado (%)'), csvText('Estimado por el modelo (%)'));
+          GROUPS.forEach((group) => {
+            row(csvText(group), csvText(GROUP_NAMES[group]),
+              csvNumber(report.observed[group] * 100),
+              report.predicted ? csvNumber(report.predicted[group] * 100) : '');
+          });
+          row('');
+
+          row(csvText('Prevalencia de privaciones observadas'));
+          row(csvText('Dimensión'), csvText('Código'), csvText('Indicador'), csvText('Prevalencia (%)'));
+          report.indicators.forEach((item) => {
+            row(csvText(item.dimension), csvText(item.code), csvText(item.name),
+              item.rate === null || item.rate === undefined ? '' : csvNumber(item.rate * 100));
+          });
+          row('');
+
+          if (report.drivers.length) {
+            row(csvText(driversTitle(report)));
+            row(csvText('Factor'), csvText('Dimensión'), csvText('Contribución SHAP'));
+            report.drivers.forEach((item) => {
+              row(csvText(item.name), csvText(item.dimension), csvNumber(item.weight, 3));
+            });
+            row('');
+          }
+
+          row(csvText('Nota'), csvText(REPORT_NOTE));
+
+          return '﻿' + rows.join('\r\n') + '\r\n';
+        }
+
+        // Las contribuciones SHAP son del hogar representativo de la zona, no de la
+        // zona entera: su grupo puede no coincidir con el mayoritario. Mismo texto
+        // que la ficha tecnica, para que el reporte no parezca contradecirse.
+        function driversTitle(report) {
+          return 'Factores dominantes según el modelo · hogar representativo de la zona ' +
+            `(clasificado en el grupo ${report.predictedGroup})`;
+        }
+
+        const REPORT_NOTE =
+          'Cifras agregadas por zona, sin datos que identifiquen hogares o personas. ' +
+          'Herramienta de apoyo a la decisión: no reemplaza la clasificación oficial del DNP.';
+
+        function reportFileName(report, extension) {
+          const slug = report.zone
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          // Fecha local y no toISOString(): esa es UTC, y desde las 7 p. m. en
+          // Colombia ya daria el dia siguiente.
+          const date = report.exportedAt;
+          const pad = (value) => String(value).padStart(2, '0');
+          const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+          return `SocialData_${slug}_${day}.${extension}`;
+        }
+
+        function renderPrintReport(reportEl, report) {
+          const groupRows = GROUPS.map((group) => `
+            <tr>
+              <td>${group} · ${GROUP_NAMES[group]}</td>
+              <td class="num">${formatPercent(report.observed[group] * 100)}</td>
+              <td class="num">${report.predicted ? formatPercent(report.predicted[group] * 100) : '—'}</td>
+            </tr>`).join('');
+
+          const indicatorRows = report.indicators.map((item) => `
+            <tr>
+              <td>${escapeHtml(item.dimension)}</td>
+              <td>${escapeHtml(item.name)}</td>
+              <td class="num">${item.rate === null || item.rate === undefined ? '—' : formatPercent(item.rate * 100)}</td>
+            </tr>`).join('');
+
+          const driverRows = report.drivers.map((item) => `
+            <tr>
+              <td>${escapeHtml(item.name)}</td>
+              <td>${escapeHtml(item.dimension)}</td>
+              <td class="num">${item.weight > 0 ? '+' : ''}${item.weight.toFixed(3).replace('.', ',')}</td>
+            </tr>`).join('');
+
+          reportEl.innerHTML = `
+            <header class="report-head">
+              <div>
+                <h1>Reporte de zona</h1>
+                <p>SocialData · Vulnerabilidad socioeconómica · Área Metropolitana de Bucaramanga</p>
+              </div>
+              <p>${escapeHtml(formatDateTime(report.exportedAt))}</p>
+            </header>
+
+            <table class="report-table report-meta">
+              <tbody>
+                <tr><th>Zona</th><td>${escapeHtml(report.zone)}</td></tr>
+                <tr><th>Municipio</th><td>${escapeHtml(report.municipality)}</td></tr>
+                <tr><th>Hogares registrados</th><td>${report.households.toLocaleString('es-CO')}</td></tr>
+                <tr><th>Personas</th><td>${report.people.toLocaleString('es-CO')}</td></tr>
+                <tr><th>Fuente y periodo</th><td>${escapeHtml(report.source)}</td></tr>
+                <tr><th>Fecha del corte publicado</th><td>${escapeHtml(report.dataDate)}</td></tr>
+                <tr><th>Exportado por</th><td>${escapeHtml(exportedByText(report))}</td></tr>
+              </tbody>
+            </table>
+
+            <section class="report-section">
+              <h2>Distribución por grupo del Sisbén</h2>
+              <table class="report-table">
+                <thead><tr><th>Grupo</th><th class="num">Observado</th><th class="num">Estimado por el modelo</th></tr></thead>
+                <tbody>${groupRows}</tbody>
+              </table>
+            </section>
+
+            <section class="report-section">
+              <h2>Prevalencia de privaciones observadas</h2>
+              <table class="report-table">
+                <thead><tr><th>Dimensión</th><th>Indicador</th><th class="num">Prevalencia</th></tr></thead>
+                <tbody>${indicatorRows}</tbody>
+              </table>
+            </section>
+
+            ${report.drivers.length ? `
+            <section class="report-section">
+              <h2>${escapeHtml(driversTitle(report))}</h2>
+              <table class="report-table">
+                <thead><tr><th>Factor</th><th>Dimensión</th><th class="num">Contribución SHAP</th></tr></thead>
+                <tbody>${driverRows}</tbody>
+              </table>
+            </section>` : ''}
+
+            <p class="report-note">${escapeHtml(REPORT_NOTE)}
+              Las contribuciones SHAP explican en qué se apoya el modelo, no relaciones causales.</p>`;
+        }
+
+        function downloadFile(fileName, text, type) {
+          const url = URL.createObjectURL(new Blob([text], { type }));
+          const link = document.createElement('a');
+
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        return {
+          formatRatio, formatPercent, escapeHtml, renderSummary, renderBreadcrumb, renderDimensions,
+          setDimensionExpanded, renderIndicatorsNote, renderIndicators, renderCollapseButton,
+          renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations,
+          renderMessages, renderSuggestions,
+          roleLabel, renderSession, renderLoginError, renderLoginNotice,
+          renderUsers, renderAdminSummary, renderAdminMessage,
+          reportToCsv, reportFileName, renderPrintReport, downloadFile
+        };
       })();
 
       const Chat = (() => {
@@ -2868,12 +4334,25 @@
             'mejoramiento de vivienda con ampliación de cuartos y programas de vivienda de interés prioritario'
         };
 
-        // Privaciones de la zona, de mayor a menor prevalencia.
+        // Privaciones de la zona, de mayor a menor prevalencia. Las que no tienen
+        // dato (el backend devuelve null si ningun hogar lo registra) se omiten.
         function deprivationsOf(zone) {
           return getDeprivations(zone.zona_id).dimensiones
             .flatMap((group) => group.indicadores.map((item) => ({ ...item, dimension: group.dimension })))
+            .filter((item) => item.prevalencia !== null && item.prevalencia !== undefined)
             .sort((a, b) => b.prevalencia - a.prevalencia);
         }
+
+        // Con el backend, prediccion y explicacion dependen de ia-predictor y pueden
+        // faltar. El asistente responde con lo que haya en vez de fallar.
+        function driversOf(zone) {
+          const explanation = getExplanation(zone.zona_id);
+          return (explanation && explanation.contribuciones) || [];
+        }
+
+        const MODEL_UNAVAILABLE =
+          'El modelo predictivo no está disponible en este momento, así que no puedo ' +
+          'responder con su estimación. Las cifras observadas de la zona siguen disponibles.';
 
         function rankOf(zone) {
           const ranked = getZonesRanked();
@@ -2896,12 +4375,16 @@
 
         function critical(zone) {
           const worst = deprivationsOf(zone)[0];
-          const drivers = getExplanation(zone.zona_id).contribuciones;
+          const drivers = driversOf(zone);
           const driver = drivers.find((item) => item.contribucion > 0) || drivers[0];
 
-          return `La privación más extendida es ${worst.nombre.toLowerCase()}, presente en el ` +
+          const observed = `La privación más extendida es ${worst.nombre.toLowerCase()}, presente en el ` +
             `${ratio(worst.prevalencia)} de los hogares de la zona, dentro de la dimensión de ` +
-            `${worst.dimension.toLowerCase()}.\n\n` +
+            `${worst.dimension.toLowerCase()}.`;
+
+          if (!driver) return `${observed}\n\n${MODEL_UNAVAILABLE}`;
+
+          return `${observed}\n\n` +
             `Conviene distinguir dos cosas: qué es más frecuente y qué pesa más en la clasificación. ` +
             `El factor que más empuja hacia el grupo estimado es ${driver.etiqueta.toLowerCase()} ` +
             `(${driver.dimension.toLowerCase()}). Una privación puede ser muy común y aun así influir poco ` +
@@ -2910,7 +4393,7 @@
 
         function recommend(zone) {
           const deprivations = deprivationsOf(zone);
-          const drivers = getExplanation(zone.zona_id).contribuciones;
+          const drivers = driversOf(zone);
           const picks = [];
 
           const labour = drivers.find((item) => item.dimension === 'Trabajo' && item.contribucion > 0);
@@ -2978,8 +4461,11 @@
 
         function modelAnswer(zone) {
           const card = getModelCard();
+          const prediction = getPrediction(zone.zona_id);
+          if (!card || !prediction) return MODEL_UNAVAILABLE;
+
           const metrics = card.metricas;
-          const predicted = getPrediction(zone.zona_id).predicho;
+          const predicted = prediction.predicho;
           const top = ['A', 'B', 'C', 'D'].reduce((a, b) => (predicted[a] >= predicted[b] ? a : b));
 
           return `Para esta zona el modelo estima que el grupo mayoritario es el ${top}, con un ` +
@@ -3039,7 +4525,10 @@
 
         const {
           loadData, getSummary, getCatalog, getZones, getZonesRanked,
-          getDeprivations, getPrediction, getExplanation
+          getDeprivations, getPrediction, getExplanation,
+          login, getSession, logout, takeNotice,
+          listUsers, createUser, setUserActive, resetLocalUsers,
+          buildZoneReport
         } = Model;
 
         const { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode } = MapView;
@@ -3049,10 +4538,47 @@
           renderSummary, renderBreadcrumb, renderDimensions, renderIndicators,
           setDimensionExpanded, renderIndicatorsNote, renderCollapseButton,
           renderMetrics, clearMetrics, renderDistribution,
-          renderExplanation, renderDeprivations, renderMessages, renderSuggestions
+          renderExplanation, renderDeprivations, renderMessages, renderSuggestions,
+          roleLabel, renderSession, renderLoginError, renderLoginNotice,
+          renderUsers, renderAdminSummary, renderAdminMessage,
+          reportToCsv, reportFileName, renderPrintReport, downloadFile
         } = View;
 
         const refs = {
+          appEl: document.getElementById('app'),
+          loginScreenEl: document.getElementById('login-screen'),
+          loginForm: document.getElementById('login-form'),
+          loginEmail: document.getElementById('login-email'),
+          loginPassword: document.getElementById('login-password'),
+          loginSubmit: document.getElementById('login-submit'),
+          loginErrorEl: document.getElementById('login-error'),
+          loginNoticeEl: document.getElementById('login-notice'),
+          togglePasswordBtn: document.getElementById('toggle-password'),
+
+          sessionNameEl: document.getElementById('session-name'),
+          sessionRoleEl: document.getElementById('session-role'),
+          sessionModeEl: document.getElementById('session-mode'),
+          adminBtn: document.getElementById('toggle-admin'),
+          logoutBtn: document.getElementById('logout'),
+
+          adminPanelEl: document.getElementById('admin-panel'),
+          closeAdminBtn: document.getElementById('close-admin'),
+          adminSummaryEl: document.getElementById('admin-summary'),
+          adminMessageEl: document.getElementById('admin-message'),
+          userListEl: document.getElementById('user-list'),
+          userForm: document.getElementById('user-form'),
+          newNameInput: document.getElementById('new-name'),
+          newEmailInput: document.getElementById('new-email'),
+          newPasswordInput: document.getElementById('new-password'),
+          newRoleInput: document.getElementById('new-role'),
+          createUserBtn: document.getElementById('create-user'),
+          adminDemoNoteEl: document.getElementById('admin-demo-note'),
+          resetUsersBtn: document.getElementById('reset-users'),
+
+          exportBtn: document.getElementById('toggle-export'),
+          exportMenuEl: document.getElementById('export-menu'),
+          printReportEl: document.getElementById('print-report'),
+
           mapEl: document.getElementById('map'),
           mapPlaceholderEl: document.getElementById('map-placeholder'),
           mapBtn: document.getElementById('toggle-map'),
@@ -3107,7 +4633,10 @@
           deprivations: null,
           // Mapa ampliado y, si lo esta, si vive en el panel o crece en su sitio.
           mapLarge: false,
-          mapInPanel: false
+          mapInPanel: false,
+          session: null,
+          started: false,
+          adminOpen: false
         };
 
         // Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel
@@ -3226,8 +4755,10 @@
           refs.sheetBtnTextEl.textContent = open ? 'Ocultar ficha técnica' : 'Ver ficha técnica';
           refs.sheetEl.hidden = !open;
 
-          // Ficha y mapa ampliado comparten el area del asistente: solo uno a la vez.
+          // Ficha, mapa ampliado y administracion comparten el area del asistente:
+          // solo uno a la vez.
           if (open && state.mapInPanel) setMapLarge(false);
+          if (open) toggleAdmin(false);
           if (open) refs.closeSheetBtn.focus();
         }
 
@@ -3238,12 +4769,19 @@
           refs.sheetBtn.focus();
         });
 
+        // Escape cierra lo que este encima, de uno en uno.
         document.addEventListener('keydown', (event) => {
           if (event.key !== 'Escape') return;
 
-          if (!refs.sheetEl.hidden) {
+          if (!refs.exportMenuEl.hidden) {
+            toggleExportMenu(false);
+            refs.exportBtn.focus();
+          } else if (!refs.sheetEl.hidden) {
             toggleSheet(false);
             refs.sheetBtn.focus();
+          } else if (state.adminOpen) {
+            toggleAdmin(false);
+            refs.adminBtn.focus();
           } else if (state.mapLarge) {
             setMapLarge(false);
             refs.mapBtn.focus();
@@ -3265,6 +4803,8 @@
 
           state.mapLarge = on;
           state.mapInPanel = on && !compactLayout.matches;
+
+          if (state.mapInPanel) toggleAdmin(false);
 
           if (state.mapInPanel) {
             refs.mapPanelBodyEl.appendChild(refs.mapEl);
@@ -3331,6 +4871,10 @@
           refs.sheetEmptyEl.hidden = false;
           refs.sheetBodyEl.hidden = true;
 
+          // El reporte es de una zona: sin zona seleccionada no hay nada que exportar.
+          toggleExportMenu(false);
+          refs.exportBtn.disabled = true;
+
           clearMetrics(refs);
           fitMetroArea();
           refreshBreadcrumb();
@@ -3352,6 +4896,7 @@
           refs.chatBodyEl.hidden = false;
           refs.sheetEmptyEl.hidden = true;
           refs.sheetBodyEl.hidden = false;
+          refs.exportBtn.disabled = false;
 
           greet(zone);
           renderMessages(refs.messagesEl, getMessages(zone.zona_id));
@@ -3385,15 +4930,315 @@
         });
 
         // ---------------------------------------------------------------
+        // Exportar reporte de la zona (HU-12): ambos roles
+        // ---------------------------------------------------------------
+        function toggleExportMenu(show) {
+          const open = show === undefined ? refs.exportMenuEl.hidden : show;
+
+          refs.exportMenuEl.hidden = !open;
+          refs.exportBtn.setAttribute('aria-expanded', String(open));
+          refs.exportBtn.classList.toggle('is-active', open);
+
+          if (open) refs.exportMenuEl.querySelector('.menu-item').focus();
+        }
+
+        function exportReport(format) {
+          const zone = state.selectedZone;
+          if (!zone) return;
+
+          const report = buildZoneReport(zone.zona_id);
+
+          if (format === 'csv') {
+            downloadFile(reportFileName(report, 'csv'), reportToCsv(report), 'text/csv;charset=utf-8');
+          } else {
+            // El navegador ofrece «Guardar como PDF» en el dialogo de impresion; asi
+            // no hace falta ninguna libreria externa.
+            renderPrintReport(refs.printReportEl, report);
+            window.print();
+          }
+        }
+
+        refs.exportBtn.addEventListener('click', () => toggleExportMenu());
+
+        refs.exportMenuEl.addEventListener('click', (event) => {
+          const item = event.target.closest('.menu-item');
+          if (!item) return;
+
+          toggleExportMenu(false);
+          refs.exportBtn.focus();
+          exportReport(item.dataset.format);
+        });
+
+        // Flechas entre las opciones del menu.
+        refs.exportMenuEl.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+
+          event.preventDefault();
+          const items = [...refs.exportMenuEl.querySelectorAll('.menu-item')];
+          const step = event.key === 'ArrowDown' ? 1 : -1;
+          const next = (items.indexOf(document.activeElement) + step + items.length) % items.length;
+          items[next].focus();
+        });
+
+        // Un clic fuera del menu lo cierra.
+        document.addEventListener('click', (event) => {
+          if (!refs.exportMenuEl.hidden && !event.target.closest('.menu-wrap')) toggleExportMenu(false);
+        });
+
+        // ---------------------------------------------------------------
+        // Administracion de usuarios (RF-09, HU-08): solo administrador
+        // ---------------------------------------------------------------
+        function toggleAdmin(show) {
+          const open = show === undefined ? !state.adminOpen : show;
+          if (open === state.adminOpen) return;
+          if (open && (!state.session || state.session.role !== 'administrador')) return;
+
+          if (open) {
+            toggleSheet(false);
+            if (state.mapInPanel) setMapLarge(false);
+          }
+
+          state.adminOpen = open;
+          refs.adminPanelEl.hidden = !open;
+          refs.adminBtn.setAttribute('aria-expanded', String(open));
+          refs.adminBtn.classList.toggle('is-active', open);
+
+          if (!open) return;
+
+          refs.adminDemoNoteEl.hidden = state.session.mode !== 'local';
+          renderAdminMessage(refs.adminMessageEl, '');
+          // En pantallas compactas el area del asistente queda debajo de la barra.
+          if (compactLayout.matches) refs.adminPanelEl.scrollIntoView({ block: 'start' });
+          refs.closeAdminBtn.focus();
+          refreshUsers();
+        }
+
+        function handleAdminError(error) {
+          if (error.code === 'expired') {
+            endSession('expired');
+            return;
+          }
+          renderAdminMessage(refs.adminMessageEl, error.message || 'No se pudo completar la acción.', 'error');
+        }
+
+        async function refreshUsers() {
+          try {
+            const users = await listUsers();
+            renderUsers(refs.userListEl, users, state.session.email, changeUserState);
+            renderAdminSummary(refs.adminSummaryEl, users);
+            return users;
+          } catch (error) {
+            handleAdminError(error);
+            return [];
+          }
+        }
+
+        async function changeUserState(user, button) {
+          button.disabled = true;
+
+          try {
+            await setUserActive(user, !user.activo);
+            await refreshUsers();
+            renderAdminMessage(refs.adminMessageEl,
+              `${user.nombre} quedó ${user.activo ? 'desactivado' : 'activo'}.`, 'ok');
+          } catch (error) {
+            button.disabled = false;
+            handleAdminError(error);
+          }
+        }
+
+        refs.adminBtn.addEventListener('click', () => toggleAdmin());
+
+        refs.closeAdminBtn.addEventListener('click', () => {
+          toggleAdmin(false);
+          refs.adminBtn.focus();
+        });
+
+        refs.userForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          refs.createUserBtn.disabled = true;
+
+          try {
+            const user = await createUser({
+              nombre: refs.newNameInput.value,
+              email: refs.newEmailInput.value,
+              password: refs.newPasswordInput.value,
+              rol: refs.newRoleInput.value
+            });
+
+            refs.userForm.reset();
+            await refreshUsers();
+            renderAdminMessage(refs.adminMessageEl,
+              `Usuario ${user.email} creado con el rol ${roleLabel(user.rol).toLowerCase()}.`, 'ok');
+            refs.newNameInput.focus();
+          } catch (error) {
+            handleAdminError(error);
+          } finally {
+            refs.createUserBtn.disabled = false;
+          }
+        });
+
+        refs.resetUsersBtn.addEventListener('click', async () => {
+          const ok = window.confirm(
+            'Se borrarán los usuarios creados, los desactivados y los bloqueos guardados en este navegador. ¿Continuar?');
+          if (!ok) return;
+
+          resetLocalUsers();
+          const users = await refreshUsers();
+
+          // Si quien restablece era un usuario creado localmente, ya no existe.
+          if (!users.some((user) => user.email === state.session.email)) {
+            endSession('logout');
+            return;
+          }
+          renderAdminMessage(refs.adminMessageEl, 'Usuarios de demostración restablecidos.', 'ok');
+        });
+
+        // ---------------------------------------------------------------
+        // Sesion (RF-01)
+        // ---------------------------------------------------------------
+        const LOGIN_MESSAGES = {
+          // Generico a proposito: no revela si fallo el correo o la contrasena
+          // (flujo alternativo 1 de RF-01).
+          invalid: 'Correo o contraseña incorrectos.',
+          inactive: 'Tu usuario está desactivado. Contacta al administrador.',
+          insecure: 'El inicio de sesión requiere una conexión segura (HTTPS o localhost).'
+        };
+
+        const NOTICES = {
+          expired: 'Tu sesión expiró. Vuelve a iniciar sesión.',
+          logout: 'Cerraste la sesión correctamente.'
+        };
+
+        function loginMessage(error) {
+          if (error.code === 'locked') {
+            const minutes = error.minutes || 15;
+            return `Demasiados intentos fallidos. Espera ${minutes} minuto${minutes === 1 ? '' : 's'} ` +
+              'antes de volver a intentarlo.';
+          }
+          return LOGIN_MESSAGES[error.code] || 'No se pudo iniciar sesión. Inténtalo de nuevo.';
+        }
+
+        function hidePassword() {
+          refs.loginPassword.type = 'password';
+          refs.togglePasswordBtn.textContent = 'Mostrar';
+          refs.togglePasswordBtn.setAttribute('aria-pressed', 'false');
+        }
+
+        function showLogin(notice) {
+          refs.appEl.hidden = true;
+          refs.loginScreenEl.hidden = false;
+          renderLoginNotice(refs.loginNoticeEl, NOTICES[notice]);
+          refs.loginSubmit.disabled = false;
+          refs.loginEmail.focus();
+        }
+
+        let expiryTimer = null;
+
+        function watchExpiry() {
+          clearTimeout(expiryTimer);
+          const left = state.session.exp - Date.now();
+
+          if (left <= 0) {
+            endSession('expired');
+            return;
+          }
+          expiryTimer = setTimeout(() => endSession('expired'), Math.min(left, 2147483647));
+        }
+
+        function enterApp(session) {
+          state.session = session;
+          refs.loginScreenEl.hidden = true;
+          refs.appEl.hidden = false;
+
+          renderSession(refs, session);
+          watchExpiry();
+
+          // El mapa y los datos se montan solo con sesion, y una sola vez.
+          if (!state.started) {
+            state.started = true;
+            start();
+          }
+        }
+
+        // location.replace descarta todo el estado en memoria, incluida la
+        // conversacion con cifras de las zonas, y no deja la vista autenticada en
+        // el historial del navegador.
+        function endSession(reason) {
+          clearTimeout(expiryTimer);
+          logout(reason);
+          window.location.replace(window.location.pathname + window.location.search);
+        }
+
+        refs.loginForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+
+          const email = refs.loginEmail.value.trim();
+          const password = refs.loginPassword.value;
+
+          // La contrasena solo vive en esta funcion: el campo se vacia en cada intento.
+          refs.loginPassword.value = '';
+          hidePassword();
+          renderLoginNotice(refs.loginNoticeEl, '');
+
+          if (!email || !password) {
+            renderLoginError(refs.loginErrorEl, 'Escribe tu correo y tu contraseña.');
+            (email ? refs.loginPassword : refs.loginEmail).focus();
+            return;
+          }
+
+          refs.loginSubmit.disabled = true;
+          refs.loginSubmit.textContent = 'Verificando…';
+          renderLoginError(refs.loginErrorEl, '');
+
+          try {
+            enterApp(await login(email, password));
+          } catch (error) {
+            renderLoginError(refs.loginErrorEl, loginMessage(error));
+            refs.loginPassword.focus();
+          } finally {
+            refs.loginSubmit.disabled = false;
+            refs.loginSubmit.textContent = 'Iniciar sesión';
+          }
+        });
+
+        refs.togglePasswordBtn.addEventListener('click', () => {
+          const show = refs.loginPassword.type === 'password';
+
+          refs.loginPassword.type = show ? 'text' : 'password';
+          refs.togglePasswordBtn.textContent = show ? 'Ocultar' : 'Mostrar';
+          refs.togglePasswordBtn.setAttribute('aria-pressed', String(show));
+          refs.loginPassword.focus();
+        });
+
+        refs.logoutBtn.addEventListener('click', () => endSession('logout'));
+
+        // Al volver a la pestana se revisa la caducidad: los temporizadores pueden
+        // dormirse con la pestana en segundo plano.
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible' && state.session && !getSession()) {
+            endSession('expired');
+          }
+        });
+
+        // ---------------------------------------------------------------
         // Arranque
         // ---------------------------------------------------------------
         async function start() {
+          refs.summaryEl.textContent = 'Cargando datos…';
+
           try {
             await loadData();
           } catch (error) {
+            // Un 401 del backend al cargar: el token vencio o se revoco.
+            if (error.code === 'expired') {
+              endSession('expired');
+              return;
+            }
             refs.summaryEl.textContent = 'No se pudieron cargar los datos.';
-            refs.chatEmptyEl.textContent =
-              'No se pudieron cargar los indicadores (api/data.json). Comprueba que la carpeta api esté publicada.';
+            refs.chatEmptyEl.textContent = state.session && state.session.mode === 'api'
+              ? `No se pudieron cargar los indicadores desde el backend (${error.message}).`
+              : 'No se pudieron cargar los indicadores (api/data.json). Comprueba que la carpeta api esté publicada.';
             return;
           }
 
@@ -3417,7 +5262,15 @@
           selectZone(getZonesRanked()[0], false);
         }
 
-        start();
+        // No se arranca directamente: primero se comprueba si hay una sesion
+        // vigente. Sin ella se muestra el acceso y la aplicacion no se monta.
+        function boot() {
+          const session = getSession();
+          if (session) enterApp(session);
+          else showLogin(takeNotice());
+        }
+
+        boot();
       })();
     </script>
   </body>

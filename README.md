@@ -22,10 +22,17 @@ python -m http.server 5173 --directory frontend
 
 y abrir `http://localhost:5173`.
 
-La aplicación exige iniciar sesión, por lo que el backend debe estar en
-ejecución y accesible en la dirección configurada en el script de `index.html` (por defecto
-`http://localhost:8000/api/v1`). Los usuarios de demostración se definen en
-`db/init/02_seed.sql`.
+La aplicación exige iniciar sesión. Si el backend está en ejecución
+(`http://localhost:8000/api/v1`) se valida contra él; si no, se usa el modo de
+demostración, que funciona también desde GitHub Pages. Usuarios:
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Administrador | `admin@socialdata.co` | `SocialData2026*` |
+| Analista | `analista@socialdata.co` | `SocialData2026*` |
+
+Ver [Autenticación y control de acceso](#autenticación-y-control-de-acceso) para
+lo que protege y lo que no protege cada modo.
 
 Tras publicar cambios conviene forzar la recarga con **Ctrl+Shift+R**. GitHub
 Pages sirve los archivos con unos diez minutos de caché, y la publicación tarda
@@ -87,6 +94,9 @@ recursos.
   del modelo y factores que más pesan en esa estimación.
 - **Preguntar al asistente** sobre la zona, con preguntas propias o con las
   sugerencias que aparecen bajo la conversación.
+- **Exportar el reporte de la zona** en Excel (.csv) o PDF. Ambos roles.
+- **Administrar usuarios**: crear, desactivar y reactivar. Solo el
+  administrador.
 
 ## Organización de la interfaz
 
@@ -101,8 +111,14 @@ recursos.
 - **Ficha técnica.** Panel deslizante sobre la conversación, sin sustituirla.
   El mismo botón que la abre la cierra, igual que la ✕ o la tecla Escape.
 - **Mapa ampliado.** Panel sobre la conversación, con el mismo patrón que la
-  ficha técnica. Ficha y mapa ampliado son excluyentes: abrir uno cierra el
-  otro.
+  ficha técnica.
+- **Administración.** Panel sobre la conversación, solo para el administrador.
+  Ficha, mapa ampliado y administración son excluyentes: abrir uno cierra los
+  otros.
+- **Cabecera.** A la derecha, el usuario con su rol, el botón de administración
+  si corresponde y **Cerrar sesión**. En escritorio la cabecera no se parte en
+  dos filas: si no cabe, el lema y la ruta se recortan con puntos suspensivos y
+  el texto completo queda en el `title`.
 
 ### Mapa ampliable
 
@@ -177,101 +193,193 @@ desplazamiento y ningún bloque aparece recortado.
 
 El frontend implementa **RF-01 «Iniciar sesión»**, caso de uso base incluido por
 los demás, y el componente de autenticación de **RNF-02 «Seguridad y protección
-de datos personales»** (Ley 1581 de 2012), sobre el servicio ya construido en el
-backend (`POST /api/v1/auth/login`, JWT HS256 de 480 minutos, contraseñas con
-`bcrypt`, bloqueo tras cinco intentos y bitácora de auditoría). Corresponde a la
-historia de usuario **HU-07** y sigue los diagramas de actividades y de
-secuencia de inicio de sesión entregados en los UML Parte 2 del Sprint 3.
+de datos personales»** (Ley 1581 de 2012). Corresponde a la historia de usuario
+**HU-07** y sigue los diagramas de actividades y de secuencia de inicio de
+sesión entregados en los UML Parte 2 del Sprint 3.
 
-### Flujo
+### Usuarios de demostración
 
-1. El controlador no arranca la aplicación directamente. Comprueba primero si existe
-   una sesión guardada y vigente; si no la hay, muestra la pantalla de acceso y
-   espera.
-2. Con credenciales válidas, `model.login()` guarda la sesión, la pantalla de
-   acceso se oculta, la cabecera muestra nombre y rol, y se ejecuta `start()`.
-3. La sesión termina al pulsar **Cerrar sesión**, al caducar el token o al
-   recibir un 401 de la API. En los tres casos se vuelve a la pantalla de
-   acceso.
+Los mismos de `db/init/02_seed.sql`:
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Administrador | `admin@socialdata.co` | `SocialData2026*` |
+| Analista | `analista@socialdata.co` | `SocialData2026*` |
+
+La contraseña **no está escrita en el código**. `index.html` solo guarda su
+derivación PBKDF2-SHA256 (150 000 iteraciones), con una sal aleatoria distinta
+por usuario, y la comprobación se hace con la Web Crypto API del navegador.
+Cambiar estas credenciales antes de cualquier uso real.
+
+### Dos modos de sesión
+
+| Modo | Cuándo | Contra qué se valida |
+|---|---|---|
+| **Backend** | La página se sirve desde `localhost` o `127.0.0.1` y el backend responde | `POST /api/v1/auth/login`: JWT HS256 de 480 min, `bcrypt`, bloqueo y bitácora de auditoría del servidor |
+| **Demostración** | El backend no responde, o la página se sirve desde otro dominio (GitHub Pages) | Los usuarios de demostración, en el navegador |
+
+Solo la **falta de respuesta** del backend hace pasar al modo de demostración.
+Si el backend responde con un rechazo (401, 403, 429) o con un error propio, se
+respeta tal cual: no se «reintenta en local» para esquivarlo.
+
+Desde GitHub Pages el backend ni se intenta. No está publicado, y una página
+pública que llama a `http://localhost` hace que el navegador pida al visitante
+permiso para acceder a su red local, algo que no debe ver quien evalúa el
+prototipo.
+
+La cabecera muestra la etiqueta **demostración** junto al rol cuando la sesión es
+de ese modo.
+
+### Qué protege cada modo, sin exagerar
+
+**El modo de demostración no es un control de acceso.** Es una demostración de la
+interfaz y del flujo de RF-01. Todo lo que ocurre en un navegador lo controla
+quien lo usa: puede leer el código, modificar la sesión guardada o pedir
+`api/data.json` directamente por URL. Sirve para que el prototipo publicado sea
+navegable y para evaluar el comportamiento, no para proteger datos.
+
+La protección real de RNF-02 la da el backend. Con una sesión del backend,
+`loadData()` pide los indicadores a la API mediante `request()`, y el servidor
+valida el token en cada consulta. `api/data.json` sigue publicado solo porque lo
+necesita el modo de demostración.
+
+Aun así, el modo de demostración reproduce las reglas del backend para que se
+comporte igual:
+
+- Mismo orden de comprobaciones que `autenticar()`: usuario inexistente,
+  desactivado, bloqueado y, al final, contraseña.
+- **Cinco intentos fallidos bloquean el usuario 15 minutos**, como
+  `MAX_INTENTOS` y `BLOQUEO_MINUTOS` en `backend/app/core/config.py`.
+- Sesión de 480 minutos, como `JWT_MINUTOS`.
 
 ### Medidas de seguridad en el cliente
 
-- **La contraseña no se conserva.** Solo existe como argumento de `login()`, se
-  envía en el cuerpo del `POST` y el campo del formulario se vacía tras cada
-  intento, con éxito o sin él. No se guarda en variables de módulo ni en ningún
-  almacenamiento del navegador.
-- **Token en `sessionStorage`.** La sesión desaparece al cerrar la pestaña. No
-  se usa `localStorage`, que persiste indefinidamente y amplía la ventana de
-  robo ante un posible XSS.
-- **El token nunca viaja en la URL.** Todas las peticiones autenticadas pasan por
-  `request()` del módulo `Model`, que lo añade en la cabecera
-  `Authorization: Bearer`. Ni el token ni la contraseña se escriben en consola.
-- **Formulario inerte sin JavaScript.** Los campos no tienen atributo `name`, el
-  formulario usa `method="post"` y el botón arranca deshabilitado hasta que el
-  controlador toma el control: si el script no llega a cargar, las credenciales
-  no pueden enviarse a ninguna parte.
+- **La contraseña no se conserva.** Solo existe como argumento de `login()`. El
+  campo del formulario se vacía en cada intento, con éxito o sin él, y vuelve a
+  ocultarse si se había mostrado. No se guarda en ningún almacenamiento del
+  navegador.
 - **Mensaje genérico.** Ante credenciales inválidas la interfaz no distingue si
   falló el correo o la contraseña (flujo alternativo 1 de RF-01).
-- **Cierre de sesión completo.** Borra el token, vacía el historial del
-  asistente (que contiene cifras de las zonas consultadas) y recarga la página
-  con `location.replace`, lo que descarta todo el estado en memoria y no deja la
-  vista autenticada en el historial del navegador. Recargar después no vuelve a
-  entrar.
-- **Caducidad vigilada en el cliente.** Como los datos se leen hoy del corte
-  local, ninguna petición al backend detectaría el vencimiento del token. El
-  controlador programa el cierre de sesión con la fecha `exp` del JWT y la
-  vuelve a comprobar al regresar a la pestaña. Al volver al login por este
-  motivo se muestra el aviso «Tu sesión expiró».
+- **Mismo tiempo de respuesta exista o no el correo.** Con un correo no
+  registrado también se deriva la clave. Sin esto, la respuesta llegaba en un
+  tercio del tiempo y delataba qué correos existen, lo que anulaba el mensaje
+  genérico. Medido: ~80 ms en ambos casos.
+- **Sesión en `sessionStorage`.** Desaparece al cerrar la pestaña. No se usa
+  `localStorage`, que persiste indefinidamente.
+- **El token nunca viaja en la URL.** Las peticiones autenticadas pasan por
+  `request()`, que lo añade en la cabecera `Authorization: Bearer`. Ni el token
+  ni la contraseña se escriben en consola.
+- **Formulario inerte sin JavaScript.** Los campos no tienen atributo `name` y el
+  botón arranca deshabilitado: si el script no carga, no se envía nada.
+- **Nada se monta sin sesión.** Hasta autenticarse no se inicializa el mapa ni se
+  pide `api/data.json`.
+- **Cierre de sesión completo.** Borra la sesión y recarga con
+  `location.replace`, lo que descarta todo el estado en memoria (incluida la
+  conversación, que lleva cifras de zonas) y no deja la vista autenticada en el
+  historial. Recargar después no vuelve a entrar.
+- **Caducidad vigilada.** El controlador programa el cierre con la fecha `exp`
+  de la sesión y la revisa al volver a la pestaña, porque los temporizadores se
+  duermen en segundo plano.
 
-### Respuestas del servicio de autenticación
+### Mensajes
 
-| Código | Significado | Mensaje en la interfaz |
+| Situación | Backend | Mensaje en la interfaz |
 |---|---|---|
-| 401 | Credenciales incorrectas | «Correo o contraseña incorrectos.» |
-| 403 | Usuario desactivado | «Tu usuario está desactivado. Contacta al administrador.» |
-| 429 | Bloqueo por intentos fallidos | «Demasiados intentos. Espera 15 minutos antes de volver a intentarlo.» |
-| Sin respuesta | Backend inaccesible | «No se pudo conectar con el servidor…» |
+| Credenciales incorrectas | 401 | «Correo o contraseña incorrectos.» |
+| Usuario desactivado | 403 | «Tu usuario está desactivado. Contacta al administrador.» |
+| Bloqueo por intentos | 429 | «Demasiados intentos fallidos. Espera N minutos antes de volver a intentarlo.» |
+| Campos vacíos | — | «Escribe tu correo y tu contraseña.» |
+| Sin Web Crypto (ni HTTPS ni localhost) | — | «El inicio de sesión requiere una conexión segura (HTTPS o localhost).» |
 
-Fuera del login, un 401 en cualquier petición autenticada se interpreta como
-sesión vencida o revocada y devuelve a la pantalla de acceso.
+Tras cerrar sesión o caducar, la pantalla de acceso lo indica una vez.
 
 ### Configuración
 
-Los parámetros de conexión están concentrados al principio del módulo `Model`, en el script de `index.html`:
+Al principio del bloque de sesión del módulo `Model`:
 
 | Constante | Valor | Uso |
 |---|---|---|
-| `API_URL` | `http://localhost:8000/api/v1` | Base de todas las peticiones a la API. |
-| `LOGIN_FIELDS` | `{ email: 'correo', password: 'contrasena' }` | Nombres de los campos del cuerpo de `POST /auth/login`. |
-| `SESSION_MINUTES` | `480` | Caducidad de respaldo si el token no trae el claim `exp`. |
+| `API_URL` | `http://localhost:8000/api/v1` | Base de las peticiones a la API. |
+| `BACKEND_ENABLED` | `true` en `localhost` / `127.0.0.1` | Si se intenta el backend. |
+| `BACKEND_TIMEOUT_MS` | `5000` | Espera máxima del login contra el backend. |
+| `SESSION_MINUTES` | `480` | Duración de la sesión de demostración, y respaldo si el JWT no trae `exp`. |
+| `MAX_ATTEMPTS` / `LOCK_MINUTES` | `5` / `15` | Bloqueo por intentos fallidos. |
 
-La respuesta del login se interpreta de forma tolerante: el token se toma de
-`access_token` (o `token`) y el nombre y el rol del objeto `usuario`, o en su
-defecto de los claims del JWT.
+El cuerpo de `POST /auth/login` usa los campos `email` y `password`, que son los
+del esquema `Credenciales` del backend. Una versión anterior enviaba `correo` y
+`contrasena`, que el backend rechaza con 422.
 
-### Alcance del control de acceso
+Nota para desarrollo: con la página en `localhost` y el backend apagado, cada
+inicio de sesión espera a que el navegador reciba la conexión rechazada antes de
+pasar al modo de demostración. En Windows eso tarda unos segundos, y la consola
+muestra `ERR_CONNECTION_REFUSED`. Es el comportamiento esperado.
 
-El control de acceso de esta versión se aplica **a la interfaz**: sin sesión no
-se monta la aplicación ni se cargan los datos. Sin embargo, el corte de
-indicadores sigue publicado como archivo estático en `api/data.json`, y ese
-archivo es accesible por URL directa para cualquiera que conozca la ruta. La
-protección completa de los datos exigida por RNF-02 se alcanza cuando
-`loadData()` pase a obtenerlos del backend mediante `request()`, momento en que
-el propio servidor validará el token en cada consulta.
+## Administración de usuarios (solo administrador)
 
-No existe un modo de demostración sin credenciales: si el backend no responde,
-la pantalla de acceso informa del error de conexión y la aplicación no se abre.
+Implementa **RF-09 «Gestionar usuarios y roles»** e **HU-08**. El botón
+**Administración** de la cabecera solo existe para el rol administrador; el
+analista no lo ve, y las funciones del modelo comprueban el rol de nuevo antes
+de actuar.
 
-### Despliegue en GitHub Pages
+Abre un panel sobre el área del asistente, con el mismo patrón que la ficha
+técnica y el mapa ampliado. Los tres son excluyentes: abrir uno cierra los otros.
+Se cierra con el mismo botón, con su ✕ o con Escape.
 
-La versión publicada se sirve por HTTPS y el backend se ejecuta en
-`http://localhost:8000`. Para que el inicio de sesión funcione desde la URL
-pública, el equipo del usuario debe tener el backend en ejecución y este debe
-admitir por CORS el origen de GitHub Pages. Algunos navegadores aplican además
-restricciones al acceso desde páginas públicas a direcciones de la red local y
-muestran un aviso de permiso, que debe aceptarse para que el inicio de sesión
-llegue al backend. El funcionamiento debe comprobarse en el navegador de
-destino antes de presentarlo.
+Permite:
+
+- **Ver los usuarios** con su rol y su estado.
+- **Desactivar o reactivar** un usuario. Un usuario desactivado no puede iniciar
+  sesión y recibe su propio mensaje. El administrador no puede desactivarse a sí
+  mismo, igual que en `cambiar_estado()` del backend.
+- **Crear usuarios** con nombre, correo, contraseña inicial y rol, con las mismas
+  reglas que el esquema `NuevoUsuario`: nombre de 3 a 120 caracteres, correo
+  válido y único (sin distinguir mayúsculas), contraseña de al menos 8
+  caracteres. La contraseña se guarda derivada con PBKDF2 y sal propia, nunca en
+  claro.
+
+| Modo | Dónde se guardan los cambios |
+|---|---|
+| Backend | `GET` y `POST /auth/usuarios`, `PATCH /auth/usuarios/{id}/estado`, protegidos por `solo_administrador` |
+| Demostración | `localStorage` de este navegador. No afectan a otros equipos. El panel ofrece **Restablecer usuarios de demostración** |
+
+Los nombres y correos los escribe una persona, así que se tratan como datos no
+confiables: en pantalla siempre pasan por `escapeHtml` o `textContent`, y en el
+CSV se neutralizan los que empiezan por `=`, `+`, `-` o `@` para que Excel no
+los ejecute como fórmula.
+
+La ruta del modo backend se probó en el navegador contra
+`pruebas/backend_de_prueba.py` (listar, crear, duplicado con el 409 del backend,
+desactivar y reactivar). Esa prueba destapó un fallo: `GET /auth/usuarios`
+devuelve `{"usuarios": [...]}` y la interfaz lo trataba como una lista. Falta
+repetirla contra PostgreSQL.
+
+## Exportar reporte de la zona (ambos roles)
+
+Implementa **HU-12 «Exportación de reportes»**, que pide un reporte con periodo,
+zona e índices de privación, descargable en PDF y en Excel. El botón **Exportar
+reporte** de la cabecera del asistente está disponible para los dos roles y se
+deshabilita cuando no hay zona seleccionada.
+
+| Formato | Cómo se genera |
+|---|---|
+| **Excel (.csv)** | Se descarga directamente. Separador `;`, coma decimal y marca BOM UTF-8: es lo que espera Excel en español para abrirlo en columnas y con tildes. |
+| **PDF** | Abre el diálogo de impresión con un reporte maquetado para A4; se elige «Guardar como PDF». No usa librerías externas. |
+
+Contenido: zona, municipio, hogares y personas; fuente y periodo del corte;
+quién lo exporta (nombre y rol) y cuándo; distribución por grupo del Sisbén,
+observada y estimada por el modelo; prevalencia de las quince privaciones; y los
+factores del modelo con su contribución SHAP.
+
+Dos precisiones que el reporte deja escritas:
+
+- Solo lleva **cifras agregadas por zona**, sin identificadores de hogar, como
+  exige RNF-02.
+- Los factores SHAP son los del **hogar representativo** de la zona, cuyo grupo
+  puede no coincidir con el mayoritario. El título lo dice para que el reporte no
+  parezca contradecirse.
+
+El nombre del archivo lleva la zona y la fecha local:
+`SocialData_Giron-Centro-poblado-y-rural-disperso_2026-09-22.csv`.
 
 ## Cartografía base
 
@@ -305,21 +413,31 @@ Tres precisiones:
 
 ## Estado
 
-Los datos viajan en `api/data.json` para que la interfaz funcione sin depender
-de los endpoints de datos, y las respuestas del asistente se componen con
-plantillas sobre esas mismas cifras. El inicio de sesión ya se realiza contra el
-backend.
+### De dónde salen los datos
+
+| Sesión | Origen |
+|---|---|
+| Backend | La API: `/indicadores/resumen`, `/zonas`, `/catalogo`, `/zonas/{id}/privaciones`, y `/ia/modelo`, `/ia/prediccion/{id}`, `/ia/explicacion/{id}`. Las ocho zonas se piden en paralelo. |
+| Demostración | `api/data.json`, que tiene exactamente la misma forma. |
+
+La predicción, la explicación y la ficha del modelo dependen de `ia-predictor`.
+Si no responde, la aplicación se abre igual con las cifras observadas: la ficha
+muestra «Predicción no disponible», el asistente lo dice en vez de fallar y el
+reporte se exporta sin esas piezas (RNF-04). Un 401 al cargar devuelve al login
+con el aviso «Tu sesión expiró».
+
+Todo esto se probó en el navegador contra `pruebas/backend_de_prueba.py`, que
+usa la autenticación real del backend y el `ia-predictor` real, pero sirve los
+indicadores desde `api/data.json`. Falta probarlo contra PostgreSQL.
+
+Las respuestas del asistente se componen con plantillas sobre esas mismas cifras.
 
 Pendiente para las siguientes iteraciones:
 
-- Conectar las funciones de datos del módulo `Model` a la API del proyecto. Las
-  firmas ya son las definitivas y el helper `request()` ya añade el token, así
-  que solo cambia el cuerpo de cada función: en vez de leer el JSON local, hará
-  `request()` contra `/api/v1`. Con ese cambio el control de acceso cubre
-  también los datos.
-- Mostrar u ocultar funciones según el rol (por ejemplo, la gestión de usuarios
-  para el administrador).
-- Sustituir el asistente por reglas por el microservicio `ia-asistente`.
+- Probar la carga por API y la administración contra el backend con PostgreSQL.
+- Sustituir el asistente por reglas por el microservicio `ia-asistente`. Su
+  `historial` espera mensajes `{"rol", "contenido"}`; el del frontend usa
+  `{author, text}`, así que hay que traducirlo al enviarlo.
 
 ---
 
