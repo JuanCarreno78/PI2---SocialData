@@ -2251,9 +2251,25 @@
         color: #8e2c22;
       }
 
+      .user-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-end;
+      }
+
       .user-action {
         padding: 6px 12px;
         font-size: 12px;
+      }
+
+      /* Solo aparece en usuarios desactivados: eliminar es el segundo paso. */
+      .user-action.is-danger {
+        border-color: var(--high);
+        color: var(--high);
+      }
+
+      .user-action.is-danger:hover {
+        background: #fbeaea;
       }
 
       .user-form {
@@ -2474,7 +2490,8 @@
           grid-template-columns: 1fr;
         }
 
-        .user-tags {
+        .user-tags,
+        .user-actions {
           justify-content: flex-start;
         }
       }
@@ -2750,7 +2767,8 @@
                 <section class="admin-section" aria-labelledby="users-title">
                   <h3 id="users-title">Usuarios</h3>
                   <p class="panel-subtitle">
-                    Un usuario desactivado no puede iniciar sesión. No puedes desactivar tu propio usuario.
+                    Un usuario desactivado no puede iniciar sesión y, desde ese estado, se puede eliminar.
+                    No puedes desactivar ni eliminar tu propio usuario.
                   </p>
                   <div id="user-list" class="user-list" role="list"></div>
                 </section>
@@ -3076,16 +3094,23 @@
           return sameBytes(hash, fromBase64(user.hash));
         }
 
-        // Registro local: usuarios creados desde la administracion y lista de
-        // desactivados. Solo existe en este navegador.
+        // Registro local: usuarios creados desde la administracion y listas de
+        // desactivados y eliminados. Solo existe en este navegador.
         function localRegistry() {
           const stored = readJson(localStorage, USERS_KEY, {});
-          return { created: stored.created || [], inactive: stored.inactive || [] };
+          return {
+            created: stored.created || [],
+            inactive: stored.inactive || [],
+            deleted: stored.deleted || []
+          };
         }
 
         function localUsers() {
           const registry = localRegistry();
-          return [...DEMO_USERS, ...registry.created]
+          // "deleted" solo aplica a la semilla: si se crea otro usuario con ese
+          // correo, es uno nuevo y se muestra.
+          const seed = DEMO_USERS.filter((user) => !registry.deleted.includes(user.email));
+          return [...seed, ...registry.created]
             .map((user) => ({ ...user, activo: !registry.inactive.includes(user.email) }));
         }
 
@@ -3256,6 +3281,8 @@
             throw new Error(detail);
           }
 
+          // 204 (p. ej. DELETE) no trae cuerpo.
+          if (response.status === 204) return null;
           return response.json();
         }
 
@@ -3331,6 +3358,33 @@
           return { ...user, activo: active };
         }
 
+        // Mismas reglas que eliminar_usuario() del backend: nunca a uno mismo y
+        // solo a usuarios ya desactivados, para que borrar sea un segundo paso.
+        async function deleteUser(user) {
+          const session = requireAdmin();
+          if (user.email === session.email) throw new Error('No puedes eliminar tu propio usuario.');
+          if (user.activo) throw new Error('Desactiva el usuario antes de eliminarlo.');
+
+          if (session.mode === 'api') {
+            await request(`/auth/usuarios/${encodeURIComponent(user.id)}`, { method: 'DELETE' });
+            return;
+          }
+
+          const current = findLocalUser(user.email);
+          if (!current) throw new Error('Usuario no encontrado.');
+          if (current.activo) throw new Error('Desactiva el usuario antes de eliminarlo.');
+
+          // Los creados aqui se borran del todo; los de la semilla se marcan,
+          // porque vienen escritos en el codigo.
+          const registry = localRegistry();
+          const created = registry.created.some((item) => item.email === user.email);
+          registry.created = registry.created.filter((item) => item.email !== user.email);
+          registry.inactive = registry.inactive.filter((email) => email !== user.email);
+          if (!created) registry.deleted.push(user.email);
+          writeJson(localStorage, USERS_KEY, registry);
+          saveLock(user.email, null);
+        }
+
         // ---------------------------------------------------------------
         // Reporte de zona (HU-12)
         // ---------------------------------------------------------------
@@ -3371,7 +3425,7 @@
           loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations,
           getPrediction, getExplanation, getZonesRanked,
           login, getSession, logout, takeNotice,
-          listUsers, createUser, setUserActive,
+          listUsers, createUser, setUserActive, deleteUser,
           buildZoneReport
         };
       })();
@@ -3998,12 +4052,13 @@
         // ---------------------------------------------------------------
         // Los nombres y correos los escribe un administrador: todo pasa por
         // escapeHtml o por textContent.
-        function renderUsers(listEl, users, currentEmail, onToggle) {
+        function renderUsers(listEl, users, currentEmail, onToggle, onDelete) {
           listEl.textContent = '';
 
           users.forEach((user) => {
             const self = user.email === currentEmail;
             const row = document.createElement('div');
+            const actions = document.createElement('span');
             const button = document.createElement('button');
 
             row.classList.add('user-row');
@@ -4031,7 +4086,21 @@
               button.addEventListener('click', () => onToggle(user, button));
             }
 
-            row.appendChild(button);
+            actions.className = 'user-actions';
+            actions.appendChild(button);
+
+            // Eliminar solo se ofrece despues de desactivar.
+            if (!user.activo && !self) {
+              const remove = document.createElement('button');
+              remove.type = 'button';
+              remove.className = 'btn-secondary user-action is-danger';
+              remove.textContent = 'Eliminar';
+              remove.setAttribute('aria-label', `Eliminar a ${user.nombre}`);
+              remove.addEventListener('click', () => onDelete(user, remove));
+              actions.appendChild(remove);
+            }
+
+            row.appendChild(actions);
             listEl.appendChild(row);
           });
         }
@@ -4667,7 +4736,7 @@
           loadData, getSummary, getCatalog, getZones, getZonesRanked,
           getDeprivations, getPrediction, getExplanation,
           login, getSession, logout, takeNotice,
-          listUsers, createUser, setUserActive,
+          listUsers, createUser, setUserActive, deleteUser,
           buildZoneReport
         } = Model;
 
@@ -5160,7 +5229,7 @@
         async function refreshUsers() {
           try {
             const users = await listUsers();
-            renderUsers(refs.userListEl, users, state.session.email, changeUserState);
+            renderUsers(refs.userListEl, users, state.session.email, changeUserState, removeUser);
             renderAdminSummary(refs.adminSummaryEl, users);
             return users;
           } catch (error) {
@@ -5177,6 +5246,24 @@
             await refreshUsers();
             renderAdminMessage(refs.adminMessageEl,
               `${user.nombre} quedó ${user.activo ? 'desactivado' : 'activo'}.`, 'ok');
+          } catch (error) {
+            button.disabled = false;
+            handleAdminError(error);
+          }
+        }
+
+        async function removeUser(user, button) {
+          const ok = window.confirm(
+            `¿Eliminar a ${user.nombre} (${user.email})? No se puede deshacer: ` +
+            'se borran su cuenta y sus escenarios guardados. La bitácora de auditoría se conserva.');
+          if (!ok) return;
+
+          button.disabled = true;
+
+          try {
+            await deleteUser(user);
+            await refreshUsers();
+            renderAdminMessage(refs.adminMessageEl, `${user.nombre} fue eliminado.`, 'ok');
           } catch (error) {
             button.disabled = false;
             handleAdminError(error);

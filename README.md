@@ -337,10 +337,16 @@ Permite:
   válido y único (sin distinguir mayúsculas), contraseña de al menos 8
   caracteres. La contraseña se guarda derivada con PBKDF2 y sal propia, nunca en
   claro.
+- **Eliminar** un usuario. Solo se ofrece cuando ya está desactivado, así que
+  borrar es siempre un segundo paso, y pide confirmación porque no se puede
+  deshacer. Nadie puede eliminarse a sí mismo. En el backend se borran también
+  sus escenarios y conversaciones (solo los veía él); la bitácora de auditoría se
+  conserva, con el id del usuario en `detalle.usuario_eliminado`. Después, su
+  correo queda libre para crear otro usuario.
 
 | Modo | Dónde se guardan los cambios |
 |---|---|
-| Backend | `GET` y `POST /auth/usuarios`, `PATCH /auth/usuarios/{id}/estado`, protegidos por `solo_administrador` |
+| Backend | `GET` y `POST /auth/usuarios`, `PATCH /auth/usuarios/{id}/estado` y `DELETE /auth/usuarios/{id}`, protegidos por `solo_administrador` |
 | Demostración | `localStorage` de este navegador. No afectan a otros equipos. Para volver a los dos usuarios iniciales, borra los datos del sitio en el navegador. |
 
 Los nombres y correos los escribe una persona, así que se tratan como datos no
@@ -350,7 +356,8 @@ nombre como `=HYPERLINK(...)` se ve tal cual y no se ejecuta como fórmula.
 
 La ruta del modo backend se probó en el navegador contra
 `pruebas/backend_de_prueba.py` (listar, crear, duplicado con el 409 del backend,
-desactivar y reactivar). Esa prueba destapó un fallo: `GET /auth/usuarios`
+desactivar, reactivar y eliminar, con los rechazos 400, 404 y 409 de
+eliminar). Esa prueba destapó un fallo: `GET /auth/usuarios`
 devuelve `{"usuarios": [...]}` y la interfaz lo trataba como una lista. Falta
 repetirla contra PostgreSQL.
 
