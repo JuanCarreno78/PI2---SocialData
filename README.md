@@ -24,12 +24,14 @@ y abrir `http://localhost:5173`.
 
 La aplicación exige iniciar sesión. Si el backend está en ejecución
 (`http://localhost:8000/api/v1`) se valida contra él; si no, se usa el modo de
-demostración, que funciona también desde GitHub Pages. Usuarios:
+demostración, que funciona también desde GitHub Pages.
 
-| Rol | Correo | Contraseña |
-|---|---|---|
-| Administrador | `admin@socialdata.co` | `SocialData2026*` |
-| Analista | `analista@socialdata.co` | `SocialData2026*` |
+- **Con backend:** `admin@socialdata.co` y `analista@socialdata.co`, con las
+  contraseñas que se asignaron en esa instalación (ver «Usuarios» en el README
+  principal). Ninguna está en el repositorio.
+- **Modo de demostración** (sin backend): los mismos correos con la contraseña
+  `SocialData2026*`. Solo abre la interfaz con los datos públicos dentro del
+  navegador; el backend no la acepta.
 
 Ver [Autenticación y control de acceso](#autenticación-y-control-de-acceso) para
 lo que protege y lo que no protege cada modo.
@@ -72,7 +74,7 @@ su interfaz pública:
 | `Model` | Datos y sesión. No usa `document`. |
 | `MapView` | Mapa con Leaflet. |
 | `View` | Pinta el DOM. No consulta el modelo. |
-| `Chat` | Asistente por reglas. |
+| `Chat` | Conversación por zona. Con backend la redacta la IA generativa; sin él, plantillas sobre las cifras. |
 | Controlador (último bloque) | Cablea eventos, guarda el estado y reparte el trabajo. Es el único que conoce a todos los demás. |
 
 El script también tolera la ausencia de recursos. Si `leaflet.js` no llega a
@@ -85,16 +87,21 @@ recursos.
 
 - **Iniciar y cerrar sesión** con correo y contraseña; la cabecera muestra el
   nombre del usuario y su rol.
-- **Explorar las ocho zonas** en el mapa, coloreadas según el porcentaje de
-  hogares en el grupo A del Sisbén, y **ampliarlo** a un tamaño de trabajo.
+- **Analizar el área metropolitana completa** sin elegir ninguna zona: es la
+  vista al entrar. Ver [Área metropolitana](#área-metropolitana).
+- **Elegir una zona** en el selector **Analizar** o con un clic en el mapa,
+  coloreado según el porcentaje de hogares en el grupo A del Sisbén, y
+  **ampliarlo** a un tamaño de trabajo.
+- **Cambiar a modo oscuro** con el botón de la luna. Por defecto la página es clara.
 - **Consultar las cuatro dimensiones** y sus quince indicadores, desplegando cada
   dimensión en su sitio, con la prevalencia de cada indicador en la zona
   seleccionada.
 - **Revisar la ficha técnica** de cada zona: distribución por grupo, estimación
   del modelo y factores que más pesan en esa estimación.
-- **Preguntar al asistente** sobre la zona, con preguntas propias o con las
-  sugerencias que aparecen bajo la conversación.
-- **Exportar el reporte de la zona** en Excel (.xlsx) o PDF. Ambos roles.
+- **Conversar con el asistente de IA** sobre la zona: pedirle sus conclusiones o
+  recomendaciones, o hacerle preguntas propias. Ver [Asistente](#asistente).
+- **Exportar el reporte de la zona o del área** en Excel (.xlsx) o PDF. El PDF
+  incluye un resumen del chat redactado por la IA. Ambos roles.
 - **Administrar usuarios**: crear, desactivar y reactivar. Solo el
   administrador.
 
@@ -120,11 +127,23 @@ recursos.
   dos filas: si no cabe, el lema y la ruta se recortan con puntos suspensivos y
   el texto completo queda en el `title`.
 
+### Elegir qué analizar
+
+Tres formas, que se mantienen sincronizadas:
+
+- **Selector «Analizar»**, sobre el mapa: «Toda el área metropolitana» y las
+  ocho zonas agrupadas por municipio. Es la forma más directa.
+- **Clic en el mapa.** Al pasar el puntero, un globo dice qué zona es, su cifra
+  y «Clic para analizar»; el clic la analiza de inmediato. Ya no se abren
+  globos con datos que haya que cerrar a mano.
+- **Ruta de la cabecera.** «Área Metropolitana» vuelve al área completa.
+
 ### Mapa ampliable
 
 El botón **Ampliar** de la barra del mapa lleva el mapa a un tamaño de trabajo
 y el mismo botón, rotulado entonces **Reducir**, lo devuelve a la barra lateral.
-También lo reducen la ✕ del panel y la tecla Escape.
+También lo reducen la ✕ del panel y la tecla Escape, y **se cierra solo al
+elegir una zona**: el mapa pequeño acerca entonces la zona elegida.
 
 El comportamiento depende del ancho de la ventana:
 
@@ -154,6 +173,36 @@ en cada cambio de tamaño:
 
 El cambio de tamaño no altera el estado de la aplicación: la zona seleccionada,
 las dimensiones abiertas y la conversación se conservan.
+
+### Área metropolitana
+
+Sin zona seleccionada se analiza el área completa, y es la vista al entrar. Para
+el chat, las métricas, la ficha técnica y el reporte es una zona más, con
+`zona_id` 0 (`Model.getArea()`):
+
+- **Cifras.** El porcentaje por grupo sale de los conteos del resumen; los
+  indicadores, las privaciones y la estimación del modelo son el promedio de las
+  ocho zonas ponderado por hogares, que es exactamente el promedio sobre todos
+  los hogares. Como el resto de la plataforma, es la muestra del Sisbén sin
+  ponderar por población (ver `docs/revision-backend-2026-09.md`, decisión A).
+- **Factores del modelo.** No hay: SHAP explica hogares de una zona. La ficha y
+  el asistente lo dicen y remiten a elegir una zona.
+- **Asistente.** El chat envía `zona_id: null` y las conclusiones van a
+  `POST /ia/interpretar/area/flujo`. El backend arma el perfil de las ocho zonas
+  juntas, y el asistente recibe hechos ya calculados: qué zona tiene más y menos
+  pobreza extrema y cómo se compara lo rural con lo urbano en cada municipio.
+
+### Logotipo y modo oscuro
+
+- **Logotipo.** Un marcador de ubicación con tres barras crecientes: el
+  territorio y sus datos. Está en la cabecera, el acceso, el avatar del
+  asistente y el icono de la pestaña.
+- **Modo oscuro.** El botón de la luna, en la cabecera y en el acceso, cambia
+  el tema; el del sol vuelve al claro. **Por defecto es claro**, aunque el
+  sistema operativo esté en oscuro. La elección se guarda en el navegador
+  (`localStorage`, clave `sd.theme`) y se aplica en el `<head>` antes de pintar,
+  para que no parpadee. El mapa cambia a la cartografía gris oscuro de Esri, y
+  el reporte se imprime siempre en claro.
 
 ### Dimensiones e indicadores
 
@@ -199,7 +248,7 @@ sesión entregados en los UML Parte 2 del Sprint 3.
 
 ### Usuarios de demostración
 
-Los mismos de `db/init/02_seed.sql`:
+Solo para el modo de demostración (sin backend):
 
 | Rol | Correo | Contraseña |
 |---|---|---|
@@ -209,23 +258,31 @@ Los mismos de `db/init/02_seed.sql`:
 La contraseña **no está escrita en el código**. `index.html` solo guarda su
 derivación PBKDF2-SHA256 (150 000 iteraciones), con una sal aleatoria distinta
 por usuario, y la comprobación se hace con la Web Crypto API del navegador.
-Cambiar estas credenciales antes de cualquier uso real.
+
+El backend **ya no la acepta**: desde la revisión de seguridad de octubre de
+2026, `db/init/02_seed.sql` crea los usuarios sin contraseña válida y cada
+instalación asigna las suyas (`python -m app.gestion_usuarios`). Antes eran la
+misma, publicada aquí, y cualquiera podía entrar como administrador a un backend
+expuesto.
 
 ### Dos modos de sesión
 
 | Modo | Cuándo | Contra qué se valida |
 |---|---|---|
-| **Backend** | La página se sirve desde `localhost` o `127.0.0.1` y el backend responde | `POST /api/v1/auth/login`: JWT HS256 de 480 min, `bcrypt`, bloqueo y bitácora de auditoría del servidor |
-| **Demostración** | El backend no responde, o la página se sirve desde otro dominio (GitHub Pages) | Los usuarios de demostración, en el navegador |
+| **Backend** | El backend responde en la dirección de `config.js` | `POST /api/v1/auth/login`: JWT HS256, `bcrypt`, bloqueo y bitácora de auditoría del servidor |
+| **Demostración** | El backend no responde (por ejemplo, con el túnel cerrado) | Los usuarios de demostración, en el navegador |
 
 Solo la **falta de respuesta** del backend hace pasar al modo de demostración.
 Si el backend responde con un rechazo (401, 403, 429) o con un error propio, se
 respeta tal cual: no se «reintenta en local» para esquivarlo.
 
-Desde GitHub Pages el backend ni se intenta. No está publicado, y una página
-pública que llama a `http://localhost` hace que el navegador pida al visitante
-permiso para acceder a su red local, algo que no debe ver quien evalúa el
-prototipo.
+**Con el túnel de ngrok.** La dirección del backend la fija `config.js`: en el
+proxy de `socialdata-ngrok` es `/api/v1` (mismo origen), y en GitHub Pages es
+el túnel (`https://reviver-dangling-refinery.ngrok-free.dev/api/v1`). Con el
+túnel abierto, GitHub Pages usa el backend real del portátil; con el túnel
+cerrado, el navegador no recibe respuesta y la página pasa al modo de
+demostración. Cada petición lleva la cabecera `ngrok-skip-browser-warning`, para
+que el plan gratuito de ngrok no responda su página de aviso en lugar del JSON.
 
 La interfaz no distingue los dos modos: es el mismo producto con o sin backend.
 Para saber en cuál se está, `sessionStorage` guarda la sesión con `mode: 'api'` o
@@ -300,8 +357,8 @@ Al principio del bloque de sesión del módulo `Model`:
 
 | Constante | Valor | Uso |
 |---|---|---|
-| `API_URL` | `http://localhost:8000/api/v1` | Base de las peticiones a la API. |
-| `BACKEND_ENABLED` | `true` en `localhost` / `127.0.0.1` | Si se intenta el backend. |
+| `API_URL` | de `config.js` (`/api/v1` o el túnel) | Base de las peticiones a la API. |
+| `BACKEND_ENABLED` | `true` | Siempre se intenta el backend; sin respuesta, modo de demostración. |
 | `BACKEND_TIMEOUT_MS` | `5000` | Espera máxima del login contra el backend. |
 | `SESSION_MINUTES` | `480` | Duración de la sesión de demostración, y respaldo si el JWT no trae `exp`. |
 | `MAX_ATTEMPTS` / `LOCK_MINUTES` | `5` / `15` | Bloqueo por intentos fallidos. |
@@ -365,18 +422,28 @@ repetirla contra PostgreSQL.
 
 Implementa **HU-12 «Exportación de reportes»**, que pide un reporte con periodo,
 zona e índices de privación, descargable en PDF y en Excel. El botón **Exportar
-reporte** de la cabecera del asistente está disponible para los dos roles y se
-deshabilita cuando no hay zona seleccionada.
+reporte** de la cabecera del asistente está disponible para los dos roles, para
+una zona o para el área metropolitana completa.
 
 | Formato | Cómo se genera |
 |---|---|
 | **Excel (.xlsx)** | Se descarga directamente. Es un libro de Excel real, generado en el navegador sin librerías (un ZIP con las hojas en XML). Las cifras van como números con formato (`60,9 %`, `1.807`, `+0,364`), no como texto, así que se pueden ordenar y operar. Se eligió en lugar de CSV porque un CSV depende de la configuración regional: en un equipo con coma como separador de listas salía todo en una columna y parecía corrupto. |
-| **PDF** | Abre el diálogo de impresión con un reporte maquetado para A4; se elige «Guardar como PDF». No usa librerías externas. |
+| **PDF** | Abre el diálogo de impresión con un reporte maquetado para A4; se elige «Guardar como PDF». No usa librerías externas. Si hubo conversación, primero pide a la IA el resumen (el botón dice «Preparando resumen…», unos 20 s). |
 
 Contenido: zona, municipio, hogares y personas; fuente y periodo del corte;
 quién lo exporta (nombre y rol) y cuándo; distribución por grupo del Sisbén,
 observada y estimada por el modelo; prevalencia de las quince privaciones; y los
 factores del modelo con su contribución SHAP.
+
+El PDF añade **«Resumen de la conversación con el asistente»**: un texto corrido
+de uno o dos párrafos (100 a 200 palabras) que cuenta, en orden, qué se consultó,
+qué analizó el asistente y a qué conclusiones o recomendaciones llegó. Lo redacta
+la misma IA del chat (`POST /ia/resumir`). Una primera versión en viñetas se
+cambió porque se leía como notas sueltas y no como parte de un informe. El asistente solo
+recibe la conversación, sin las cifras de la zona, así que no puede agregar
+datos que no se hayan dicho. Sin conversación no hay sección; sin IA (Ollama
+apagado, o la versión de GitHub Pages), la sección lista las preguntas que se
+hicieron.
 
 Dos precisiones que el reporte deja escritas:
 
@@ -434,18 +501,52 @@ muestra «Predicción no disponible», el asistente lo dice en vez de fallar y e
 reporte se exporta sin esas piezas (RNF-04). Un 401 al cargar devuelve al login
 con el aviso «Tu sesión expiró».
 
-Todo esto se probó en el navegador contra `pruebas/backend_de_prueba.py`, que
-usa la autenticación real del backend y el `ia-predictor` real, pero sirve los
-indicadores desde `api/data.json`. Falta probarlo contra PostgreSQL.
+Probado en el navegador contra el backend completo en Docker (PostgreSQL,
+`ia-predictor`, `ia-asistente` y Ollama con qwen3:8b), y antes contra
+`pruebas/backend_de_prueba.py`, que no tiene las rutas del asistente: con él, el
+chat responde con plantillas.
 
-Las respuestas del asistente se componen con plantillas sobre esas mismas cifras.
+## Asistente
 
-Pendiente para las siguientes iteraciones:
+Con sesión del backend, el chat de cada zona lo redacta la IA generativa
+(`ia-asistente` con qwen3:8b en Ollama). Sin backend, como en GitHub Pages,
+responde al instante con plantillas sobre las mismas cifras.
 
-- Probar la carga por API y la administración contra el backend con PostgreSQL.
-- Sustituir el asistente por reglas por el microservicio `ia-asistente`. Su
-  `historial` espera mensajes `{"rol", "contenido"}`; el del frontend usa
-  `{author, text}`, así que hay que traducirlo al enviarlo.
+| Acción | Ruta del backend |
+|---|---|
+| «Dame tus conclusiones sobre esta zona» | `POST /ia/interpretar/{id}/flujo?tipo=interpretar` (para el área: `/ia/interpretar/area/flujo`) |
+| «¿Qué intervenciones recomiendas?» | `POST /ia/interpretar/{id}/flujo?tipo=recomendar` (ídem) |
+| Cualquier otra pregunta, escrita o sugerida | `POST /ia/chat/flujo` con `pregunta`, `zona_id` (`null` para el área) e `historial` |
+| Resumen para el PDF | `POST /ia/resumir` con `zona_id` e `historial` |
+
+Las dos primeras sugerencias, con fondo verde claro, piden un análisis completo;
+las demás son preguntas libres.
+
+**En flujo.** El modelo escribe a unos 8 tokens/s en el equipo del proyecto, así
+que la respuesta llega a medida que se escribe: NDJSON con un evento `meta`
+(motor, fuentes y advertencia), varios `texto` y un `fin` o `error`.
+`requestStream()` del modelo lo lee con `fetch` y un lector del cuerpo, y la
+vista actualiza solo el último mensaje. Mientras no llega texto, el globo muestra
+«Analizando la zona…» con los segundos; mientras se escribe, un cursor.
+
+**Una respuesta a la vez.** El campo, el botón y las sugerencias se deshabilitan
+hasta que termina, porque Ollama atiende las peticiones en fila. Si se cambia de
+zona, la respuesta sigue llegando a la conversación de su zona.
+
+**Memoria.** Con cada pregunta se envían los últimos mensajes como
+`{rol, contenido}`, que es lo que lee `ia-asistente`; usa los cuatro últimos
+para entender a qué se refiere la pregunta.
+
+**Texto del modelo.** Escribe negritas y viñetas de markdown. `formatAnswer()`
+escapa el HTML primero y luego convierte solo `**…**`, `### ` y las viñetas: el
+texto del modelo nunca entra como HTML crudo. Debajo de cada respuesta,
+«Generado con IA · qwen3:8b · N fuentes» despliega las fuentes y la advertencia
+de que es apoyo a la decisión.
+
+**Si la IA no responde** (Ollama apagado, `ia-asistente` caído o modo
+plantilla), la pregunta se contesta con las plantillas y un aviso: «La IA
+generativa no respondió, así que esta respuesta se armó con las cifras de la
+zona». Si la respuesta se corta a medias, se conserva lo escrito y se avisa.
 
 ---
 

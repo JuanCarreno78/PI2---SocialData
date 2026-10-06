@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SocialData - Vulnerabilidad socioeconómica AMB</title>
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='10' fill='%230f5c52'/%3E%3Cpath d='M22 7.7c-6.4 0-11.5 5-11.5 11.5 0 8.3 11.5 16.8 11.5 16.8s11.5-8.5 11.5-16.8C33.5 12.7 28.4 7.7 22 7.7z' fill='%23fff'/%3E%3Cg fill='%230f5c52'%3E%3Crect x='16.6' y='18.2' width='2.6' height='6.3' rx='1.3'/%3E%3Crect x='20.7' y='15.2' width='2.6' height='9.3' rx='1.3'/%3E%3Crect x='24.8' y='12.6' width='2.6' height='11.9' rx='1.3'/%3E%3C/g%3E%3C/svg%3E" />
+    <!-- Direccion de la API (version con tunel de ngrok): ver config.js. -->
+    <script src="config.js"></script>
+    <!-- Modo oscuro: se aplica antes de pintar para que no parpadee en claro.
+         Por defecto, claro; solo es oscuro si el usuario lo eligio. -->
+    <script>
+      try {
+        if (localStorage.getItem('sd.theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+      } catch (error) {
+        // Sin almacenamiento (navegacion privada estricta): queda en claro.
+      }
+    </script>
     <!-- Estilos internos: la pagina no enlaza ninguna hoja de estilos, asi que
          no puede quedar a medias por un archivo ausente o una cache antigua. -->
     <style>
@@ -685,7 +698,10 @@
         --line: #dce3de;
 
         --primary: #0f5c52;
+        /* --primary-dark es para texto y --primary-deep para fondos: en claro son
+           el mismo verde, pero en oscuro el texto tiene que aclararse y el fondo no. */
         --primary-dark: #0a3f38;
+        --primary-deep: #0a3f38;
         --primary-soft: #e3eeeb;
         --accent: #b5762c;
 
@@ -702,6 +718,123 @@
         --shadow-button: 0 1px 2px rgba(10, 63, 56, 0.24), 0 2px 8px rgba(10, 63, 56, 0.18);
 
         --sidebar-width: 340px;
+      }
+
+      /* --- Modo oscuro --------------------------------------------------------
+         Solo si el usuario lo elige (boton de la cabecera): por defecto la pagina
+         es clara aunque el sistema operativo este en oscuro. Se redefinen los
+         mismos tokens; abajo, los pocos colores que no pasan por ellos. */
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #0f1614;
+        --surface: #17211e;
+        --surface-soft: #1c2824;
+        --ink: #e2ebe7;
+        --ink-soft: #9db0a9;
+        --line: #2b3934;
+
+        --primary: #23917a;
+        --primary-dark: #8fd4c2;
+        --primary-deep: #0d4a41;
+        --primary-soft: #1d3832;
+        --accent: #d39545;
+
+        --low: #4fa576;
+        --medium: #e0b04f;
+        --high: #d65a4c;
+
+        --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 12px rgba(0, 0, 0, 0.25);
+        --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      :root[data-theme="dark"] .map-canvas,
+      :root[data-theme="dark"] .map-canvas .leaflet-container {
+        background-color: #1a2421;
+      }
+
+      :root[data-theme="dark"] .map-canvas.no-basemap,
+      :root[data-theme="dark"] .map-canvas.no-basemap .leaflet-container {
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      }
+
+      :root[data-theme="dark"] .map-canvas .leaflet-control-attribution {
+        background: rgba(23, 33, 30, 0.85);
+        color: var(--ink-soft);
+      }
+
+      :root[data-theme="dark"] .map-canvas .leaflet-control-attribution a {
+        color: var(--primary-dark);
+      }
+
+      :root[data-theme="dark"] .leaflet-bar a {
+        background-color: var(--surface);
+        border-bottom-color: var(--line);
+        color: var(--ink);
+      }
+
+      :root[data-theme="dark"] .leaflet-bar a:hover,
+      :root[data-theme="dark"] .leaflet-bar a:focus {
+        background-color: var(--surface-soft);
+      }
+
+      :root[data-theme="dark"] .leaflet-control-scale-line {
+        background: rgba(23, 33, 30, 0.8);
+        border-color: var(--ink-soft);
+        color: var(--ink);
+        text-shadow: none;
+      }
+
+      :root[data-theme="dark"] .login-screen {
+        background:
+          radial-gradient(circle at 15% 10%, rgba(35, 145, 122, 0.16), transparent 42%),
+          radial-gradient(circle at 88% 90%, rgba(211, 149, 69, 0.1), transparent 40%),
+          var(--bg);
+      }
+
+      :root[data-theme="dark"] .role-badge.is-admin {
+        background: #3a2c17;
+        color: #f0c98d;
+      }
+
+      :root[data-theme="dark"] .state-badge {
+        background: #173326;
+        color: #8fd0a6;
+      }
+
+      :root[data-theme="dark"] .state-badge.is-off {
+        background: #3a1d1a;
+        color: #f0a59c;
+      }
+
+      :root[data-theme="dark"] .user-action.is-danger:hover {
+        background: #3a1d1a;
+      }
+
+      :root[data-theme="dark"] .sheet-content,
+      :root[data-theme="dark"] .admin-content {
+        scrollbar-color: #3a4a44 transparent;
+      }
+
+      :root[data-theme="dark"] .sheet-content::-webkit-scrollbar-thumb {
+        background: #3a4a44;
+      }
+
+      /* El reporte se imprime siempre en claro, sea cual sea el tema. */
+      @media print {
+        :root[data-theme="dark"] {
+          color-scheme: light;
+          --bg: #ffffff;
+          --surface: #ffffff;
+          --surface-soft: #f5f7f5;
+          --ink: #17241f;
+          --ink-soft: #52655f;
+          --line: #dce3de;
+          --primary: #0f5c52;
+          --primary-dark: #0a3f38;
+          --primary-soft: #e3eeeb;
+        }
       }
 
       *,
@@ -779,19 +912,22 @@
 
       /* flex-shrink 0: el logotipo nunca cede ancho aunque el texto de al lado
          no quepa. */
+      /* Logotipo: un marcador de ubicacion con tres barras crecientes, el
+         territorio y sus datos. Mismo dibujo que el icono de la pestaña. */
       .brand-mark {
         flex-shrink: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        display: block;
         width: 44px;
         height: 44px;
-        border-radius: var(--radius-sm);
-        background: var(--primary);
-        color: #ffffff;
-        font-family: var(--font-display);
-        font-size: 16px;
-        font-weight: 700;
+      }
+
+      .brand-mark-bg,
+      .brand-mark-bar {
+        fill: var(--primary);
+      }
+
+      .brand-mark-pin {
+        fill: #ffffff;
       }
 
       .brand h1 {
@@ -868,7 +1004,7 @@
         padding: 11px 18px;
         border: none;
         border-radius: 999px;
-        background: linear-gradient(180deg, #14705f 0%, var(--primary) 60%, var(--primary-dark) 100%);
+        background: linear-gradient(180deg, #14705f 0%, var(--primary) 60%, var(--primary-deep) 100%);
         color: #ffffff;
         font-size: 13.5px;
         font-weight: 700;
@@ -956,6 +1092,93 @@
         align-items: flex-start;
         justify-content: space-between;
         gap: 10px;
+      }
+
+      /* Selector de zona: la forma mas directa de elegir que analizar. */
+      .zone-picker {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .zone-picker-label {
+        flex: 0 0 auto;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      .zone-select {
+        flex: 1;
+        min-width: 0;
+        padding: 7px 10px;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .zone-select:hover,
+      .zone-select:focus {
+        border-color: var(--primary);
+      }
+
+      /* Globo al pasar sobre una zona del mapa. */
+      .leaflet-tooltip.zone-tip {
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        box-shadow: var(--shadow-panel);
+        font-family: var(--font-body);
+        font-size: 12px;
+        line-height: 1.35;
+        color: var(--ink);
+      }
+
+      .leaflet-tooltip.zone-tip::before {
+        display: none;
+      }
+
+      /* Leaflet envuelve el contenido: el apilado va en el bloque propio. */
+      .zone-tip > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .zone-tip strong {
+        font-size: 12.5px;
+        color: var(--primary-dark);
+      }
+
+      .zone-tip-action {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink-soft);
+      }
+
+      /* Contenedor del rotulo de municipio: sin el fondo blanco por defecto. */
+      .town-label-icon {
+        background: none;
+        border: none;
+        white-space: nowrap;
+      }
+
+      .town-label-icon .town-label {
+        display: inline-block;
+      }
+
+      :root[data-theme="dark"] .town-label {
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(23, 33, 30, 0.9);
       }
 
       .btn-map {
@@ -1349,7 +1572,7 @@
         width: 26px;
         height: 26px;
         border-radius: 50%;
-        background: var(--primary-dark);
+        background: var(--primary-deep);
         color: #ffffff;
         font-size: 12px;
         font-weight: 700;
@@ -1379,7 +1602,7 @@
       }
 
       .dimension-card.is-active .dimension-count {
-        background: #ffffff;
+        background: var(--surface);
       }
 
       .dimension-chevron {
@@ -1486,11 +1709,13 @@
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        background: linear-gradient(145deg, #14705f, var(--primary-dark));
-        color: #ffffff;
-        font-family: var(--font-display);
-        font-size: 14px;
-        font-weight: 700;
+        background: linear-gradient(145deg, #14705f, var(--primary-deep));
+      }
+
+      /* El marcador del logotipo, sin el cuadro de fondo. */
+      .chat-avatar svg {
+        width: 30px;
+        height: 30px;
       }
 
       .chat-identity h2 {
@@ -1535,12 +1760,14 @@
          caracteres se vuelve incomoda de leer. */
       .chat-message {
         display: flex;
+        flex-direction: column;
+        gap: 5px;
         max-width: min(76%, 72ch);
       }
 
       .chat-message--user {
         align-self: flex-end;
-        justify-content: flex-end;
+        align-items: flex-end;
       }
 
       .chat-message--assistant {
@@ -1571,11 +1798,105 @@
         color: #ffffff;
       }
 
+      /* --- Respuestas de la IA generativa --- */
+
+      .chat-waiting {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink-soft);
+      }
+
+      .typing {
+        display: inline-flex;
+        gap: 4px;
+      }
+
+      .typing span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--primary);
+        animation: typing 1.2s infinite ease-in-out;
+      }
+
+      .typing span:nth-child(2) { animation-delay: 0.15s; }
+      .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+      @keyframes typing {
+        0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+        30% { opacity: 1; transform: translateY(-3px); }
+      }
+
+      /* Cursor al final mientras el texto se sigue escribiendo. */
+      .chat-bubble.is-writing::after {
+        content: '▍';
+        margin-left: 1px;
+        color: var(--primary);
+        animation: caret 1s steps(2) infinite;
+      }
+
+      @keyframes caret {
+        50% { opacity: 0; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .typing span,
+        .chat-bubble.is-writing::after {
+          animation: none;
+        }
+      }
+
+      .chat-sources,
+      .chat-note {
+        margin: 0;
+        padding: 0 4px;
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      .chat-sources summary {
+        cursor: pointer;
+        width: fit-content;
+      }
+
+      .chat-sources summary:hover {
+        color: var(--primary-dark);
+      }
+
+      .chat-sources ul {
+        margin: 6px 0;
+        padding-left: 18px;
+      }
+
+      .chat-sources p {
+        margin: 0;
+        font-style: italic;
+      }
+
       .chat-suggestions {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         padding: 6px 20px 12px;
+      }
+
+      /* Sugerencias que piden un analisis completo a la IA. */
+      .chat-suggestion.is-ai {
+        background: var(--primary-soft);
+      }
+
+      .chat-suggestion:disabled,
+      .chat-input:disabled {
+        opacity: 0.55;
+        cursor: default;
+        transform: none;
+      }
+
+      .chat-suggestion:disabled:hover {
+        background: var(--surface);
+        color: var(--primary-dark);
       }
 
       .chat-suggestion {
@@ -2083,6 +2404,48 @@
         color: var(--high);
       }
 
+      /* Boton de tema: un icono redondo. Muestra el tema al que se cambia. */
+      .theme-toggle {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1.5px solid var(--line);
+        border-radius: 50%;
+        background: var(--surface);
+        color: var(--ink-soft);
+        transition: border-color 0.14s ease, color 0.14s ease;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+
+      .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .theme-toggle .icon-sun,
+      :root[data-theme="dark"] .theme-toggle .icon-moon {
+        display: none;
+      }
+
+      :root[data-theme="dark"] .theme-toggle .icon-sun {
+        display: block;
+      }
+
+      /* En el acceso, arriba a la derecha. */
+      .login-theme {
+        position: fixed;
+        top: calc(16px + env(safe-area-inset-top, 0px));
+        right: 16px;
+      }
+
       /* --- Exportar reporte: menu desplegable ------------------------------- */
 
       .chat-actions {
@@ -2362,6 +2725,24 @@
         color: #52655f;
       }
 
+      .report-section .report-note {
+        margin-top: 6px;
+      }
+
+      /* El resumen de la IA trae saltos de linea y viñetas como texto. */
+      .report-summary {
+        white-space: pre-wrap;
+        font-size: 10.5pt;
+        line-height: 1.5;
+      }
+
+      .report-list {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 10.5pt;
+        line-height: 1.5;
+      }
+
       @media print {
         @page {
           size: A4;
@@ -2512,9 +2893,21 @@
          y sin montar hasta que hay sesion. Los campos no llevan atributo name y el
          boton arranca deshabilitado: si el script no carga, no se envia nada. -->
     <div class="login-screen" id="login-screen">
+      <button type="button" id="login-theme" class="theme-toggle login-theme" aria-pressed="false"
+              aria-label="Activar modo oscuro" title="Activar modo oscuro">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"/>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+        </svg>
+      </button>
       <form class="login-card" id="login-form" method="post" novalidate>
         <div class="brand">
-          <span class="brand-mark" aria-hidden="true">SD</span>
+          <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true" focusable="false"><rect class="brand-mark-bg" width="44" height="44" rx="10"/><path class="brand-mark-pin" d="M22 7.7c-6.4 0-11.5 5-11.5 11.5 0 8.3 11.5 16.8 11.5 16.8s11.5-8.5 11.5-16.8C33.5 12.7 28.4 7.7 22 7.7z"/><rect class="brand-mark-bar" x="16.6" y="18.2" width="2.6" height="6.3" rx="1.3"/><rect class="brand-mark-bar" x="20.7" y="15.2" width="2.6" height="9.3" rx="1.3"/><rect class="brand-mark-bar" x="24.8" y="12.6" width="2.6" height="11.9" rx="1.3"/></svg>
           <div>
             <h1>SocialData</h1>
             <p class="tagline">Vulnerabilidad socioeconómica · Área Metropolitana de Bucaramanga</p>
@@ -2559,7 +2952,7 @@
     <div class="app" id="app" hidden>
       <header class="app-header">
         <div class="brand">
-          <span class="brand-mark" aria-hidden="true">SD</span>
+          <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true" focusable="false"><rect class="brand-mark-bg" width="44" height="44" rx="10"/><path class="brand-mark-pin" d="M22 7.7c-6.4 0-11.5 5-11.5 11.5 0 8.3 11.5 16.8 11.5 16.8s11.5-8.5 11.5-16.8C33.5 12.7 28.4 7.7 22 7.7z"/><rect class="brand-mark-bar" x="16.6" y="18.2" width="2.6" height="6.3" rx="1.3"/><rect class="brand-mark-bar" x="20.7" y="15.2" width="2.6" height="9.3" rx="1.3"/><rect class="brand-mark-bar" x="24.8" y="12.6" width="2.6" height="11.9" rx="1.3"/></svg>
           <div>
             <h1>SocialData</h1>
             <p class="tagline">Vulnerabilidad socioeconómica · Área Metropolitana de Bucaramanga</p>
@@ -2582,6 +2975,18 @@
             <span class="btn-icon" aria-hidden="true">⚙</span>
             Administración
           </button>
+          <button type="button" id="toggle-theme" class="theme-toggle" aria-pressed="false"
+                  aria-label="Activar modo oscuro" title="Activar modo oscuro">
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+            </svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.5"/>
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+            </svg>
+          </button>
           <button type="button" id="logout" class="btn-quiet">Cerrar sesión</button>
         </div>
       </header>
@@ -2590,6 +2995,11 @@
         <aside class="sidebar" aria-label="Mapa, métricas e indicadores">
           <section class="block map-block" aria-label="Mapa de zonas">
             <div class="map-toolbar">
+              <!-- Elegir sin buscar en el mapa. Sin zona, se analiza el area completa. -->
+              <label class="zone-picker" for="zone-select">
+                <span class="zone-picker-label">Analizar</span>
+                <select id="zone-select" class="zone-select"></select>
+              </label>
               <div class="map-toolbar-row">
                 <p class="layer-label">
                   Capa activa
@@ -2626,7 +3036,7 @@
           <section class="accordion" aria-label="Métricas de la zona">
             <h2 class="accordion-head">
               <button type="button" class="accordion-button" aria-expanded="true" aria-controls="metrics-panel">
-                <span class="accordion-title">Métricas de la zona</span>
+                <span class="accordion-title" id="metrics-title">Métricas de la zona</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
               </button>
             </h2>
@@ -2678,7 +3088,9 @@
         <section class="chat-panel" aria-label="Asistente SocialData">
           <header class="chat-header">
             <div class="chat-identity">
-              <span class="chat-avatar" aria-hidden="true">SD</span>
+              <span class="chat-avatar" aria-hidden="true">
+                <svg viewBox="0 0 44 44" focusable="false"><path fill="#ffffff" d="M22 7.7c-6.4 0-11.5 5-11.5 11.5 0 8.3 11.5 16.8 11.5 16.8s11.5-8.5 11.5-16.8C33.5 12.7 28.4 7.7 22 7.7z"/><g fill="#0f5c52"><rect x="16.6" y="18.2" width="2.6" height="6.3" rx="1.3"/><rect x="20.7" y="15.2" width="2.6" height="9.3" rx="1.3"/><rect x="24.8" y="12.6" width="2.6" height="11.9" rx="1.3"/></g></svg>
+              </span>
               <div>
                 <h2>Asistente SocialData</h2>
                 <p class="panel-subtitle" id="zone-name">Área Metropolitana de Bucaramanga</p>
@@ -2691,7 +3103,7 @@
                 <button type="button" id="toggle-export" class="btn-secondary"
                         aria-haspopup="menu" aria-expanded="false" aria-controls="export-menu" disabled>
                   <span class="btn-icon" aria-hidden="true">⤓</span>
-                  Exportar reporte
+                  <span id="toggle-export-text">Exportar reporte</span>
                 </button>
                 <div class="menu" id="export-menu" role="menu" aria-label="Formato del reporte" hidden>
                   <button type="button" class="menu-item" role="menuitem" data-format="xlsx">
@@ -2700,7 +3112,7 @@
                   </button>
                   <button type="button" class="menu-item" role="menuitem" data-format="pdf">
                     <span class="menu-item-title">PDF</span>
-                    <span class="menu-item-note">Abre la impresión: elige «Guardar como PDF»</span>
+                    <span class="menu-item-note">Incluye un resumen del chat hecho por la IA. Abre la impresión: elige «Guardar como PDF»</span>
                   </button>
                 </div>
               </div>
@@ -2724,10 +3136,10 @@
               <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
               <div id="chat-suggestions" class="chat-suggestions"></div>
               <form id="chat-form" class="chat-form" autocomplete="off">
-                <input type="text" id="chat-input" class="chat-input"
+                <input type="text" id="chat-input" class="chat-input" maxlength="1000"
                        placeholder="¿Qué quiere saber sobre esta zona?"
                        aria-label="Escribe tu pregunta para el asistente" />
-                <button type="submit" class="btn-primary">
+                <button type="submit" id="chat-submit" class="btn-primary">
                   Enviar <span class="btn-icon" aria-hidden="true">→</span>
                 </button>
               </form>
@@ -2885,6 +3297,11 @@
     <script>
       'use strict';
 
+      // El plan gratuito de ngrok responde una pagina de aviso ("You are about to
+      // visit...") a las peticiones de navegador. Con esta cabecera la omite y
+      // devuelve la respuesta real (JSON) a las peticiones de la pagina.
+      const NGROK_HEADER = Object.freeze({ 'ngrok-skip-browser-warning': '1' });
+
       const Model = (() => {
         // Capa de datos. No toca el DOM.
         // Con una sesion del backend, los indicadores se piden a la API y el
@@ -2900,12 +3317,83 @@
         async function loadData() {
           const session = getSession();
           data = session && session.mode === 'api' ? await loadFromApi() : await loadFromFile();
+          addArea(data);
           return data;
+        }
+
+        // ---------------------------------------------------------------
+        // Area metropolitana como una zona mas (zona_id 0)
+        // ---------------------------------------------------------------
+        // Asi el chat, las metricas, la ficha y el reporte la tratan igual que a
+        // una zona. Sus cifras son promedios de las ocho zonas ponderados por
+        // hogares, que es exactamente el promedio sobre todos los hogares: todas
+        // las tasas de la vista son proporciones de hogares. Como el resto de la
+        // plataforma, es la muestra del Sisben, sin ponderar por poblacion.
+        const AREA_ID = 0;
+
+        function weightedMean(pairs) {
+          const valid = pairs.filter(([value]) => value !== null && value !== undefined);
+          const weight = valid.reduce((sum, [, n]) => sum + n, 0);
+          if (!weight) return null;
+          return Math.round(valid.reduce((sum, [value, n]) => sum + Number(value) * n, 0) / weight * 10000) / 10000;
+        }
+
+        function addArea(d) {
+          const zones = d.zonas;
+          const households = (zone) => Number(zone.total_hogares);
+          const total = zones.reduce((sum, zone) => sum + households(zone), 0);
+          const counts = d.resumen.distribucion_grupos;
+
+          const area = {
+            zona_id: AREA_ID, isArea: true, cod_mpio: null, zona: 0,
+            municipio: 'Área Metropolitana', zona_nombre: 'Área Metropolitana de Bucaramanga',
+            total_hogares: total, total_personas: d.resumen.total_personas
+          };
+          ['a', 'b', 'c', 'd'].forEach((g) => {
+            area[`pct_grupo_${g}`] = Math.round((counts[g.toUpperCase()] || 0) / total * 10000) / 10000;
+          });
+          Object.keys(zones[0])
+            .filter((key) => (key.startsWith('pct_') && !key.startsWith('pct_grupo')) || key.startsWith('prom_'))
+            .forEach((key) => { area[key] = weightedMean(zones.map((zone) => [zone[key], households(zone)])); });
+
+          // Privaciones: la misma estructura que las de una zona.
+          const first = d.detalle[String(zones[0].zona_id)].privaciones;
+          const privaciones = {
+            ...first, zona_id: AREA_ID, zona_nombre: area.zona_nombre, total_hogares: total,
+            dimensiones: first.dimensiones.map((dim, i) => ({
+              ...dim,
+              indicadores: dim.indicadores.map((item, j) => ({
+                ...item,
+                prevalencia: weightedMean(zones.map((zone) => [
+                  d.detalle[String(zone.zona_id)].privaciones.dimensiones[i].indicadores[j].prevalencia,
+                  households(zone)]))
+              }))
+            }))
+          };
+
+          // Estimacion del modelo: solo si esta la de las ocho zonas.
+          const predictions = zones.map((zone) => d.detalle[String(zone.zona_id)].prediccion);
+          const prediccion = predictions.every(Boolean) ? {
+            zona: { id: AREA_ID, nombre: area.zona_nombre, municipio: area.municipio },
+            n_hogares: total,
+            observado: { A: area.pct_grupo_a, B: area.pct_grupo_b, C: area.pct_grupo_c, D: area.pct_grupo_d },
+            predicho: Object.fromEntries(['A', 'B', 'C', 'D'].map((g) => [g,
+              weightedMean(zones.map((zone, i) => [predictions[i].predicho[g], households(zone)]))])),
+            modelo: predictions[0].modelo
+          } : null;
+
+          // Los factores SHAP explican hogares de una zona: no hay version del area.
+          d.area = area;
+          d.detalle[String(AREA_ID)] = { privaciones, prediccion, explicacion: null };
+        }
+
+        function getArea() {
+          return data.area;
         }
 
         // Corte de los indicadores publicado junto a la pagina.
         async function loadFromFile() {
-          const response = await fetch('api/data.json');
+          const response = await fetch('api/data.json', { headers: NGROK_HEADER });
 
           if (!response.ok) {
             throw new Error('HTTP ' + response.status);
@@ -2970,6 +3458,7 @@
         }
 
         function getZoneById(zoneId) {
+          if (Number(zoneId) === AREA_ID) return data.area;
           return data.zonas.find((zone) => zone.zona_id === Number(zoneId));
         }
 
@@ -3000,11 +3489,13 @@
         // interfaz, no un control de acceso: quien controle el navegador puede
         // saltarselo. El control real es el del backend.
 
-        const API_URL = 'http://localhost:8000/api/v1';
+        // Version con tunel: la direccion sale de config.js. Servido por el proxy de
+        // esta carpeta, es '/api/v1' (mismo origen que la pagina).
+        const API_URL = (window.SD_CONFIG && window.SD_CONFIG.apiUrl) || '/api/v1';
 
-        // Desde GitHub Pages ni se intenta: el backend no esta publicado y el
-        // navegador pediria al visitante permiso para acceder a su red local.
-        const BACKEND_ENABLED = ['localhost', '127.0.0.1'].includes(location.hostname);
+        // Siempre hay backend detras (el proxy o el tunel). Si no responde, el
+        // login cae al modo de demostracion, como en el proyecto original.
+        const BACKEND_ENABLED = true;
         const BACKEND_TIMEOUT_MS = 5000;
 
         const SESSION_KEY = 'sd.session';
@@ -3180,7 +3671,7 @@
           try {
             response = await fetch(API_URL + '/auth/login', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json', ...NGROK_HEADER },
               // Nombres de campo del esquema Credenciales del backend.
               body: JSON.stringify({ email, password }),
               signal: controller.signal
@@ -3195,6 +3686,12 @@
           }
           if (response.status === 403) throw new AuthError('inactive', 'El usuario está desactivado');
           if (response.status === 429) {
+            // Dos 429 distintos: la cuenta bloqueada tras 5 fallos, o demasiados
+            // intentos desde la misma red (limite por IP del backend).
+            const body = await response.json().catch(() => ({}));
+            if (/desde esta red/.test(String(body.detail))) {
+              throw new AuthError('throttled', 'Demasiados intentos desde esta red');
+            }
             throw new AuthError('locked', 'Usuario bloqueado temporalmente', { minutes: LOCK_MINUTES });
           }
           if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -3263,6 +3760,7 @@
             ...options,
             headers: {
               'Content-Type': 'application/json',
+              ...NGROK_HEADER,
               ...(options.headers || {}),
               Authorization: `Bearer ${session.token}`
             }
@@ -3284,6 +3782,92 @@
           // 204 (p. ej. DELETE) no trae cuerpo.
           if (response.status === 204) return null;
           return response.json();
+        }
+
+        // ---------------------------------------------------------------
+        // Asistente de IA generativa (HU-18, HU-19)
+        // ---------------------------------------------------------------
+        // El modelo de lenguaje corre detras del backend (ia-asistente + Ollama),
+        // asi que solo existe con una sesion del backend.
+        function assistantAvailable() {
+          const session = getSession();
+          return Boolean(session && session.mode === 'api');
+        }
+
+        // El modelo escribe a ~11 tokens/s: la respuesta llega en flujo (NDJSON)
+        // para mostrarla mientras se escribe. onEvent recibe cada evento:
+        // { tipo: 'meta' | 'texto' | 'fin' | 'error', ... }.
+        async function requestStream(path, body, onEvent) {
+          const session = getSession();
+          if (!session || session.mode !== 'api') throw new AuthError('expired', 'La sesión expiró');
+
+          const response = await fetch(API_URL + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...NGROK_HEADER, Authorization: `Bearer ${session.token}` },
+            body: body === undefined ? undefined : JSON.stringify(body)
+          });
+
+          if (response.status === 401) throw new AuthError('expired', 'La sesión expiró');
+          // 429: demasiadas consultas del usuario; 503: el asistente tiene la fila
+          // llena. Se muestra el aviso del backend en lugar de tratarlo como una falla.
+          if (response.status === 429 || response.status === 503) {
+            let detail = 'El asistente está ocupado. Intenta de nuevo en un minuto.';
+            try {
+              const body = await response.json();
+              if (typeof body.detail === 'string') detail = body.detail;
+            } catch (error) {
+              // Sin cuerpo JSON: queda el aviso generico.
+            }
+            throw Object.assign(new Error(detail), { code: 'limit' });
+          }
+          if (!response.ok || !response.body) throw new Error('HTTP ' + response.status);
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          try {
+            for (;;) {
+              const { value, done } = await reader.read();
+              buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+
+              // Una linea puede llegar partida entre dos lecturas: la ultima espera.
+              const lines = buffer.split('\n');
+              buffer = lines.pop();
+              lines.filter((line) => line.trim()).forEach((line) => onEvent(JSON.parse(line)));
+
+              if (done) break;
+            }
+            if (buffer.trim()) onEvent(JSON.parse(buffer));
+          } catch (error) {
+            // Si onEvent corta (evento de error), se deja de leer el flujo.
+            reader.cancel().catch(() => {});
+            throw error;
+          }
+        }
+
+        // historial: [{ rol: 'usuario' | 'asistente', contenido }], las claves
+        // que lee ia-asistente.
+        // Para el backend, el area metropolitana es "sin zona": zona_id null.
+        function askAssistant(zoneId, question, history, onEvent) {
+          return requestStream('/ia/chat/flujo', {
+            pregunta: question, zona_id: zoneId === AREA_ID ? null : zoneId, historial: history
+          }, onEvent);
+        }
+
+        // kind: 'interpretar' (conclusiones) o 'recomendar'.
+        function interpretZone(zoneId, kind, onEvent) {
+          const target = zoneId === AREA_ID ? 'area' : encodeURIComponent(zoneId);
+          return requestStream(`/ia/interpretar/${target}/flujo?tipo=${encodeURIComponent(kind)}`,
+            undefined, onEvent);
+        }
+
+        // Resumen de la conversacion para el reporte en PDF (lo redacta la IA).
+        function summarizeConversation(zoneId, history) {
+          return request('/ia/resumir', {
+            method: 'POST',
+            body: JSON.stringify({ zona_id: zoneId === AREA_ID ? null : zoneId, historial: history })
+          });
         }
 
         // ---------------------------------------------------------------
@@ -3397,7 +3981,8 @@
 
           return {
             zone: zone.zona_nombre,
-            municipality: zone.municipio,
+            isArea: Boolean(zone.isArea),
+            municipality: zone.isArea ? data.resumen.cobertura : zone.municipio,
             households: Number(zone.total_hogares),
             people: Number(zone.total_personas),
             source: data.resumen.fuente,
@@ -3423,9 +4008,10 @@
 
         return {
           loadData, getSummary, getCatalog, getModelCard, getZones, getZoneById, getDeprivations,
-          getPrediction, getExplanation, getZonesRanked,
+          getPrediction, getExplanation, getZonesRanked, getArea, AREA_ID,
           login, getSession, logout, takeNotice,
           listUsers, createUser, setUserActive, deleteUser,
+          assistantAvailable, askAssistant, interpretZone, summarizeConversation,
           buildZoneReport
         };
       })();
@@ -3455,6 +4041,11 @@
           {
             url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
             labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+            // La misma cartografia en gris oscuro, para el modo oscuro.
+            dark: {
+              url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+              labels: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}'
+            },
             options: {
               maxZoom: 16,
               attribution: '&copy; <a href="https://www.esri.com/">Esri</a> &middot; &copy; OSM'
@@ -3509,16 +4100,29 @@
           return String(zone.zona_nombre || '').split(' - ')[0];
         }
 
+        // Capas base en uso, para poder cambiarlas con el tema. La generacion evita
+        // que el temporizador de una capa ya retirada siga probando proveedores.
+        let baseLayers = [];
+        let baseGeneration = 0;
+        let mapContainerEl = null;
+
+        function currentTheme() {
+          return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+        }
+
         // Degradacion en cascada: si pasados unos segundos el proveedor no ha pintado
         // ninguna tesela, se prueba el siguiente; agotados todos, queda la reticula.
-        function addBaseLayer(containerEl, index = 0) {
+        function addBaseLayer(containerEl, index = 0, generation = baseGeneration) {
+          if (generation !== baseGeneration) return;
           if (index >= BASE_LAYERS.length) {
             containerEl.classList.add('no-basemap');
             return;
           }
 
-          const source = BASE_LAYERS[index];
+          const base = BASE_LAYERS[index];
+          const source = currentTheme() === 'dark' && base.dark ? { ...base, ...base.dark } : base;
           const layer = L.tileLayer(source.url, source.options).addTo(map);
+          baseLayers.push(layer);
 
           // Los toponimos van en un panel propio por encima de las zonas, con
           // pointer-events none para no interceptar los clics dirigidos a ellas.
@@ -3532,6 +4136,7 @@
             labelLayer = L.tileLayer(source.labels, {
               ...source.options, attribution: '', pane: 'labels'
             }).addTo(map);
+            baseLayers.push(labelLayer);
           }
 
           let loaded = false;
@@ -3540,12 +4145,24 @@
           // No sirve descartar al proveedor al primer tileerror: Leaflet tambien lo
           // emite cuando el mapa cancela teselas a medio descargar al reencuadrar.
           setTimeout(() => {
+            if (generation !== baseGeneration) return;
             const layerEl = layer.getContainer();
             if (loaded || (layerEl && layerEl.querySelector('.leaflet-tile-loaded'))) return;
             map.removeLayer(layer);
             if (labelLayer) map.removeLayer(labelLayer);
-            addBaseLayer(containerEl, index + 1);
+            addBaseLayer(containerEl, index + 1, generation);
           }, 5000);
+        }
+
+        // Cambia la cartografia al tema actual (clara u oscura).
+        function refreshTheme() {
+          if (!map || !mapContainerEl) return;
+          baseGeneration += 1;
+          baseLayers.forEach((layer) => map.removeLayer(layer));
+          baseLayers = [];
+          mapContainerEl.classList.remove('no-basemap');
+          addBaseLayer(mapContainerEl);
+          if (lastDraw) drawZones(...lastDraw);   // el borde de las zonas cambia con el tema
         }
 
         // fitBounds sobre un contenedor de 0 px hace que Leaflet caiga en maxZoom, que
@@ -3573,6 +4190,7 @@
           map = L.map(containerEl, {
             zoomControl: true, scrollWheelZoom: false, minZoom: 10, maxZoom: 16
           });
+          mapContainerEl = containerEl;
           addBaseLayer(containerEl);
           L.control.scale({ imperial: false, metric: true }).addTo(map);
           markerLayer = L.layerGroup().addTo(map);
@@ -3600,18 +4218,43 @@
           return 12 + ratio * 18;
         }
 
-        function popupHtml(zone, value, valueLabel) {
-          const text = value === null || value === undefined ? 'Sin datos' : `${value.toFixed(1)}%`;
-          return `<p class="popup-title">${zone.zona_nombre}</p>` +
-                 `<p class="popup-value">${valueLabel}: <strong>${text}</strong></p>` +
-                 `<p class="popup-value">${Number(zone.total_hogares).toLocaleString('es-CO')} hogares</p>` +
-                 `<p class="popup-action">Clic para ver el detalle ›</p>`;
+        // Al pasar el puntero: que zona es y su cifra. Se arma con textContent: el
+        // nombre viene de los datos y no debe entrar como HTML.
+        function zoneTip(zone, value, valueLabel) {
+          const tip = document.createElement('div');
+          const title = document.createElement('strong');
+          const figure = document.createElement('span');
+          const action = document.createElement('span');
+          const kind = Number(zone.zona) === 2 ? 'zona rural (área esquemática)' : 'cabecera urbana';
+
+          title.textContent = `${townName(zone)} · ${kind}`;
+          figure.textContent = value === null || value === undefined
+            ? 'Sin datos' : `${valueLabel}: ${value.toFixed(1).replace('.', ',')} %`;
+          action.textContent = 'Clic para analizar';
+          action.className = 'zone-tip-action';
+          tip.append(title, figure, action);
+          return tip;
+        }
+
+        // Un clic analiza la zona directamente. Antes el clic abria ademas un
+        // globo con los datos que habia que cerrar a mano.
+        function bindZone(layer, zone, value, onSelect, valueLabel) {
+          layer.bindTooltip(zoneTip(zone, value, valueLabel), {
+            sticky: true, direction: 'top', offset: [0, -10], className: 'zone-tip'
+          });
+          layer.on('click', () => {
+            layer.closeTooltip();
+            onSelect(zone);
+          });
+          layer.addTo(markerLayer);
         }
 
         function drawZones(zones, valueOf, onSelect, highlightedId = null, valueLabel = 'Hogares en grupo A') {
           lastDraw = [zones, valueOf, onSelect, highlightedId, valueLabel];
           if (!map) return;
           markerLayer.clearLayers();
+
+          const highlighted = zones.find((zone) => zone.zona_id === highlightedId);
 
           // Primero los anillos rurales, para que las cabeceras queden encima.
           const rural = zones.filter((zone) => Number(zone.zona) === 2);
@@ -3620,49 +4263,48 @@
           rural.forEach((zone) => {
             const value = valueOf(zone);
             const center = centerOf(zone.cod_mpio);
-            const highlighted = highlightedId && zone.zona_id === highlightedId;
+            const selected = zone === highlighted;
 
-            const ring = L.circle([center.lat, center.lng], {
+            bindZone(L.circle([center.lat, center.lng], {
               radius: 4200,
               fillColor: colorOf(value),
-              fillOpacity: highlighted ? 0.34 : 0.2,
+              fillOpacity: selected ? 0.34 : 0.2,
               color: colorOf(value),
-              weight: highlighted ? 3 : 1.5,
+              weight: selected ? 3 : 1.5,
               dashArray: '6 5',
               className: 'rural-ring'
-            });
-
-            ring.bindPopup(popupHtml(zone, value, valueLabel) +
-              '<p class="popup-action">Área esquemática: el Sisbén no publica geometrías por zona.</p>');
-            ring.on('click', () => onSelect(zone));
-            ring.addTo(markerLayer);
+            }), zone, value, onSelect, valueLabel);
           });
 
           urban.forEach((zone) => {
             const value = valueOf(zone);
             const center = centerOf(zone.cod_mpio);
-            const highlighted = highlightedId && zone.zona_id === highlightedId;
+            const selected = zone === highlighted;
 
-            const marker = L.circleMarker([center.lat, center.lng], {
+            // El borde marca la seleccion: oscuro sobre el mapa claro y al reves.
+            const dark = currentTheme() === 'dark';
+            bindZone(L.circleMarker([center.lat, center.lng], {
               radius: radiusOf(value),
               fillColor: colorOf(value),
               fillOpacity: 0.85,
-              color: highlighted ? '#17241F' : '#ffffff',
-              weight: highlighted ? 3 : 1.5,
+              color: selected !== dark ? '#17241F' : '#ffffff',
+              weight: selected ? 3 : 1.5,
               className: 'zone-marker'
-            });
+            }), zone, value, onSelect, valueLabel);
 
-            marker.bindPopup(popupHtml(zone, value, valueLabel));
-            // En el recuadro compacto cuatro rotulos fijos se solapan entre si y con
-            // los toponimos de la cartografia base. Solo queda fijo el de la zona
-            // seleccionada; los demas aparecen al pasar el puntero. Con el mapa
-            // ampliado caben los cuatro y quedan todos fijos.
-            marker.bindTooltip(townName(zone), {
-              permanent: largeMode || Boolean(highlighted),
-              direction: 'right', offset: [8, 0], className: 'town-label'
-            });
-            marker.on('click', () => onSelect(zone));
-            marker.addTo(markerLayer);
+            // Rotulo del municipio, aparte del globo de la zona. En el recuadro
+            // compacto cuatro rotulos se solapan: solo va el del municipio
+            // seleccionado. Con el mapa ampliado caben los cuatro.
+            const sameTown = highlighted && String(highlighted.cod_mpio) === String(zone.cod_mpio);
+            if (largeMode || sameTown) {
+              const label = document.createElement('span');
+              label.className = 'town-label';
+              label.textContent = townName(zone);
+              L.marker([center.lat, center.lng], {
+                icon: L.divIcon({ className: 'town-label-icon', html: label, iconSize: null, iconAnchor: [-16, 10] }),
+                interactive: false, keyboard: false
+              }).addTo(markerLayer);
+            }
           });
         }
 
@@ -3715,7 +4357,7 @@
           return largeMode;
         }
 
-        return { scaleOf, colorOf, initMap, drawZones, flyToZone, fitMetroArea, setLargeMode, isLargeMode };
+        return { scaleOf, colorOf, initMap, drawZones, flyToZone, fitMetroArea, setLargeMode, isLargeMode, refreshTheme };
       })();
 
       const View = (() => {
@@ -3749,10 +4391,13 @@
           return `${Number(value).toFixed(1).replace('.', ',')}%`;
         }
 
+        // Tambien las comillas: el truco anterior (textContent -> innerHTML) no las
+        // escapaba, y dentro de un atributo (title="...") una comilla en el dato
+        // cerraba el atributo y permitia inyectar otros (XSS).
+        const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
         function escapeHtml(text) {
-          const div = document.createElement('div');
-          div.textContent = text;
-          return div.innerHTML;
+          return String(text ?? '').replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
         }
 
         function renderSummary(summaryEl, summary) {
@@ -3934,9 +4579,34 @@
           });
         }
 
-        function renderExplanation(listEl, noteEl, explanation) {
+        // Opciones del selector de zona: el area completa y las zonas agrupadas por
+        // municipio, en el orden en que llegan (municipio y luego urbana/rural).
+        function renderZoneOptions(selectEl, area, zones) {
+          selectEl.textContent = '';
+          selectEl.appendChild(new Option('Toda el área metropolitana', String(area.zona_id)));
+
+          const groups = new Map();
+          zones.forEach((zone) => {
+            const town = String(zone.zona_nombre).split(' - ')[0];
+            const label = Number(zone.zona) === 2 ? 'Rural' : 'Cabecera urbana';
+            if (!groups.has(town)) groups.set(town, []);
+            groups.get(town).push(new Option(`${town} · ${label}`, String(zone.zona_id)));
+          });
+          groups.forEach((options, town) => {
+            const group = document.createElement('optgroup');
+            group.label = town;
+            options.forEach((option) => group.appendChild(option));
+            selectEl.appendChild(group);
+          });
+        }
+
+        function renderExplanation(listEl, noteEl, explanation, isArea = false) {
           listEl.textContent = '';
 
+          if (isArea) {
+            noteEl.textContent = 'Los factores del modelo se calculan por zona: selecciona una en el mapa para verlos.';
+            return;
+          }
           if (!explanation || !explanation.contribuciones || !explanation.contribuciones.length) {
             noteEl.textContent = 'Explicabilidad no disponible para esta zona.';
             return;
@@ -3987,34 +4657,111 @@
           });
         }
 
+        // El modelo de lenguaje escribe negritas (**texto**), titulos (### ) y
+        // viñetas de markdown. Se escapa primero: su texto nunca entra como HTML.
+        function formatAnswer(text) {
+          return escapeHtml(text)
+            .replace(/^#{1,4}\s*(.+)$/gm, '<strong>$1</strong>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/^(\s*)[*-]\s+/gm, '$1• ');
+        }
+
+        function engineLabel(engine) {
+          return String(engine).replace(/^ollama:/, '');
+        }
+
+        function waitingNode(message) {
+          const seconds = Math.floor((Date.now() - message.startedAt) / 1000);
+          const wrap = document.createElement('span');
+          wrap.className = 'chat-waiting';
+          wrap.innerHTML = '<span class="typing" aria-hidden="true"><span></span><span></span><span></span></span>';
+
+          const label = document.createElement('span');
+          label.textContent = seconds >= 3 ? `Analizando la zona… ${seconds} s` : 'Analizando la zona…';
+          wrap.appendChild(label);
+          return wrap;
+        }
+
+        // Debajo de la respuesta: con que se genero, sus fuentes y la advertencia.
+        function metaNode(message) {
+          if (message.note) {
+            const note = document.createElement('p');
+            note.className = 'chat-note';
+            note.textContent = message.note;
+            return note;
+          }
+          if (!message.engine || message.pending) return null;
+
+          const details = document.createElement('details');
+          const summary = document.createElement('summary');
+          const list = document.createElement('ul');
+          const warning = document.createElement('p');
+          const sources = message.sources || [];
+
+          details.className = 'chat-sources';
+          summary.textContent = `Generado con IA · ${engineLabel(message.engine)} · ${sources.length} fuentes`;
+          sources.forEach((source) => {
+            const item = document.createElement('li');
+            item.textContent = source.referencia;
+            list.appendChild(item);
+          });
+          warning.textContent = message.warning || '';
+
+          details.append(summary, list, warning);
+          return details;
+        }
+
+        function messageNode(message) {
+          const row = document.createElement('div');
+          const bubble = document.createElement('div');
+
+          row.classList.add('chat-message', `chat-message--${message.author}`);
+          bubble.classList.add('chat-bubble');
+
+          if (message.pending && !message.text) {
+            bubble.appendChild(waitingNode(message));
+          } else if (message.engine) {
+            bubble.innerHTML = formatAnswer(message.text);
+            bubble.classList.toggle('is-writing', Boolean(message.pending));
+          } else {
+            bubble.textContent = message.text;
+          }
+
+          row.appendChild(bubble);
+          const meta = metaNode(message);
+          if (meta) row.appendChild(meta);
+          return row;
+        }
+
         function renderMessages(listEl, messages) {
           listEl.textContent = '';
-
-          messages.forEach((message) => {
-            const row = document.createElement('div');
-            const bubble = document.createElement('div');
-
-            row.classList.add('chat-message', `chat-message--${message.author}`);
-            bubble.classList.add('chat-bubble');
-            bubble.textContent = message.text;
-
-            row.appendChild(bubble);
-            listEl.appendChild(row);
-          });
-
+          messages.forEach((message) => listEl.appendChild(messageNode(message)));
           listEl.scrollTop = listEl.scrollHeight;
+        }
+
+        // Mientras la respuesta se escribe solo cambia el ultimo mensaje. Se sigue
+        // bajando solo si el usuario ya estaba abajo: si subio a leer, no se le mueve.
+        function renderLastMessage(listEl, message) {
+          const atBottom = listEl.scrollHeight - listEl.scrollTop - listEl.clientHeight < 80;
+          const last = listEl.lastElementChild;
+          const node = messageNode(message);
+
+          if (last) listEl.replaceChild(node, last);
+          else listEl.appendChild(node);
+          if (atBottom) listEl.scrollTop = listEl.scrollHeight;
         }
 
         function renderSuggestions(listEl, suggestions, onPick) {
           listEl.textContent = '';
 
-          suggestions.forEach((text) => {
+          suggestions.forEach((suggestion) => {
             const button = document.createElement('button');
 
             button.type = 'button';
             button.classList.add('chat-suggestion');
-            button.textContent = text;
-            button.addEventListener('click', () => onPick(text));
+            if (suggestion.kind) button.classList.add('is-ai');
+            button.textContent = suggestion.text;
+            button.addEventListener('click', () => onPick(suggestion));
 
             listEl.appendChild(button);
           });
@@ -4418,8 +5165,8 @@
 
             <table class="report-table report-meta">
               <tbody>
-                <tr><th>Zona</th><td>${escapeHtml(report.zone)}</td></tr>
-                <tr><th>Municipio</th><td>${escapeHtml(report.municipality)}</td></tr>
+                <tr><th>${report.isArea ? 'Ámbito' : 'Zona'}</th><td>${escapeHtml(report.zone)}</td></tr>
+                <tr><th>${report.isArea ? 'Municipios' : 'Municipio'}</th><td>${escapeHtml(report.municipality)}</td></tr>
                 <tr><th>Hogares registrados</th><td>${report.households.toLocaleString('es-CO')}</td></tr>
                 <tr><th>Personas</th><td>${report.people.toLocaleString('es-CO')}</td></tr>
                 <tr><th>Fuente y periodo</th><td>${escapeHtml(report.source)}</td></tr>
@@ -4453,8 +5200,35 @@
               </table>
             </section>` : ''}
 
+            ${conversationSection(report.conversation)}
+
             <p class="report-note">${escapeHtml(REPORT_NOTE)}
               Las contribuciones SHAP explican en qué se apoya el modelo, no relaciones causales.</p>`;
+        }
+
+        // Lo que se hablo con el asistente. Con la IA, su resumen; sin ella, la
+        // lista de consultas. Sin conversacion, no hay seccion.
+        function conversationSection(conversation) {
+          if (!conversation) return '';
+
+          if (conversation.text) {
+            return `
+            <section class="report-section">
+              <h2>Resumen de la conversación con el asistente</h2>
+              <div class="report-summary">${formatAnswer(conversation.text)}</div>
+              <p class="report-note">Resumen redactado por la IA (${escapeHtml(engineLabel(conversation.engine))})
+                a partir del chat. Es apoyo a la decisión, no una recomendación oficial.</p>
+            </section>`;
+          }
+
+          return `
+            <section class="report-section">
+              <h2>Consultas realizadas al asistente</h2>
+              <ul class="report-list">
+                ${conversation.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}
+              </ul>
+              <p class="report-note">El resumen de la IA no estaba disponible al exportar.</p>
+            </section>`;
         }
 
         function downloadFile(fileName, text, type) {
@@ -4473,8 +5247,8 @@
         return {
           formatRatio, formatPercent, escapeHtml, renderSummary, renderBreadcrumb, renderDimensions,
           setDimensionExpanded, renderIndicatorsNote, renderIndicators, renderCollapseButton,
-          renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations,
-          renderMessages, renderSuggestions,
+          renderMetrics, clearMetrics, renderDistribution, renderExplanation, renderDeprivations, renderZoneOptions,
+          renderMessages, renderLastMessage, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
           reportToXlsx, reportFileName, renderPrintReport, downloadFile
@@ -4496,8 +5270,12 @@
           return history.get(zoneId);
         }
 
-        function push(zoneId, author, text) {
-          messagesOf(zoneId).push({ author, text });
+        // Un mensaje es { author, text } y, si lo redacto la IA generativa,
+        // ademas { engine, sources }. Mientras espera respuesta lleva pending.
+        function push(zoneId, author, text, extra = {}) {
+          const message = { author, text, ...extra };
+          messagesOf(zoneId).push(message);
+          return message;
         }
 
         function ratio(value) {
@@ -4568,7 +5346,33 @@
           return { position: ranked.findIndex((z) => z.zona_id === zone.zona_id) + 1, total: ranked.length };
         }
 
+        // Los factores del modelo explican hogares de una zona: el area no los tiene.
+        const AREA_WITHOUT_DRIVERS =
+          'Los factores del modelo se calculan por zona. Selecciona una zona en el mapa para ver ' +
+          'qué pesa más en su clasificación.';
+
+        function worstList(worst) {
+          return `${worst[0].nombre.toLowerCase()} (${ratio(worst[0].prevalencia)}), ` +
+            `${worst[1].nombre.toLowerCase()} (${ratio(worst[1].prevalencia)}) y ` +
+            `${worst[2].nombre.toLowerCase()} (${ratio(worst[2].prevalencia)})`;
+        }
+
+        function areaOverview(area) {
+          const ranked = getZonesRanked();
+          const most = ranked[0];
+          const least = ranked[ranked.length - 1];
+
+          return `En el ${area.zona_nombre} hay ${Number(area.total_hogares).toLocaleString('es-CO')} ` +
+            `hogares registrados en el Sisbén, repartidos en ${ranked.length} zonas. El ` +
+            `${ratio(area.pct_grupo_a)} está en el grupo A (pobreza extrema) y el ` +
+            `${ratio(Number(area.pct_grupo_a) + Number(area.pct_grupo_b))} entre los grupos A y B.\n\n` +
+            `La zona con más pobreza extrema es ${most.zona_nombre} (${ratio(most.pct_grupo_a)}) y la de ` +
+            `menos, ${least.zona_nombre} (${ratio(least.pct_grupo_a)}). Las privaciones más extendidas en ` +
+            `el área son ${worstList(deprivationsOf(area).slice(0, 3))}.`;
+        }
+
         function overview(zone) {
+          if (zone.isArea) return areaOverview(zone);
           const worst = deprivationsOf(zone).slice(0, 3);
           const rank = rankOf(zone);
 
@@ -4577,9 +5381,7 @@
             `grupo A (pobreza extrema) y el ${ratio(Number(zone.pct_grupo_a) + Number(zone.pct_grupo_b))} ` +
             `entre los grupos A y B. Ocupa el puesto ${rank.position} de ${rank.total} entre las zonas del ` +
             `área metropolitana ordenadas por pobreza extrema.\n\n` +
-            `Las privaciones más extendidas son ${worst[0].nombre.toLowerCase()} (${ratio(worst[0].prevalencia)}), ` +
-            `${worst[1].nombre.toLowerCase()} (${ratio(worst[1].prevalencia)}) y ` +
-            `${worst[2].nombre.toLowerCase()} (${ratio(worst[2].prevalencia)}).`;
+            `Las privaciones más extendidas son ${worstList(worst)}.`;
         }
 
         function critical(zone) {
@@ -4588,10 +5390,10 @@
           const driver = drivers.find((item) => item.contribucion > 0) || drivers[0];
 
           const observed = `La privación más extendida es ${worst.nombre.toLowerCase()}, presente en el ` +
-            `${ratio(worst.prevalencia)} de los hogares de la zona, dentro de la dimensión de ` +
-            `${worst.dimension.toLowerCase()}.`;
+            `${ratio(worst.prevalencia)} de los hogares ${zone.isArea ? 'del área' : 'de la zona'}, ` +
+            `dentro de la dimensión de ${worst.dimension.toLowerCase()}.`;
 
-          if (!driver) return `${observed}\n\n${MODEL_UNAVAILABLE}`;
+          if (!driver) return `${observed}\n\n${zone.isArea ? AREA_WITHOUT_DRIVERS : MODEL_UNAVAILABLE}`;
 
           return `${observed}\n\n` +
             `Conviene distinguir dos cosas: qué es más frecuente y qué pesa más en la clasificación. ` +
@@ -4616,8 +5418,8 @@
             }
           });
 
-          let text = `Líneas de intervención pertinentes para ${zone.zona_nombre}, ordenadas por el peso ` +
-            `que tienen en esta zona:\n`;
+          let text = `Líneas de intervención pertinentes para ${zone.isArea ? 'el ' : ''}${zone.zona_nombre}, ` +
+            `ordenadas por el peso que tienen ${zone.isArea ? 'en el área' : 'en esta zona'}:\n`;
 
           picks.slice(0, 4).forEach((pick, index) => {
             text += `\n${index + 1}. ${pick.name}: ${ACTIONS[pick.name]}. Se prioriza porque ${pick.reason}.`;
@@ -4677,7 +5479,8 @@
           const predicted = prediction.predicho;
           const top = ['A', 'B', 'C', 'D'].reduce((a, b) => (predicted[a] >= predicted[b] ? a : b));
 
-          return `Para esta zona el modelo estima que el grupo mayoritario es el ${top}, con un ` +
+          return `Para ${zone.isArea ? 'el área (sumando la estimación de sus ocho zonas)' : 'esta zona'} ` +
+            `el modelo estima que el grupo mayoritario es el ${top}, con un ` +
             `${ratio(predicted[top])} de los hogares, frente al ${ratio(zone['pct_grupo_' + top.toLowerCase()])} ` +
             `observado en el dataset.\n\n` +
             `El modelo es ${card.algoritmo}, entrenado sobre ${card.n_variables} variables ` +
@@ -4690,7 +5493,7 @@
         const RULES = [
           { keys: ['recomend', 'interven', 'que hacer', 'que deberia', 'accion', 'priorizar', 'invertir', 'proyecto'], answer: recommend },
           { keys: ['critic', 'principal problema', 'peor', 'mas grave', 'mayor problema', 'problema'], answer: critical },
-          { keys: ['compar', 'otras zonas', 'ranking', 'rural', 'urbana', 'peores'], answer: compare },
+          { keys: ['compar', 'otras zonas', 'ranking', 'rural', 'urbana', 'peores', 'que zona', 'atencion'], answer: compare },
           { keys: ['modelo', 'predic', 'prediccion', 'precision', 'exactitud', 'algoritmo', 'ia'], answer: modelAnswer },
           { keys: ['educacion', 'escolar', 'analfabet', 'estudi'], answer: (zone) => byDimension(zone, 'Educacion') },
           { keys: ['salud', 'aseguramiento', 'eps'], answer: (zone) => byDimension(zone, 'Salud') },
@@ -4704,28 +5507,107 @@
           return rule ? rule.answer(zone) : overview(zone);
         }
 
+        // kind: la accion que pide al backend. Sin kind es una pregunta libre.
         const SUGGESTIONS = [
-          '¿Cuál es el principal problema de esta zona?',
-          '¿Qué intervenciones recomiendas?',
-          '¿Cómo se compara con las demás zonas?',
-          '¿Qué dice el modelo sobre esta zona?'
+          { text: '¿Cuál es el principal problema de esta zona?' },
+          { text: '¿Qué intervenciones recomiendas?' },
+          { text: '¿Cómo se compara con las demás zonas?' },
+          { text: '¿Qué dice el modelo sobre esta zona?' }
         ];
 
-        function greet(zone) {
-          if (messagesOf(zone.zona_id).length) return;
-          push(zone.zona_id, 'assistant', overview(zone));
+        // Con la IA generativa, las dos primeras piden un analisis completo de la zona.
+        const AI_SUGGESTIONS = [
+          { text: 'Dame tus conclusiones sobre esta zona', kind: 'interpretar' },
+          { text: '¿Qué intervenciones recomiendas?', kind: 'recomendar' },
+          { text: '¿Cómo se compara con las demás zonas?' },
+          { text: '¿Qué dice el modelo sobre esta zona?' }
+        ];
+
+        // Sin zona seleccionada se analiza el area completa.
+        const AREA_SUGGESTIONS = [
+          { text: '¿Qué zona necesita más atención?' },
+          { text: '¿Qué intervenciones recomiendas para el área?' },
+          { text: '¿Cómo se compara lo rural con lo urbano?' },
+          { text: '¿Cuál es la privación más extendida en el área?' }
+        ];
+
+        const AREA_AI_SUGGESTIONS = [
+          { text: 'Dame tus conclusiones sobre el área metropolitana', kind: 'interpretar' },
+          { text: '¿Qué intervenciones recomiendas para el área?', kind: 'recomendar' },
+          { text: '¿Qué zona necesita más atención?' },
+          { text: '¿Cómo se compara lo rural con lo urbano?' }
+        ];
+
+        function suggestionsFor(zone, withAi) {
+          if (zone.isArea) return withAi ? AREA_AI_SUGGESTIONS : AREA_SUGGESTIONS;
+          return withAi ? AI_SUGGESTIONS : SUGGESTIONS;
         }
 
+        function greet(zone, withAi = false) {
+          if (messagesOf(zone.zona_id).length) return;
+          const hint = withAi
+            ? `\n\nPuedes pedirme mis conclusiones sobre ${zone.isArea ? 'el área' : 'la zona'} o ` +
+              'preguntarme lo que necesites: respondo con la IA generativa, apoyado en estas cifras.' +
+              (zone.isArea ? ' Para analizar una zona en particular, selecciónala en el mapa.' : '')
+            : '';
+          push(zone.zona_id, 'assistant', overview(zone) + hint);
+        }
+
+        // Respuesta inmediata con plantillas: sin backend, o si la IA no responde.
         function ask(zone, question) {
           push(zone.zona_id, 'user', question);
           push(zone.zona_id, 'assistant', reply(zone, question));
+        }
+
+        // Conversacion previa en el formato de ia-asistente. El backend acepta 20
+        // mensajes y el asistente usa los ultimos seis.
+        function historyFor(zoneId) {
+          return messagesOf(zoneId)
+            .filter((message) => !message.pending)
+            .slice(-10)
+            .map((message) => ({
+              rol: message.author === 'user' ? 'usuario' : 'asistente',
+              contenido: clip(message.text)
+            }));
+        }
+
+        function startAnswer(zone, question) {
+          push(zone.zona_id, 'user', question);
+          return push(zone.zona_id, 'assistant', '', { pending: true, startedAt: Date.now() });
+        }
+
+        function finishAnswer(message, fields) {
+          delete message.pending;
+          Object.assign(message, fields);
         }
 
         function getMessages(zoneId) {
           return messagesOf(zoneId);
         }
 
-        return { SUGGESTIONS, greet, ask, getMessages };
+        // La conversacion para el resumen del reporte: sin el saludo inicial, que
+        // es una plantilla, y solo si el funcionario pregunto algo. El backend
+        // acepta hasta 20 mensajes.
+        function conversationFor(zoneId) {
+          const messages = messagesOf(zoneId).filter((message) => !message.pending).slice(1);
+          if (!messages.some((message) => message.author === 'user')) return [];
+          return messages.slice(-20).map((message) => ({
+            rol: message.author === 'user' ? 'usuario' : 'asistente',
+            contenido: clip(message.text)
+          }));
+        }
+
+        // El backend rechaza mensajes de mas de 4.000 caracteres (tope contra
+        // peticiones gigantes). El asistente solo usa unos 800 de cada uno, asi
+        // que recortar aqui no cambia la respuesta y evita que el chat falle.
+        function clip(text) {
+          return String(text || '').slice(0, 3900);
+        }
+
+        return {
+          suggestionsFor, greet, ask, reply, conversationFor,
+          historyFor, startAnswer, finishAnswer, getMessages
+        };
       })();
 
       (() => {
@@ -4734,20 +5616,24 @@
 
         const {
           loadData, getSummary, getCatalog, getZones, getZonesRanked,
-          getDeprivations, getPrediction, getExplanation,
+          getDeprivations, getPrediction, getExplanation, getArea,
           login, getSession, logout, takeNotice,
           listUsers, createUser, setUserActive, deleteUser,
+          assistantAvailable, askAssistant, interpretZone, summarizeConversation,
           buildZoneReport
         } = Model;
 
-        const { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode } = MapView;
-        const { greet, ask, getMessages, SUGGESTIONS } = Chat;
+        const { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode, refreshTheme } = MapView;
+        const {
+          greet, ask, reply, historyFor, startAnswer, finishAnswer, getMessages,
+          suggestionsFor, conversationFor
+        } = Chat;
 
         const {
           renderSummary, renderBreadcrumb, renderDimensions, renderIndicators,
           setDimensionExpanded, renderIndicatorsNote, renderCollapseButton,
-          renderMetrics, clearMetrics, renderDistribution,
-          renderExplanation, renderDeprivations, renderMessages, renderSuggestions,
+          renderMetrics, clearMetrics, renderDistribution, renderZoneOptions,
+          renderExplanation, renderDeprivations, renderMessages, renderLastMessage, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
           reportToXlsx, reportFileName, renderPrintReport, downloadFile
@@ -4826,7 +5712,13 @@
           messagesEl: document.getElementById('chat-messages'),
           suggestionsEl: document.getElementById('chat-suggestions'),
           chatForm: document.getElementById('chat-form'),
-          chatInput: document.getElementById('chat-input')
+          chatInput: document.getElementById('chat-input'),
+          chatSubmitBtn: document.getElementById('chat-submit'),
+          zoneSelectEl: document.getElementById('zone-select'),
+          metricsTitleEl: document.getElementById('metrics-title'),
+          exportBtnTextEl: document.getElementById('toggle-export-text'),
+          themeBtn: document.getElementById('toggle-theme'),
+          loginThemeBtn: document.getElementById('login-theme')
         };
 
         const DEFAULT_LAYER = 'Hogares en grupo A (pobreza extrema)';
@@ -4841,6 +5733,8 @@
           mapLarge: false,
           mapInPanel: false,
           session: null,
+          // Hay una respuesta de la IA en camino.
+          waiting: false,
           started: false,
           adminOpen: false
         };
@@ -5053,48 +5947,54 @@
         // ---------------------------------------------------------------
         // Mapa y navegacion
         // ---------------------------------------------------------------
+        function isArea(zone) {
+          return Boolean(zone && zone.isArea);
+        }
+
         function refreshMap() {
-          drawZones(
-            getZones(), valueOf, selectZone,
-            state.selectedZone ? state.selectedZone.zona_id : null,
+          const zone = state.selectedZone;
+          drawZones(getZones(), valueOf, selectZone, zone && !isArea(zone) ? zone.zona_id : null,
             'Hogares en grupo A');
         }
 
         function refreshBreadcrumb() {
           const trail = [{ name: 'Área Metropolitana' }];
-          if (state.selectedZone) trail.push({ name: state.selectedZone.zona_nombre });
+          if (state.selectedZone && !isArea(state.selectedZone)) trail.push({ name: state.selectedZone.zona_nombre });
           renderBreadcrumb(refs.breadcrumbEl, trail, showMetroArea);
         }
 
+        // Sin zona seleccionada se analiza el area metropolitana completa: para el
+        // chat, las metricas, la ficha y el reporte es una zona mas.
         function showMetroArea() {
-          state.selectedZone = null;
-          state.deprivations = null;
-
-          refs.zoneNameEl.textContent = 'Área Metropolitana de Bucaramanga';
-          refs.sheetZoneEl.textContent = 'Área Metropolitana de Bucaramanga';
-          refs.chatEmptyEl.hidden = false;
-          refs.chatBodyEl.hidden = true;
-          refs.sheetEmptyEl.hidden = false;
-          refs.sheetBodyEl.hidden = true;
-
-          // El reporte es de una zona: sin zona seleccionada no hay nada que exportar.
-          toggleExportMenu(false);
-          refs.exportBtn.disabled = true;
-
-          clearMetrics(refs);
-          fitMetroArea();
-          refreshBreadcrumb();
-          refreshMap();
-          refreshDimensions();
+          selectZone(getArea());
         }
+
+        refs.zoneSelectEl.addEventListener('change', () => {
+          const id = Number(refs.zoneSelectEl.value);
+          const zone = id === getArea().zona_id ? getArea() : getZones().find((item) => item.zona_id === id);
+          if (zone) selectZone(zone);
+        });
 
         function selectZone(zone, zoomIn = true) {
           state.selectedZone = zone;
           state.deprivations = getDeprivations(zone.zona_id);
 
+          // Elegir una zona en el mapa ampliado lo cierra: se elige para analizarla.
+          // Al cerrarlo el mapa se reencuadra y el navegador tarda unos instantes
+          // en asentar su tamaño; el acercamiento espera, o el reencuadre lo anula.
+          const closedLarge = state.mapLarge;
+          if (closedLarge) setMapLarge(false);
+
           refreshBreadcrumb();
           refreshMap();
-          if (zoomIn) flyToZone(zone.cod_mpio);
+          const move = () => (isArea(zone) ? fitMetroArea() : flyToZone(zone.cod_mpio));
+          if (zoomIn && closedLarge) setTimeout(move, 350);
+          else if (zoomIn) move();
+
+          refs.zoneSelectEl.value = String(zone.zona_id);
+          refs.metricsTitleEl.textContent = isArea(zone) ? 'Métricas del área' : 'Métricas de la zona';
+          refs.chatInput.placeholder = isArea(zone)
+            ? '¿Qué quiere saber sobre el área metropolitana?' : '¿Qué quiere saber sobre esta zona?';
 
           refs.zoneNameEl.textContent = zone.zona_nombre;
           refs.sheetZoneEl.textContent = zone.zona_nombre;
@@ -5104,16 +6004,17 @@
           refs.sheetBodyEl.hidden = false;
           refs.exportBtn.disabled = false;
 
-          greet(zone);
+          greet(zone, assistantAvailable());
           renderMessages(refs.messagesEl, getMessages(zone.zona_id));
-          renderSuggestions(refs.suggestionsEl, SUGGESTIONS, send);
+          renderSuggestions(refs.suggestionsEl, suggestionsFor(zone, assistantAvailable()), send);
+          setChatBusy(state.waiting);
 
           const prediction = getPrediction(zone.zona_id);
           const explanation = getExplanation(zone.zona_id);
 
           renderMetrics(refs, zone, prediction);
           renderDistribution(refs.distributionEl, zone, prediction);
-          renderExplanation(refs.driversEl, refs.driversNoteEl, explanation);
+          renderExplanation(refs.driversEl, refs.driversNoteEl, explanation, isArea(zone));
           renderDeprivations(refs.deprivationsEl, state.deprivations);
           refreshDimensions();
         }
@@ -5121,16 +6022,91 @@
         // ---------------------------------------------------------------
         // Asistente
         // ---------------------------------------------------------------
-        function send(question) {
-          const zone = state.selectedZone;
-          if (!zone || !question.trim()) return;
+        const AI_UNAVAILABLE =
+          'La IA generativa no respondió, así que esta respuesta se armó con las cifras de la zona.';
 
-          ask(zone, question.trim());
-          renderMessages(refs.messagesEl, getMessages(zone.zona_id));
+        // Una sola respuesta a la vez: Ollama atiende las peticiones en fila.
+        function setChatBusy(busy) {
+          refs.chatInput.disabled = busy;
+          refs.chatSubmitBtn.disabled = busy;
+          refs.suggestionsEl.querySelectorAll('button').forEach((button) => { button.disabled = busy; });
+        }
+
+        function isShowing(zoneId) {
+          return Boolean(state.selectedZone && state.selectedZone.zona_id === zoneId);
+        }
+
+        // suggestion: texto escrito, o { text, kind } de una sugerencia. kind pide
+        // las conclusiones ('interpretar') o las recomendaciones ('recomendar').
+        async function send(suggestion) {
+          const zone = state.selectedZone;
+          const { text, kind } = typeof suggestion === 'string' ? { text: suggestion } : suggestion;
+          const question = String(text).trim();
+          if (!zone || !question || state.waiting) return;
+
+          if (!assistantAvailable()) {
+            ask(zone, question);
+            renderMessages(refs.messagesEl, getMessages(zone.zona_id));
+            return;
+          }
+
+          const zoneId = zone.zona_id;
+          const history = historyFor(zoneId);
+          const message = startAnswer(zone, question);
+          const refresh = () => { if (isShowing(zoneId)) renderLastMessage(refs.messagesEl, message); };
+
+          state.waiting = true;
+          setChatBusy(true);
+          renderMessages(refs.messagesEl, getMessages(zoneId));
+          // Mientras no llega texto, el contador de segundos dice que sigue trabajando.
+          const timer = window.setInterval(() => { if (!message.text) refresh(); }, 1000);
+
+          let fallback = false;
+          const onEvent = (event) => {
+            if (event.tipo === 'meta') {
+              // En modo plantilla el asistente devuelve las cifras en crudo; las
+              // plantillas del navegador las presentan mejor.
+              fallback = !String(event.generado_con).startsWith('ollama:');
+              Object.assign(message, { engine: event.generado_con, sources: event.fuentes, warning: event.advertencia });
+            } else if (event.tipo === 'texto' && !fallback) {
+              message.text += event.delta;
+              refresh();
+            } else if (event.tipo === 'error') {
+              throw Object.assign(new Error(event.detalle), event.codigo === 'ocupado' ? { code: 'limit' } : {});
+            }
+          };
+
+          try {
+            await (kind ? interpretZone(zoneId, kind, onEvent) : askAssistant(zoneId, question, history, onEvent));
+            if (fallback || !message.text.trim()) throw new Error('Sin respuesta del modelo de lenguaje');
+            finishAnswer(message, {});
+          } catch (error) {
+            if (error.code === 'expired') {
+              endSession('expired');
+              return;
+            }
+            // Limite de uso o asistente ocupado: la respuesta de plantilla, con el
+            // aviso de esperar en vez del de "la IA no respondio".
+            if (error.code === 'limit') {
+              finishAnswer(message, { text: reply(zone, question), engine: null, note: error.message });
+              return;
+            }
+            // Si ya se habia escrito parte, se conserva y se avisa del corte.
+            finishAnswer(message, message.text.trim() && !fallback
+              ? { note: 'La respuesta se interrumpió antes de terminar.' }
+              : { text: reply(zone, question), engine: null, note: AI_UNAVAILABLE });
+          } finally {
+            window.clearInterval(timer);
+            state.waiting = false;
+            setChatBusy(false);
+            refresh();
+            if (isShowing(zoneId)) refs.chatInput.focus();
+          }
         }
 
         refs.chatForm.addEventListener('submit', (event) => {
           event.preventDefault();
+          if (state.waiting) return;
           send(refs.chatInput.value);
           refs.chatInput.value = '';
         });
@@ -5148,7 +6124,33 @@
           if (open) refs.exportMenuEl.querySelector('.menu-item').focus();
         }
 
-        function exportReport(format) {
+        // Resumen de la conversacion para el PDF. Lo redacta la IA del chat; si no
+        // responde, o no hay backend, el reporte lista las preguntas que se hicieron.
+        async function conversationSummary(zone) {
+          const conversation = conversationFor(zone.zona_id);
+          if (!conversation.length) return null;
+
+          const questions = conversation.filter((message) => message.rol === 'usuario')
+            .map((message) => message.contenido);
+          if (assistantAvailable()) {
+            try {
+              const answer = await summarizeConversation(zone.zona_id, conversation);
+              if (String(answer.generado_con).startsWith('ollama:') && answer.texto.trim()) {
+                return { text: answer.texto, engine: answer.generado_con, questions };
+              }
+            } catch (error) {
+              if (error.code === 'expired') throw error;
+            }
+          }
+          return { text: null, engine: null, questions };
+        }
+
+        function setExportBusy(busy) {
+          refs.exportBtn.disabled = busy;
+          refs.exportBtnTextEl.textContent = busy ? 'Preparando resumen…' : 'Exportar reporte';
+        }
+
+        async function exportReport(format) {
           const zone = state.selectedZone;
           if (!zone) return;
 
@@ -5156,12 +6158,25 @@
 
           if (format === 'xlsx') {
             downloadFile(reportFileName(report, 'xlsx'), reportToXlsx(report), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-          } else {
-            // El navegador ofrece «Guardar como PDF» en el dialogo de impresion; asi
-            // no hace falta ninguna libreria externa.
-            renderPrintReport(refs.printReportEl, report);
-            window.print();
+            return;
           }
+
+          setExportBusy(true);
+          try {
+            report.conversation = await conversationSummary(zone);
+          } catch (error) {
+            if (error.code === 'expired') {
+              endSession('expired');
+              return;
+            }
+          } finally {
+            setExportBusy(false);
+          }
+
+          // El navegador ofrece «Guardar como PDF» en el dialogo de impresion; asi
+          // no hace falta ninguna libreria externa.
+          renderPrintReport(refs.printReportEl, report);
+          window.print();
         }
 
         refs.exportBtn.addEventListener('click', () => toggleExportMenu());
@@ -5309,6 +6324,7 @@
           // (flujo alternativo 1 de RF-01).
           invalid: 'Correo o contraseña incorrectos.',
           inactive: 'Tu usuario está desactivado. Contacta al administrador.',
+          throttled: 'Demasiados intentos de inicio de sesión desde esta red. Espera un minuto.',
           insecure: 'El inicio de sesión requiere una conexión segura (HTTPS o localhost).'
         };
 
@@ -5429,6 +6445,41 @@
         });
 
         // ---------------------------------------------------------------
+        // Tema claro / oscuro
+        // ---------------------------------------------------------------
+        // El tema guardado ya se aplico en <head>, antes de pintar. Aqui solo se
+        // cambia y se recuerda: es una preferencia de este navegador.
+        const THEME_KEY = 'sd.theme';
+
+        function syncThemeButtons() {
+          const dark = document.documentElement.dataset.theme === 'dark';
+          const label = dark ? 'Activar modo claro' : 'Activar modo oscuro';
+          [refs.themeBtn, refs.loginThemeBtn].forEach((button) => {
+            button.setAttribute('aria-pressed', String(dark));
+            button.setAttribute('aria-label', label);
+            button.title = label;
+          });
+        }
+
+        function toggleTheme() {
+          const dark = document.documentElement.dataset.theme !== 'dark';
+          if (dark) document.documentElement.dataset.theme = 'dark';
+          else delete document.documentElement.dataset.theme;
+
+          try {
+            localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+          } catch (error) {
+            // Sin almacenamiento: el tema dura hasta recargar.
+          }
+          syncThemeButtons();
+          refreshTheme();
+        }
+
+        refs.themeBtn.addEventListener('click', toggleTheme);
+        refs.loginThemeBtn.addEventListener('click', toggleTheme);
+        syncThemeButtons();
+
+        // ---------------------------------------------------------------
         // Arranque
         // ---------------------------------------------------------------
         async function start() {
@@ -5464,9 +6515,11 @@
           refreshBreadcrumb();
           refreshMap();
 
-          // Se abre sobre la zona con mayor pobreza extrema, sin acercar, para que la
-          // vista inicial conserve toda el area metropolitana.
-          selectZone(getZonesRanked()[0], false);
+          renderZoneOptions(refs.zoneSelectEl, getArea(), getZones());
+
+          // Se abre sobre el area metropolitana completa: se puede analizar sin
+          // elegir ninguna zona.
+          selectZone(getArea(), false);
         }
 
         // No se arranca directamente: primero se comprueba si hay una sesion
