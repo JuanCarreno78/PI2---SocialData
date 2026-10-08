@@ -3,9 +3,9 @@
 Interfaz de consulta de indicadores de vulnerabilidad socioeconómica del Área
 Metropolitana de Bucaramanga: Bucaramanga, Floridablanca, Girón y Piedecuesta.
 
-Sitio estático autocontenido: toda la interfaz (estructura, estilos y lógica)
-está en `index.html`. No necesita build ni contenedor, y no enlaza hojas de
-estilo ni scripts de terceros por CDN.
+Sitio estático organizado como los laboratorios de Diseño Web: `index.html`,
+`css/styles.css` y módulos ES en `js/`. No necesita build ni contenedor, y no
+enlaza hojas de estilo ni scripts de terceros por CDN.
 
 ## Cómo verlo
 
@@ -44,40 +44,39 @@ además uno o dos minutos en propagarse.
 
 ```
 frontend/
-|--- index.html               interfaz completa: HTML, <style> y <script>
-|--- api/
-     |--- data.json          corte real de los indicadores
-|--- vendor/leaflet/         Leaflet 1.9.4, descargado en el repositorio
+|--- index.html               estructura de la página
+|--- css/styles.css           estilos de la aplicación
+|--- js/
+|    |--- theme.js            aplica el modo oscuro antes de pintar
+|    |--- model.js            datos y sesión (no usa document)
+|    |--- map.js              mapa con Leaflet
+|    |--- view.js             pinta el DOM (no consulta el modelo)
+|    |--- chat.js             conversación por zona
+|    |--- app.js              controlador: eventos y estado
+|--- api/data.json            corte real de los indicadores
+|--- vendor/leaflet/          Leaflet 1.9.4, descargado en el repositorio
 ```
 
-`index.html` es el único archivo propio de la interfaz. Contiene un bloque
-`<style>` con los estilos de la aplicación y los de Leaflet, y un único
-`<script>` clásico con toda la lógica. Del exterior del documento solo carga dos
-recursos locales: `vendor/leaflet/leaflet.js` y `api/data.json`. La cartografía
-base (teselas de Esri u OpenStreetMap) es el único contenido que se descarga en
-línea.
-
-Esta disposición responde a un problema observado en la publicación: con los
-estilos y los scripts en archivos separados, el navegador llegó a combinar un
-`index.html` nuevo con hojas de estilo y scripts antiguos conservados en caché,
-y la pantalla de acceso se mostraba sin estilos y sin respuesta. Con todo
-dentro del mismo documento, cada carga es coherente consigo misma.
-
-### Organización del script
-
-El script mantiene la separación por rol de los laboratorios de Diseño Web. Cada
-capa es un módulo en cierre (`const Nombre = (() => { … })()`) que solo expone
-su interfaz pública:
+Como en los labs, `index.html` carga `js/app.js` con `<script type="module">` y
+cada archivo importa lo que usa (`import { ... } from './model.js'`). El
+controlador (`app.js`) es el único que conoce a todos los demás. Los módulos ES
+no funcionan desde `file://`: hace falta Live Server o el servidor de arriba.
 
 | Módulo | Rol |
 |---|---|
-| `Model` | Datos y sesión. No usa `document`. |
-| `MapView` | Mapa con Leaflet. |
-| `View` | Pinta el DOM. No consulta el modelo. |
-| `Chat` | Conversación por zona. Con backend la redacta la IA generativa; sin él, plantillas sobre las cifras. |
-| Controlador (último bloque) | Cablea eventos, guarda el estado y reparte el trabajo. Es el único que conoce a todos los demás. |
+| `model.js` | Datos y sesión. No usa `document`. |
+| `map.js` | Mapa con Leaflet. |
+| `view.js` | Pinta el DOM. No consulta el modelo. |
+| `chat.js` | Conversación por zona. Con backend la redacta la IA generativa; sin él, plantillas sobre las cifras. |
+| `app.js` | Cablea eventos, guarda el estado y reparte el trabajo. |
 
-El script también tolera la ausencia de recursos. Si `leaflet.js` no llega a
+**Versión de los archivos.** Los enlaces a CSS y JS llevan `?v=AAAAMMDD` y un
+`<script type="importmap">` en `index.html` aplica la misma versión a los
+`import`. Así el navegador nunca combina un `index.html` nuevo con archivos
+viejos guardados en caché (GitHub Pages guarda diez minutos). Al publicar
+cambios, sube ese número en `index.html`.
+
+La aplicación también tolera la ausencia de recursos. Si `leaflet.js` no llega a
 cargar, el mapa muestra un aviso y el resto de la aplicación funciona. Si
 `api/data.json` no está disponible, la interfaz lo indica en lugar de quedar en
 blanco. El formulario de acceso se habilita siempre, con independencia de esos
@@ -380,9 +379,9 @@ excluyentes y se cierran con su ✕ o con Escape).
 
 | Sección | Qué permite |
 |---|---|
-| **Cuenta** | Ver nombre, correo, rol, fecha de alta, el **inicio de sesión anterior** (para notar un acceso que no se reconoce) y cuándo se cambió la contraseña. |
+| **Cuenta** | Ver nombre, correo, rol, fecha de alta y cuándo se cambió la contraseña. |
 | **Nombre** | El **administrador** lo cambia directamente. El **analista** envía una **solicitud** que un administrador aprueba o rechaza (con motivo opcional); mientras está pendiente la puede cancelar, y se muestra el resultado de la última durante 14 días. |
-| **Contraseña** | Pide la actual; la nueva debe tener al menos 12 caracteres (se aceptan frases fáciles de recordar) y no puede ser una conocida ni contener el correo. **Al cambiarla se cierran las demás sesiones abiertas**; la actual sigue. |
+| **Contraseña** | Pide la actual; la nueva debe tener al menos 12 caracteres y no puede ser una conocida ni contener el correo. **Al cambiarla se cierran las demás sesiones abiertas**; la actual sigue. |
 | **Preferencias** | Modo claro u oscuro (se guarda en el navegador). |
 
 El correo no se cambia desde el perfil: es el identificador para entrar.

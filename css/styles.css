@@ -1,7 +1,4 @@
-/* SocialData - hoja de estilos
-   Pantalla de acceso previa; barra lateral con mapa, metricas e indicadores;
-   asistente como elemento principal; ficha tecnica y mapa ampliado como
-   paneles sobre la conversacion. */
+/* SocialData - hoja de estilos */
 
 :root {
   --bg: #eff2ef;
@@ -12,7 +9,10 @@
   --line: #dce3de;
 
   --primary: #0f5c52;
+  /* primary-dark es para texto y --primary-deep para fondos: en claro son el mismo
+     verde, pero en oscuro el texto tiene que aclararse y el fondo no. */
   --primary-dark: #0a3f38;
+  --primary-deep: #0a3f38;
   --primary-soft: #e3eeeb;
   --accent: #b5762c;
 
@@ -29,6 +29,130 @@
   --shadow-button: 0 1px 2px rgba(10, 63, 56, 0.24), 0 2px 8px rgba(10, 63, 56, 0.18);
 
   --sidebar-width: 340px;
+}
+
+/* Modo oscuro */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1614;
+  --surface: #17211e;
+  --surface-soft: #1c2824;
+  --ink: #e2ebe7;
+  --ink-soft: #9db0a9;
+  --line: #2b3934;
+
+  --primary: #23917a;
+  --primary-dark: #8fd4c2;
+  --primary-deep: #0d4a41;
+  --primary-soft: #1d3832;
+  --accent: #d39545;
+
+  --low: #4fa576;
+  --medium: #e0b04f;
+  --high: #d65a4c;
+
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 12px rgba(0, 0, 0, 0.25);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme="dark"] .map-canvas,
+:root[data-theme="dark"] .map-canvas .leaflet-container {
+  background-color: #1a2421;
+}
+
+:root[data-theme="dark"] .map-canvas.no-basemap,
+:root[data-theme="dark"] .map-canvas.no-basemap .leaflet-container {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+:root[data-theme="dark"] .map-canvas .leaflet-control-attribution {
+  background: rgba(23, 33, 30, 0.85);
+  color: var(--ink-soft);
+}
+
+:root[data-theme="dark"] .map-canvas .leaflet-control-attribution a {
+  color: var(--primary-dark);
+}
+
+:root[data-theme="dark"] .leaflet-bar a {
+  background-color: var(--surface);
+  border-bottom-color: var(--line);
+  color: var(--ink);
+}
+
+:root[data-theme="dark"] .leaflet-bar a:hover,
+:root[data-theme="dark"] .leaflet-bar a:focus {
+  background-color: var(--surface-soft);
+}
+
+:root[data-theme="dark"] .leaflet-control-scale-line {
+  background: rgba(23, 33, 30, 0.8);
+  border-color: var(--ink-soft);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+:root[data-theme="dark"] .login-screen {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(35, 145, 122, 0.16), transparent 42%),
+    radial-gradient(circle at 88% 90%, rgba(211, 149, 69, 0.1), transparent 40%),
+    var(--bg);
+}
+
+:root[data-theme="dark"] .role-badge.is-admin {
+  background: #3a2c17;
+  color: #f0c98d;
+}
+
+:root[data-theme="dark"] .profile-note.is-warning {
+  background: #3a2c17;
+  color: #f0c98d;
+}
+
+:root[data-theme="dark"] .profile-note.is-error {
+  background: #3a1d1a;
+  color: #f0a59c;
+}
+
+:root[data-theme="dark"] .state-badge {
+  background: #173326;
+  color: #8fd0a6;
+}
+
+:root[data-theme="dark"] .state-badge.is-off {
+  background: #3a1d1a;
+  color: #f0a59c;
+}
+
+:root[data-theme="dark"] .user-action.is-danger:hover {
+  background: #3a1d1a;
+}
+
+:root[data-theme="dark"] .sheet-content,
+:root[data-theme="dark"] .admin-content {
+  scrollbar-color: #3a4a44 transparent;
+}
+
+:root[data-theme="dark"] .sheet-content::-webkit-scrollbar-thumb {
+  background: #3a4a44;
+}
+
+/* El reporte se imprime siempre en claro, sea cual sea el tema. */
+@media print {
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-soft: #f5f7f5;
+    --ink: #17241f;
+    --ink-soft: #52655f;
+    --line: #dce3de;
+    --primary: #0f5c52;
+    --primary-dark: #0a3f38;
+    --primary-soft: #e3eeeb;
+  }
 }
 
 *,
@@ -79,7 +203,7 @@ button {
   color: var(--ink-soft);
 }
 
-/* --- Estructura ------------------------------------------------------- */
+/* Estructura */
 
 .app {
   min-height: 100vh;
@@ -104,18 +228,23 @@ button {
   gap: 14px;
 }
 
+/* flex-shrink 0: el logotipo nunca cede ancho aunque el texto de al lado no quepa. */
+/* Logotipo: un marcador de ubicación con tres barras crecientes, el territorio y sus
+   datos. */
 .brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
+  display: block;
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-sm);
-  background: var(--primary);
-  color: #ffffff;
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
+}
+
+.brand-mark-bg,
+.brand-mark-bar {
+  fill: var(--primary);
+}
+
+.brand-mark-pin {
+  fill: #ffffff;
 }
 
 .brand h1 {
@@ -170,43 +299,8 @@ button {
   font-weight: 600;
 }
 
-/* --- Cabecera: ruta y sesion ----------------------------------------- */
-
-.header-end {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-}
-
-.session {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-left: 20px;
-  border-left: 1px solid var(--line);
-}
-
-.session-user {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.25;
-}
-
-.session-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.session-role {
-  font-size: 11.5px;
-  color: var(--ink-soft);
-}
-
-/* minmax(0, 1fr) y no auto: sin esto la fila crece hasta el alto del
-   contenido y las dos columnas desbordan la ventana en vez de scrollear. */
+/* minmax(0, 1fr) y no auto: sin esto la fila crece hasta el alto del contenido y las dos
+   columnas desbordan la ventana en vez de scrollear. */
 .app-main {
   flex: 1;
   display: grid;
@@ -217,7 +311,7 @@ button {
   min-height: 0;
 }
 
-/* --- Botones ---------------------------------------------------------- */
+/* Botones */
 
 .btn-primary {
   display: inline-flex;
@@ -227,7 +321,7 @@ button {
   padding: 11px 18px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(180deg, #14705f 0%, var(--primary) 60%, var(--primary-dark) 100%);
+  background: linear-gradient(180deg, #14705f 0%, var(--primary) 60%, var(--primary-deep) 100%);
   color: #ffffff;
   font-size: 13.5px;
   font-weight: 700;
@@ -256,8 +350,8 @@ button {
   line-height: 1;
 }
 
-/* Deshabilitado: sin elevacion ni cambio al pasar el puntero, para que no
-   parezca pulsable. */
+/* Deshabilitado: sin elevación ni cambio al pasar el puntero, para que no parezca
+   pulsable. */
 .btn-primary:disabled {
   opacity: 0.45;
   cursor: default;
@@ -266,29 +360,13 @@ button {
   box-shadow: none;
 }
 
-.btn-ghost {
-  padding: 7px 14px;
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--primary-dark);
-  transition: border-color 0.14s ease, background 0.14s ease;
-}
-
-.btn-ghost:hover {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-}
-
-/* Encabeza su seccion, asi que el aire va debajo y no encima. */
+/* Encabeza su sección, así que el aire va debajo y no encima. */
 .btn-block {
   width: 100%;
   margin: 10px 0 4px;
 }
 
-/* --- Barra lateral ---------------------------------------------------- */
+/* Barra lateral */
 
 .sidebar {
   display: flex;
@@ -300,9 +378,7 @@ button {
   padding-right: 4px;
 }
 
-/* Cada bloque conserva su alto natural. Si se les deja encoger, el
-   overflow hidden que redondea sus esquinas se traga el contenido sobrante
-   en silencio y la barra deja de tener desplazamiento. */
+/* Cada bloque conserva su alto natural. */
 .sidebar > * {
   flex: 0 0 auto;
 }
@@ -331,6 +407,93 @@ button {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
+}
+
+/* Selector de zona: la forma más directa de elegir qué analizar. */
+.zone-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.zone-picker-label {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.zone-select {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.zone-select:hover,
+.zone-select:focus {
+  border-color: var(--primary);
+}
+
+/* Globo al pasar sobre una zona del mapa. */
+.leaflet-tooltip.zone-tip {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-panel);
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.leaflet-tooltip.zone-tip::before {
+  display: none;
+}
+
+/* Leaflet envuelve el contenido: el apilado va en el bloque propio. */
+.zone-tip > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zone-tip strong {
+  font-size: 12.5px;
+  color: var(--primary-dark);
+}
+
+.zone-tip-action {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+/* Contenedor del rótulo de municipio: sin el fondo blanco por defecto. */
+.town-label-icon {
+  background: none;
+  border: none;
+  white-space: nowrap;
+}
+
+.town-label-icon .town-label {
+  display: inline-block;
+}
+
+:root[data-theme="dark"] .town-label {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(23, 33, 30, 0.9);
 }
 
 .btn-map {
@@ -429,8 +592,7 @@ button {
   background: var(--high);
 }
 
-/* El mapa es un recuadro de referencia, no el protagonista. El alto se
-   adapta para que en pantallas bajas no se coma el espacio de las metricas. */
+/* El mapa es un recuadro de referencia, no el protagonista. */
 .map-canvas {
   height: clamp(185px, 24vh, 250px);
   background-color: #edf1ef;
@@ -458,12 +620,24 @@ button {
   margin: 0;
 }
 
+/* Aviso si Leaflet no llega a cargar. */
+.map-canvas.map-unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
 .map-canvas .leaflet-container {
   background-color: #edf1ef;
 }
 
-/* Respaldo sin conexion: si ningun proveedor de teselas responde, map.js
-   marca el contenedor y el fondo pasa a una reticula. */
+/* Respaldo sin conexión: si ningún proveedor de teselas responde, map.js marca el
+   contenedor y el fondo pasa a una retícula. */
 .map-canvas.no-basemap,
 .map-canvas.no-basemap .leaflet-container {
   background-image:
@@ -537,7 +711,7 @@ button {
   color: var(--primary);
 }
 
-/* --- Acordeones: un mismo boton abre y cierra ------------------------- */
+/* Acordeones: un mismo botón abre y cierra */
 
 .accordion-head {
   margin: 0;
@@ -612,7 +786,7 @@ button {
   padding: 12px 14px 14px;
 }
 
-/* --- Metricas --------------------------------------------------------- */
+/* Métricas */
 
 .metrics {
   display: grid;
@@ -668,7 +842,7 @@ button {
   font-weight: 700;
 }
 
-/* --- Dimensiones e indicadores ---------------------------------------- */
+/* Dimensiones e indicadores */
 
 .dimension-list {
   display: flex;
@@ -712,7 +886,7 @@ button {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--primary-dark);
+  background: var(--primary-deep);
   color: #ffffff;
   font-size: 12px;
   font-weight: 700;
@@ -742,7 +916,7 @@ button {
 }
 
 .dimension-card.is-active .dimension-count {
-  background: #ffffff;
+  background: var(--surface);
 }
 
 .dimension-chevron {
@@ -769,8 +943,8 @@ button {
   transform: rotate(180deg);
 }
 
-/* Lista anidada: el panel cuelga de su dimension con una guia a la izquierda
-   alineada con el numero, y empuja hacia abajo las siguientes. */
+/* Lista anidada: el panel cuelga de su dimensión con una guía a la izquierda alineada
+   con el número, y empuja hacia abajo las siguientes. */
 .dimension-panel {
   display: flex;
   flex-direction: column;
@@ -812,7 +986,7 @@ button {
   color: var(--ink-soft);
 }
 
-/* --- Asistente: elemento principal ------------------------------------ */
+/* Asistente: elemento principal */
 
 .chat-panel {
   display: flex;
@@ -849,11 +1023,13 @@ button {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #14705f, var(--primary-dark));
-  color: #ffffff;
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
+  background: linear-gradient(145deg, #14705f, var(--primary-deep));
+}
+
+/* El marcador del logotipo, sin el cuadro de fondo. */
+.chat-avatar svg {
+  width: 30px;
+  height: 30px;
 }
 
 .chat-identity h2 {
@@ -861,7 +1037,7 @@ button {
   line-height: 1.15;
 }
 
-/* Ancla del panel deslizante de ficha tecnica. */
+/* Ancla del panel deslizante de ficha técnica. */
 .chat-area {
   position: relative;
   flex: 1;
@@ -887,31 +1063,31 @@ button {
   padding: 18px 20px 10px;
 }
 
-/* Conversacion pegada abajo, junto al campo de escritura. Se hace con
-   margin-top auto en el primer mensaje y no con justify-content flex-end,
-   porque esa propiedad recorta los mensajes de arriba al crecer. */
+/* Conversación pegada abajo, junto al campo de escritura. */
 .chat-messages > .chat-message:first-child {
   margin-top: auto;
 }
 
-/* El tope en ch manda en pantallas anchas: una linea de mas de ~70
-   caracteres se vuelve incomoda de leer. */
+/* El tope en ch manda en pantallas anchas: una línea de más de ~70 caracteres se vuelve
+   incómoda de leer. */
 .chat-message {
   display: flex;
+  flex-direction: column;
+  gap: 5px;
   max-width: min(76%, 72ch);
 }
 
 .chat-message--user {
   align-self: flex-end;
-  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .chat-message--assistant {
   align-self: flex-start;
 }
 
-/* Las respuestas se componen con saltos de linea literales: sin pre-wrap se
-   verian como un unico parrafo. */
+/* Las respuestas se componen con saltos de línea literales: sin pre-wrap se verían como
+   un único párrafo. */
 .chat-bubble {
   padding: 11px 14px;
   border: 1px solid var(--line);
@@ -934,11 +1110,105 @@ button {
   color: #ffffff;
 }
 
+/* Respuestas de la IA generativa */
+
+.chat-waiting {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-soft);
+}
+
+.typing {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: typing 1.2s infinite ease-in-out;
+}
+
+.typing span:nth-child(2) { animation-delay: 0.15s; }
+.typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Cursor al final mientras el texto se sigue escribiendo. */
+.chat-bubble.is-writing::after {
+  content: '▍';
+  margin-left: 1px;
+  color: var(--primary);
+  animation: caret 1s steps(2) infinite;
+}
+
+@keyframes caret {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing span,
+  .chat-bubble.is-writing::after {
+    animation: none;
+  }
+}
+
+.chat-sources,
+.chat-note {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.chat-sources summary {
+  cursor: pointer;
+  width: fit-content;
+}
+
+.chat-sources summary:hover {
+  color: var(--primary-dark);
+}
+
+.chat-sources ul {
+  margin: 6px 0;
+  padding-left: 18px;
+}
+
+.chat-sources p {
+  margin: 0;
+  font-style: italic;
+}
+
 .chat-suggestions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 6px 20px 12px;
+}
+
+/* Sugerencias que piden un análisis completo a la IA. */
+.chat-suggestion.is-ai {
+  background: var(--primary-soft);
+}
+
+.chat-suggestion:disabled,
+.chat-input:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+
+.chat-suggestion:disabled:hover {
+  background: var(--surface);
+  color: var(--primary-dark);
 }
 
 .chat-suggestion {
@@ -990,7 +1260,7 @@ button {
   color: var(--ink-soft);
 }
 
-/* --- Ficha tecnica: panel deslizante ---------------------------------- */
+/* Ficha técnica: panel deslizante */
 
 .tech-sheet {
   position: absolute;
@@ -1018,10 +1288,9 @@ button {
   }
 }
 
-/* --- Mapa ampliado: panel sobre el asistente ------------------------- */
+/* Mapa ampliado: panel sobre el asistente */
 
-/* Cubre todo el ancho del area: el objetivo es un mapa de trabajo, no una
-   columna mas. */
+/* Cubre todo el ancho del área: el objetivo es un mapa de trabajo, no una columna más. */
 .map-panel {
   position: absolute;
   inset: 0;
@@ -1091,7 +1360,7 @@ button {
   gap: 12px;
 }
 
-/* --- Barras de indicadores -------------------------------------------- */
+/* Barras de indicadores */
 
 .bar-list {
   display: flex;
@@ -1175,127 +1444,7 @@ button {
   margin: 2px 0 -2px;
 }
 
-/* --- Pantalla de acceso ---------------------------------------------- */
-
-/* Fondo en reticula, la misma del mapa sin cartografia: remite a la
-   herramienta sin anticipar ningun dato antes de autenticarse. */
-.login-screen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(to right, rgba(15, 92, 82, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 92, 82, 0.07) 1px, transparent 1px);
-  background-size: 44px 44px;
-}
-
-.login-card {
-  width: min(400px, 100%);
-  padding: 28px 28px 22px;
-  border: 1px solid var(--line);
-  border-top: 4px solid var(--primary);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  box-shadow: 0 1px 2px rgba(23, 36, 31, 0.06), 0 12px 40px rgba(23, 36, 31, 0.1);
-}
-
-.login-product {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--primary-dark);
-}
-
-.login-title {
-  margin-top: 26px;
-  font-size: 24px;
-  line-height: 1.2;
-}
-
-.login-notice {
-  margin: 14px 0 0;
-  padding: 10px 12px;
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-sm);
-  background: #f7efe4;
-  font-size: 13px;
-  line-height: 1.45;
-  color: var(--ink);
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 20px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.field-input {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface-soft);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--ink);
-}
-
-.field-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: var(--surface);
-  box-shadow: 0 0 0 3px var(--primary-soft);
-}
-
-.login-error {
-  margin: 0;
-  padding: 10px 12px;
-  border-left: 3px solid var(--high);
-  border-radius: var(--radius-sm);
-  background: #f8e9e7;
-  font-size: 13px;
-  line-height: 1.45;
-  color: #7c231a;
-}
-
-.login-error:empty {
-  display: none;
-}
-
-.login-form .btn-block {
-  margin: 4px 0 0;
-  padding: 12px 18px;
-  font-size: 14px;
-}
-
-.login-foot {
-  margin: 20px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--ink-soft);
-}
-
-/* --- Barras de desplazamiento ----------------------------------------- */
+/* Barras de desplazamiento */
 
 .sidebar,
 .chat-messages,
@@ -1331,7 +1480,7 @@ button {
   background-color: var(--primary);
 }
 
-/* --- Pie -------------------------------------------------------------- */
+/* Pie */
 
 .app-footer {
   padding: 8px 24px 14px;
@@ -1344,11 +1493,747 @@ button {
   color: var(--ink-soft);
 }
 
-/* --- Responsivo -------------------------------------------------------- */
+/* Acceso */
+
+/* Cubre toda la ventana mientras no hay sesión. */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(15, 92, 82, 0.12), transparent 42%),
+    radial-gradient(circle at 88% 90%, rgba(181, 118, 44, 0.1), transparent 40%),
+    var(--bg);
+}
+
+.login-card {
+  width: min(400px, 100%);
+  padding: 28px 28px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 2px 4px rgba(23, 36, 31, 0.05), 0 12px 40px rgba(23, 36, 31, 0.1);
+}
+
+.login-card .brand {
+  margin-bottom: 22px;
+}
+
+.login-card h2 {
+  font-size: 20px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.login-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.login-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field .login-input {
+  padding-right: 84px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.password-toggle:hover {
+  background: var(--primary-soft);
+}
+
+.login-notice {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  font-size: 13px;
+  color: var(--primary-dark);
+}
+
+.login-error {
+  min-height: 20px;
+  margin: 14px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--high);
+}
+
+.login-submit {
+  width: 100%;
+}
+
+.login-foot {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* Sesión en la cabecera */
+
+/* El margen automático lleva la ruta de navegación junto al bloque de sesión, a la
+   derecha, en lugar de dejarla flotando en el centro. */
+.app-header > nav {
+  margin-left: auto;
+}
+
+.session {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* El nombre del usuario es el botón que abre «Mi perfil». */
+.session-user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 4px 8px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  line-height: 1.2;
+  text-align: right;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.session-user:hover,
+.session-user.is-active {
+  border-color: var(--line);
+  background: var(--surface-soft);
+}
+
+.session-user:hover .session-name {
+  color: var(--primary-dark);
+}
+
+/* Contador de solicitudes pendientes sobre «Administración». */
+.count-badge {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--high);
+  font-size: 11px;
+  line-height: 18px;
+  color: #ffffff;
+}
+
+.session-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.session-meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.role-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.role-badge.is-admin {
+  background: #f7eddf;
+  color: #7a4c16;
+}
+
+/* Botones secundarios */
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1.5px solid var(--primary);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  transition: background 0.14s ease, color 0.14s ease, transform 0.12s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--primary-soft);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary.is-active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+  background: var(--surface);
+  color: var(--primary-dark);
+}
+
+.btn-quiet {
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.btn-quiet:hover {
+  background: var(--surface-soft);
+  color: var(--high);
+}
+
+/* Botón de tema: un icono redondo. */
+.theme-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-soft);
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.theme-toggle .icon-sun,
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+
+/* En el acceso, arriba a la derecha. */
+.login-theme {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  right: 16px;
+}
+
+/* Exportar reporte: menú desplegable */
+
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.menu-wrap {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 250px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgba(23, 36, 31, 0.16);
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  text-align: left;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--primary-soft);
+}
+
+.menu-item-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.menu-item-note {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+/* Administración: panel sobre el asistente */
+
+.admin-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  animation: sheet-in 0.22s ease-out;
+}
+
+.admin-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px 18px 22px;
+  scrollbar-width: thin;
+  scrollbar-color: #b9c6c0 transparent;
+}
+
+.admin-section h3 {
+  font-size: 15px;
+}
+
+.admin-message {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-message:empty {
+  display: none;
+}
+
+.admin-message.is-error {
+  color: var(--high);
+}
+
+.admin-message.is-ok {
+  color: var(--low);
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.user-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+}
+
+.user-row.is-inactive .user-id {
+  opacity: 0.6;
+}
+
+.user-id {
+  min-width: 0;
+}
+
+.user-name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.user-name small {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.user-email {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.user-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.state-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #e5f2ea;
+  font-size: 11px;
+  font-weight: 700;
+  color: #2c6b48;
+}
+
+.state-badge.is-off {
+  background: #f8e6e3;
+  color: #8e2c22;
+}
+
+.user-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.user-action {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Solo aparece en usuarios desactivados: eliminar es el segundo paso. */
+.user-action.is-danger {
+  border-color: var(--high);
+  color: var(--high);
+}
+
+.user-action.is-danger:hover {
+  background: #fbeaea;
+}
+
+.user-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.user-form .login-field {
+  margin-top: 0;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+/* Mi perfil: mismo patrón de panel que la administración */
+
+.profile-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px 14px;
+  margin: 10px 0 0;
+  font-size: 13px;
+}
+
+.profile-facts dt {
+  color: var(--ink-soft);
+}
+
+.profile-facts dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.profile-note {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--primary-dark);
+}
+
+.profile-note.is-warning {
+  background: #fbf1e3;
+  color: #7a4c16;
+}
+
+.profile-note.is-error {
+  background: #fbeaea;
+  color: #8e2c22;
+}
+
+.profile-note .btn-quiet {
+  margin-left: 6px;
+  padding: 2px 8px;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.profile-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.profile-form .login-field {
+  margin-top: 0;
+}
+
+.profile-form .is-wide {
+  grid-column: 1 / -1;
+}
+
+.field-hint {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+/* Solicitudes de cambio de nombre en el panel del administrador. */
+.request-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  font-size: 13px;
+}
+
+.request-row .request-reason {
+  grid-column: 1 / -1;
+  padding: 7px 10px;
+  font-size: 12.5px;
+}
+
+/* Reporte de zona para imprimir o guardar como PDF */
+
+/* Invisible en pantalla. */
+.print-report {
+  display: none;
+  font-family: var(--font-body);
+  font-size: 10.5pt;
+  color: #17241f;
+}
+
+.report-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  border-bottom: 2px solid #0f5c52;
+}
+
+.report-head h1 {
+  font-size: 18pt;
+}
+
+.report-head p {
+  margin: 2px 0 0;
+  color: #52655f;
+}
+
+.report-section {
+  margin-top: 16px;
+  break-inside: avoid;
+}
+
+.report-section h2 {
+  margin-bottom: 6px;
+  font-size: 12.5pt;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid #ccd6d1;
+  text-align: left;
+  vertical-align: top;
+}
+
+.report-table thead th {
+  background: #e3eeeb;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.report-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-meta th {
+  width: 30%;
+  font-weight: 600;
+  color: #52655f;
+}
+
+.report-note {
+  margin-top: 18px;
+  font-size: 9pt;
+  color: #52655f;
+}
+
+.report-section .report-note {
+  margin-top: 6px;
+}
+
+/* El resumen de la IA trae saltos de línea y viñetas como texto. */
+.report-summary {
+  white-space: pre-wrap;
+  font-size: 10.5pt;
+  line-height: 1.5;
+}
+
+.report-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 10.5pt;
+  line-height: 1.5;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .login-screen,
+  .app {
+    display: none !important;
+  }
+
+  .print-report {
+    display: block;
+  }
+}
+
+/* Responsivo */
 
 @media (min-width: 1081px) {
   .app {
     height: 100vh;
+  }
+
+  /* Con el bloque de sesión la cabecera no cabe en una línea en portátiles: en vez de
+     partirse en dos filas, el lema y la ruta ceden espacio y se recortan con puntos
+     suspensivos. */
+  .app-header {
+    flex-wrap: nowrap;
+  }
+
+  .app-header > .brand,
+  .app-header > nav,
+  .app-header .brand > div,
+  .breadcrumb li:last-child {
+    min-width: 0;
+  }
+
+  .app-header > .brand,
+  .app-header > nav {
+    flex: 0 1 auto;
+  }
+
+  .app-header > .session {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+  }
+
+  /* Solo en la cabecera. */
+  .app-header .tagline,
+  .crumb {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .breadcrumb {
+    flex-wrap: nowrap;
+  }
+
+  .crumb {
+    max-width: 100%;
   }
 }
 
@@ -1366,34 +2251,11 @@ button {
     width: 100%;
     border-left: none;
   }
-
-  .session {
-    padding-left: 0;
-    border-left: none;
-  }
 }
 
 @media (max-width: 640px) {
   .app-header {
     padding: 12px 16px;
-  }
-
-  .header-end {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .session-user {
-    align-items: flex-start;
-  }
-
-  .login-card {
-    padding: 22px 20px 18px;
-  }
-
-  .app-main {
-    gap: 12px;
-    padding: 12px;
   }
 
   .metrics {
@@ -1418,6 +2280,27 @@ button {
 
   .chat-suggestions {
     padding: 6px 14px 10px;
+  }
+
+  .login-card {
+    padding: 22px 18px 18px;
+  }
+
+  .session-user {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .user-row,
+  .user-form,
+  .profile-form,
+  .request-row {
+    grid-template-columns: 1fr;
+  }
+
+  .user-tags,
+  .user-actions {
+    justify-content: flex-start;
   }
 }
 

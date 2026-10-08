@@ -1,10 +1,9 @@
-// Asistente analitico. Compone las respuestas con plantillas sobre cifras que
-// ya estan calculadas: no calcula nada por su cuenta y no emite ningun numero
-// que no venga de los datos de la zona.
-
+//js/chat.js
 import {
   getDeprivations, getExplanation, getPrediction, getZonesRanked, getModelCard
 } from './model.js';
+
+// Asistente analítico.
 
 const history = new Map();
 
@@ -13,8 +12,12 @@ function messagesOf(zoneId) {
   return history.get(zoneId);
 }
 
-function push(zoneId, author, text) {
-  messagesOf(zoneId).push({ author, text });
+// Un mensaje es { author, text } y, si lo redactó la IA generativa, además { engine,
+// sources }.
+function push(zoneId, author, text, extra = {}) {
+  const message = { author, text, ...extra };
+  messagesOf(zoneId).push(message);
+  return message;
 }
 
 function ratio(value) {
@@ -25,8 +28,8 @@ function withoutAccents(text) {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
-// Lineas de intervencion asociadas a cada privacion, con la entidad que
-// habitualmente las lidera en el orden territorial colombiano.
+// Líneas de intervención asociadas a cada privación, con la entidad que habitualmente las
+// lidera en el orden territorial colombiano.
 const ACTIONS = {
   'Trabajo informal':
     'rutas de formalización laboral y empresarial con la Cámara de Comercio y el SENA, y esquemas de aseguramiento para trabajadores independientes',
@@ -64,15 +67,52 @@ const ACTIONS = {
 function deprivationsOf(zone) {
   return getDeprivations(zone.zona_id).dimensiones
     .flatMap((group) => group.indicadores.map((item) => ({ ...item, dimension: group.dimension })))
+    .filter((item) => item.prevalencia !== null && item.prevalencia !== undefined)
     .sort((a, b) => b.prevalencia - a.prevalencia);
 }
+
+// Con el backend, predicción y explicación dependen de ia-predictor y pueden faltar.
+function driversOf(zone) {
+  const explanation = getExplanation(zone.zona_id);
+  return (explanation && explanation.contribuciones) || [];
+}
+
+const MODEL_UNAVAILABLE =
+  'El modelo predictivo no está disponible en este momento, así que no puedo ' +
+  'responder con su estimación. Las cifras observadas de la zona siguen disponibles.';
 
 function rankOf(zone) {
   const ranked = getZonesRanked();
   return { position: ranked.findIndex((z) => z.zona_id === zone.zona_id) + 1, total: ranked.length };
 }
 
+// Los factores del modelo explican hogares de una zona: el área no los tiene.
+const AREA_WITHOUT_DRIVERS =
+  'Los factores del modelo se calculan por zona. Selecciona una zona en el mapa para ver ' +
+  'qué pesa más en su clasificación.';
+
+function worstList(worst) {
+  return `${worst[0].nombre.toLowerCase()} (${ratio(worst[0].prevalencia)}), ` +
+    `${worst[1].nombre.toLowerCase()} (${ratio(worst[1].prevalencia)}) y ` +
+    `${worst[2].nombre.toLowerCase()} (${ratio(worst[2].prevalencia)})`;
+}
+
+function areaOverview(area) {
+  const ranked = getZonesRanked();
+  const most = ranked[0];
+  const least = ranked[ranked.length - 1];
+
+  return `En el ${area.zona_nombre} hay ${Number(area.total_hogares).toLocaleString('es-CO')} ` +
+    `hogares registrados en el Sisbén, repartidos en ${ranked.length} zonas. El ` +
+    `${ratio(area.pct_grupo_a)} está en el grupo A (pobreza extrema) y el ` +
+    `${ratio(Number(area.pct_grupo_a) + Number(area.pct_grupo_b))} entre los grupos A y B.\n\n` +
+    `La zona con más pobreza extrema es ${most.zona_nombre} (${ratio(most.pct_grupo_a)}) y la de ` +
+    `menos, ${least.zona_nombre} (${ratio(least.pct_grupo_a)}). Las privaciones más extendidas en ` +
+    `el área son ${worstList(deprivationsOf(area).slice(0, 3))}.`;
+}
+
 function overview(zone) {
+  if (zone.isArea) return areaOverview(zone);
   const worst = deprivationsOf(zone).slice(0, 3);
   const rank = rankOf(zone);
 
@@ -81,19 +121,21 @@ function overview(zone) {
     `grupo A (pobreza extrema) y el ${ratio(Number(zone.pct_grupo_a) + Number(zone.pct_grupo_b))} ` +
     `entre los grupos A y B. Ocupa el puesto ${rank.position} de ${rank.total} entre las zonas del ` +
     `área metropolitana ordenadas por pobreza extrema.\n\n` +
-    `Las privaciones más extendidas son ${worst[0].nombre.toLowerCase()} (${ratio(worst[0].prevalencia)}), ` +
-    `${worst[1].nombre.toLowerCase()} (${ratio(worst[1].prevalencia)}) y ` +
-    `${worst[2].nombre.toLowerCase()} (${ratio(worst[2].prevalencia)}).`;
+    `Las privaciones más extendidas son ${worstList(worst)}.`;
 }
 
 function critical(zone) {
   const worst = deprivationsOf(zone)[0];
-  const drivers = getExplanation(zone.zona_id).contribuciones;
+  const drivers = driversOf(zone);
   const driver = drivers.find((item) => item.contribucion > 0) || drivers[0];
 
-  return `La privación más extendida es ${worst.nombre.toLowerCase()}, presente en el ` +
-    `${ratio(worst.prevalencia)} de los hogares de la zona, dentro de la dimensión de ` +
-    `${worst.dimension.toLowerCase()}.\n\n` +
+  const observed = `La privación más extendida es ${worst.nombre.toLowerCase()}, presente en el ` +
+    `${ratio(worst.prevalencia)} de los hogares ${zone.isArea ? 'del área' : 'de la zona'}, ` +
+    `dentro de la dimensión de ${worst.dimension.toLowerCase()}.`;
+
+  if (!driver) return `${observed}\n\n${zone.isArea ? AREA_WITHOUT_DRIVERS : MODEL_UNAVAILABLE}`;
+
+  return `${observed}\n\n` +
     `Conviene distinguir dos cosas: qué es más frecuente y qué pesa más en la clasificación. ` +
     `El factor que más empuja hacia el grupo estimado es ${driver.etiqueta.toLowerCase()} ` +
     `(${driver.dimension.toLowerCase()}). Una privación puede ser muy común y aun así influir poco ` +
@@ -102,7 +144,7 @@ function critical(zone) {
 
 function recommend(zone) {
   const deprivations = deprivationsOf(zone);
-  const drivers = getExplanation(zone.zona_id).contribuciones;
+  const drivers = driversOf(zone);
   const picks = [];
 
   const labour = drivers.find((item) => item.dimension === 'Trabajo' && item.contribucion > 0);
@@ -116,8 +158,8 @@ function recommend(zone) {
     }
   });
 
-  let text = `Líneas de intervención pertinentes para ${zone.zona_nombre}, ordenadas por el peso ` +
-    `que tienen en esta zona:\n`;
+  let text = `Líneas de intervención pertinentes para ${zone.isArea ? 'el ' : ''}${zone.zona_nombre}, ` +
+    `ordenadas por el peso que tienen ${zone.isArea ? 'en el área' : 'en esta zona'}:\n`;
 
   picks.slice(0, 4).forEach((pick, index) => {
     text += `\n${index + 1}. ${pick.name}: ${ACTIONS[pick.name]}. Se prioriza porque ${pick.reason}.`;
@@ -170,11 +212,15 @@ function compare(zone) {
 
 function modelAnswer(zone) {
   const card = getModelCard();
+  const prediction = getPrediction(zone.zona_id);
+  if (!card || !prediction) return MODEL_UNAVAILABLE;
+
   const metrics = card.metricas;
-  const predicted = getPrediction(zone.zona_id).predicho;
+  const predicted = prediction.predicho;
   const top = ['A', 'B', 'C', 'D'].reduce((a, b) => (predicted[a] >= predicted[b] ? a : b));
 
-  return `Para esta zona el modelo estima que el grupo mayoritario es el ${top}, con un ` +
+  return `Para ${zone.isArea ? 'el área (sumando la estimación de sus ocho zonas)' : 'esta zona'} ` +
+    `el modelo estima que el grupo mayoritario es el ${top}, con un ` +
     `${ratio(predicted[top])} de los hogares, frente al ${ratio(zone['pct_grupo_' + top.toLowerCase()])} ` +
     `observado en el dataset.\n\n` +
     `El modelo es ${card.algoritmo}, entrenado sobre ${card.n_variables} variables ` +
@@ -187,7 +233,7 @@ function modelAnswer(zone) {
 const RULES = [
   { keys: ['recomend', 'interven', 'que hacer', 'que deberia', 'accion', 'priorizar', 'invertir', 'proyecto'], answer: recommend },
   { keys: ['critic', 'principal problema', 'peor', 'mas grave', 'mayor problema', 'problema'], answer: critical },
-  { keys: ['compar', 'otras zonas', 'ranking', 'rural', 'urbana', 'peores'], answer: compare },
+  { keys: ['compar', 'otras zonas', 'ranking', 'rural', 'urbana', 'peores', 'que zona', 'atencion'], answer: compare },
   { keys: ['modelo', 'predic', 'prediccion', 'precision', 'exactitud', 'algoritmo', 'ia'], answer: modelAnswer },
   { keys: ['educacion', 'escolar', 'analfabet', 'estudi'], answer: (zone) => byDimension(zone, 'Educacion') },
   { keys: ['salud', 'aseguramiento', 'eps'], answer: (zone) => byDimension(zone, 'Salud') },
@@ -195,35 +241,101 @@ const RULES = [
   { keys: ['vivienda', 'agua', 'acueducto', 'alcantarill', 'hacinam', 'piso', 'pared', 'servicio'], answer: (zone) => byDimension(zone, 'Vivienda') }
 ];
 
-function reply(zone, question) {
+export function reply(zone, question) {
   const text = withoutAccents(question);
   const rule = RULES.find((item) => item.keys.some((key) => text.includes(key)));
   return rule ? rule.answer(zone) : overview(zone);
 }
 
-export const SUGGESTIONS = [
-  '¿Cuál es el principal problema de esta zona?',
-  '¿Qué intervenciones recomiendas?',
-  '¿Cómo se compara con las demás zonas?',
-  '¿Qué dice el modelo sobre esta zona?'
+// kind: la acción que pide al backend.
+const SUGGESTIONS = [
+  { text: '¿Cuál es el principal problema de esta zona?' },
+  { text: '¿Qué intervenciones recomiendas?' },
+  { text: '¿Cómo se compara con las demás zonas?' },
+  { text: '¿Qué dice el modelo sobre esta zona?' }
 ];
 
-export function greet(zone) {
-  if (messagesOf(zone.zona_id).length) return;
-  push(zone.zona_id, 'assistant', overview(zone));
+// Con la IA generativa, las dos primeras piden un análisis completo de la zona.
+const AI_SUGGESTIONS = [
+  { text: 'Dame tus conclusiones sobre esta zona', kind: 'interpretar' },
+  { text: '¿Qué intervenciones recomiendas?', kind: 'recomendar' },
+  { text: '¿Cómo se compara con las demás zonas?' },
+  { text: '¿Qué dice el modelo sobre esta zona?' }
+];
+
+// Sin zona seleccionada se analiza el área completa.
+const AREA_SUGGESTIONS = [
+  { text: '¿Qué zona necesita más atención?' },
+  { text: '¿Qué intervenciones recomiendas para el área?' },
+  { text: '¿Cómo se compara lo rural con lo urbano?' },
+  { text: '¿Cuál es la privación más extendida en el área?' }
+];
+
+const AREA_AI_SUGGESTIONS = [
+  { text: 'Dame tus conclusiones sobre el área metropolitana', kind: 'interpretar' },
+  { text: '¿Qué intervenciones recomiendas para el área?', kind: 'recomendar' },
+  { text: '¿Qué zona necesita más atención?' },
+  { text: '¿Cómo se compara lo rural con lo urbano?' }
+];
+
+export function suggestionsFor(zone, withAi) {
+  if (zone.isArea) return withAi ? AREA_AI_SUGGESTIONS : AREA_SUGGESTIONS;
+  return withAi ? AI_SUGGESTIONS : SUGGESTIONS;
 }
 
+export function greet(zone, withAi = false) {
+  if (messagesOf(zone.zona_id).length) return;
+  const hint = withAi
+    ? `\n\nPuedes pedirme mis conclusiones sobre ${zone.isArea ? 'el área' : 'la zona'} o ` +
+      'preguntarme lo que necesites: respondo con la IA generativa, apoyado en estas cifras.' +
+      (zone.isArea ? ' Para analizar una zona en particular, selecciónala en el mapa.' : '')
+    : '';
+  push(zone.zona_id, 'assistant', overview(zone) + hint);
+}
+
+// Respuesta inmediata con plantillas: sin backend, o si la IA no responde.
 export function ask(zone, question) {
   push(zone.zona_id, 'user', question);
   push(zone.zona_id, 'assistant', reply(zone, question));
+}
+
+// Conversación previa en el formato de ia-asistente.
+export function historyFor(zoneId) {
+  return messagesOf(zoneId)
+    .filter((message) => !message.pending)
+    .slice(-10)
+    .map((message) => ({
+      rol: message.author === 'user' ? 'usuario' : 'asistente',
+      contenido: clip(message.text)
+    }));
+}
+
+export function startAnswer(zone, question) {
+  push(zone.zona_id, 'user', question);
+  return push(zone.zona_id, 'assistant', '', { pending: true, startedAt: Date.now() });
+}
+
+export function finishAnswer(message, fields) {
+  delete message.pending;
+  Object.assign(message, fields);
 }
 
 export function getMessages(zoneId) {
   return messagesOf(zoneId);
 }
 
-// Borra toda la conversacion en memoria. Se usa al cerrar sesion: el historial
-// contiene cifras de las zonas consultadas.
-export function resetChat() {
-  history.clear();
+// La conversación para el resumen del reporte: sin el saludo inicial, que es una plantilla,
+// y solo si el funcionario preguntó algo.
+export function conversationFor(zoneId) {
+  const messages = messagesOf(zoneId).filter((message) => !message.pending).slice(1);
+  if (!messages.some((message) => message.author === 'user')) return [];
+  return messages.slice(-20).map((message) => ({
+    rol: message.author === 'user' ? 'usuario' : 'asistente',
+    contenido: clip(message.text)
+  }));
+}
+
+// El backend rechaza mensajes de más de 4.000 caracteres (tope contra peticiones gigantes).
+function clip(text) {
+  return String(text || '').slice(0, 3900);
 }

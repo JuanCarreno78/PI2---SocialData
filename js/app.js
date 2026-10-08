@@ -1,24 +1,30 @@
-// Controlador. Cablea los eventos, guarda el estado y reparte el trabajo entre
-// el modelo, la vista, el mapa y el asistente.
-
+//js/app.js
 import {
-  loadData, getSummary, getCatalog, getZones, getZonesRanked,
-  getDeprivations, getPrediction, getExplanation,
-  login, logout, getSession, takeExpiredNotice, onUnauthorized
+  loadData, getSummary, getCatalog, getZones, getZonesRanked, getDeprivations,
+  getPrediction, getExplanation, getArea, login, getSession, logout, takeNotice, listUsers,
+  createUser, setUserActive, deleteUser, profileAvailable, getProfile, requestNameChange,
+  cancelNameChange, changePassword, listNameRequests, resolveNameRequest,
+  assistantAvailable, askAssistant, interpretZone, summarizeConversation, buildZoneReport
 } from './model.js';
-
-import { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode } from './map.js';
-import { greet, ask, getMessages, resetChat, SUGGESTIONS } from './chat.js';
-
+import { initMap, drawZones, flyToZone, fitMetroArea, setLargeMode, refreshTheme } from './map.js';
 import {
-  renderSummary, renderBreadcrumb, renderDimensions, renderIndicators,
-  setDimensionExpanded, renderIndicatorsNote, renderCollapseButton,
-  renderMetrics, clearMetrics, renderDistribution,
-  renderExplanation, renderDeprivations, renderMessages, renderSuggestions,
-  renderLoginError, renderLoginNotice, setLoginBusy, renderSession
+  greet, ask, reply, historyFor, startAnswer, finishAnswer, getMessages, suggestionsFor,
+  conversationFor
+} from './chat.js';
+import {
+  renderSummary, renderBreadcrumb, renderDimensions, renderIndicators, setDimensionExpanded,
+  renderIndicatorsNote, renderCollapseButton, renderMetrics, clearMetrics,
+  renderDistribution, renderZoneOptions, renderExplanation, renderDeprivations,
+  renderMessages, renderLastMessage, renderSuggestions, roleLabel, renderSession,
+  renderLoginError, renderLoginNotice, renderUsers, renderAdminSummary, renderAdminMessage,
+  renderProfileFacts, renderNameStatus, renderNameRequests, renderPendingBadge,
+  reportToXlsx, reportFileName, renderPrintReport, downloadFile
 } from './view.js';
 
+// Controlador.
+
 const refs = {
+  appEl: document.getElementById('app'),
   loginScreenEl: document.getElementById('login-screen'),
   loginForm: document.getElementById('login-form'),
   loginEmail: document.getElementById('login-email'),
@@ -26,11 +32,28 @@ const refs = {
   loginSubmit: document.getElementById('login-submit'),
   loginErrorEl: document.getElementById('login-error'),
   loginNoticeEl: document.getElementById('login-notice'),
+  togglePasswordBtn: document.getElementById('toggle-password'),
 
-  appEl: document.getElementById('app'),
   sessionNameEl: document.getElementById('session-name'),
   sessionRoleEl: document.getElementById('session-role'),
+  adminBtn: document.getElementById('toggle-admin'),
   logoutBtn: document.getElementById('logout'),
+
+  adminPanelEl: document.getElementById('admin-panel'),
+  closeAdminBtn: document.getElementById('close-admin'),
+  adminSummaryEl: document.getElementById('admin-summary'),
+  adminMessageEl: document.getElementById('admin-message'),
+  userListEl: document.getElementById('user-list'),
+  userForm: document.getElementById('user-form'),
+  newNameInput: document.getElementById('new-name'),
+  newEmailInput: document.getElementById('new-email'),
+  newPasswordInput: document.getElementById('new-password'),
+  newRoleInput: document.getElementById('new-role'),
+  createUserBtn: document.getElementById('create-user'),
+
+  exportBtn: document.getElementById('toggle-export'),
+  exportMenuEl: document.getElementById('export-menu'),
+  printReportEl: document.getElementById('print-report'),
 
   mapEl: document.getElementById('map'),
   mapPlaceholderEl: document.getElementById('map-placeholder'),
@@ -73,32 +96,63 @@ const refs = {
   messagesEl: document.getElementById('chat-messages'),
   suggestionsEl: document.getElementById('chat-suggestions'),
   chatForm: document.getElementById('chat-form'),
-  chatInput: document.getElementById('chat-input')
+  chatInput: document.getElementById('chat-input'),
+  chatSubmitBtn: document.getElementById('chat-submit'),
+  zoneSelectEl: document.getElementById('zone-select'),
+  metricsTitleEl: document.getElementById('metrics-title'),
+  exportBtnTextEl: document.getElementById('toggle-export-text'),
+  themeBtn: document.getElementById('toggle-theme'),
+  loginThemeBtn: document.getElementById('login-theme'),
+
+  adminPendingEl: document.getElementById('admin-pending'),
+  requestsSectionEl: document.getElementById('requests-section'),
+  requestListEl: document.getElementById('request-list'),
+
+  profileBtn: document.getElementById('toggle-profile'),
+  profilePanelEl: document.getElementById('profile-panel'),
+  closeProfileBtn: document.getElementById('close-profile'),
+  profileSummaryEl: document.getElementById('profile-summary'),
+  profileMessageEl: document.getElementById('profile-message'),
+  profileLocalEl: document.getElementById('profile-local'),
+  profileFactsEl: document.getElementById('profile-facts'),
+  nameHelpEl: document.getElementById('name-help'),
+  nameStatusEl: document.getElementById('name-status'),
+  nameForm: document.getElementById('name-form'),
+  profileNameInput: document.getElementById('profile-name'),
+  saveNameBtn: document.getElementById('save-name'),
+  passwordForm: document.getElementById('password-form'),
+  currentPasswordInput: document.getElementById('current-password'),
+  newPassword1Input: document.getElementById('new-password-1'),
+  newPassword2Input: document.getElementById('new-password-2'),
+  savePasswordBtn: document.getElementById('save-password'),
+  profileThemeBtn: document.getElementById('profile-theme')
 };
 
 const DEFAULT_LAYER = 'Hogares en grupo A (pobreza extrema)';
 
 const state = {
-  // Dimensiones abiertas, en el orden en que se abrieron. Se permiten varias a
-  // la vez; la ultima abierta da nombre a la capa activa.
+  // Dimensiones abiertas, en el orden en que se abrieron.
   openDimensions: [],
   selectedZone: null,
   deprivations: null,
-  // Mapa ampliado y, si lo esta, si vive en el panel o crece en su sitio.
+  // Mapa ampliado y, si lo está, si vive en el panel o crece en su sitio.
   mapLarge: false,
   mapInPanel: false,
-  started: false
+  session: null,
+  // Hay una respuesta de la IA en camino.
+  waiting: false,
+  started: false,
+  adminOpen: false,
+  profileOpen: false
 };
 
-// Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel
-// del asistente queda fuera de la vista: el mapa crece en su sitio.
+// Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel del
+// asistente queda fuera de la vista: el mapa crece en su sitio.
 const compactLayout = window.matchMedia('(max-width: 1080px)');
 
 const valueOf = (zone) => Number(zone.pct_grupo_a) * 100;
 
-// ---------------------------------------------------------------
 // Barra lateral: dimensiones como desplegables anidados
-// ---------------------------------------------------------------
 function refreshLayerName() {
   const last = state.openDimensions[state.openDimensions.length - 1];
   const name = last || DEFAULT_LAYER;
@@ -121,9 +175,7 @@ function refreshDimensions() {
   refreshLayerName();
 }
 
-// Pulsar una dimension abierta la cierra. Se conmuta en sitio, sin volver a
-// pintar la lista, para no perder el foco del boton pulsado. No se llama a
-// revealSection: saltaria la vista en cada clic.
+// Pulsar una dimensión abierta la cierra.
 function selectDimension(dimension, buttonEl, panelEl) {
   const open = !state.openDimensions.includes(dimension);
 
@@ -143,9 +195,7 @@ refs.collapseBtn.addEventListener('click', () => {
   refreshDimensions();
 });
 
-// ---------------------------------------------------------------
-// Acordeones: un mismo boton abre y cierra su seccion
-// ---------------------------------------------------------------
+// Acordeones: un mismo botón abre y cierra su sección
 function toggleAccordion(button) {
   const bodyEl = document.getElementById(button.getAttribute('aria-controls'));
   if (!bodyEl) return;
@@ -157,8 +207,8 @@ function toggleAccordion(button) {
   if (open) return;
 
   const section = button.closest('.accordion');
-  // Sin requestAnimationFrame: leer getBoundingClientRect ya obliga a recalcular
-  // la maqueta, y asi no depende de que se llegue a pintar un fotograma.
+  // Sin requestAnimationFrame: leer getBoundingClientRect ya obliga a recalcular la
+  // maqueta, y así no depende de que se llegue a pintar un fotograma.
   if (section) revealSection(section);
 }
 
@@ -187,17 +237,15 @@ function revealSection(section) {
   section.scrollIntoView({ block: 'nearest' });
 }
 
-// Las tarjetas de dimension tienen su propio manejador y no llevan la clase
-// accordion-button; la exclusion explicita evita una doble conmutacion si en el
-// futuro alguien se la añade.
+// Las tarjetas de dimensión tienen su propio manejador y no llevan la clase
+// accordion-button; la exclusión explícita evita una doble conmutación si en el futuro
+// alguien se la añade.
 document.addEventListener('click', (event) => {
   const button = event.target.closest('.accordion-button');
   if (button && !button.classList.contains('dimension-card')) toggleAccordion(button);
 });
 
-// ---------------------------------------------------------------
-// Ficha tecnica: el mismo boton la abre y la cierra
-// ---------------------------------------------------------------
+// Ficha técnica: el mismo botón la abre y la cierra
 function toggleSheet(show) {
   const open = show === undefined ? refs.sheetBtn.getAttribute('aria-expanded') !== 'true' : show;
 
@@ -206,8 +254,11 @@ function toggleSheet(show) {
   refs.sheetBtnTextEl.textContent = open ? 'Ocultar ficha técnica' : 'Ver ficha técnica';
   refs.sheetEl.hidden = !open;
 
-  // Ficha y mapa ampliado comparten el area del asistente: solo uno a la vez.
+  // Ficha, mapa ampliado y administración comparten el área del asistente: solo uno a la
+  // vez.
   if (open && state.mapInPanel) setMapLarge(false);
+  if (open) toggleAdmin(false);
+  if (open) toggleProfile(false);
   if (open) refs.closeSheetBtn.focus();
 }
 
@@ -218,26 +269,31 @@ refs.closeSheetBtn.addEventListener('click', () => {
   refs.sheetBtn.focus();
 });
 
+// Escape cierra lo que esté encima, de uno en uno.
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
 
-  if (!refs.sheetEl.hidden) {
+  if (!refs.exportMenuEl.hidden) {
+    toggleExportMenu(false);
+    refs.exportBtn.focus();
+  } else if (!refs.sheetEl.hidden) {
     toggleSheet(false);
     refs.sheetBtn.focus();
+  } else if (state.adminOpen) {
+    toggleAdmin(false);
+    refs.adminBtn.focus();
+  } else if (state.profileOpen) {
+    toggleProfile(false);
+    refs.profileBtn.focus();
   } else if (state.mapLarge) {
     setMapLarge(false);
     refs.mapBtn.focus();
   }
 });
 
-// ---------------------------------------------------------------
-// Mapa ampliado: el mismo boton lo amplia y lo reduce
-// ---------------------------------------------------------------
-// En escritorio el nodo del mapa se mueve a un panel sobre el asistente, igual
-// que la ficha tecnica. En pantallas compactas crece en su sitio, porque el
-// asistente queda debajo de la barra y el panel no estaria a la vista. En los
-// dos casos el estado de la aplicacion no se toca: la zona seleccionada, las
-// dimensiones abiertas y la conversacion siguen como estaban.
+// Mapa ampliado: el mismo botón lo amplía y lo reduce
+// En escritorio el nodo del mapa se mueve a un panel sobre el asistente, igual que la ficha
+// técnica.
 function setMapLarge(on) {
   if (on === state.mapLarge) return;
 
@@ -245,6 +301,9 @@ function setMapLarge(on) {
 
   state.mapLarge = on;
   state.mapInPanel = on && !compactLayout.matches;
+
+  if (state.mapInPanel) toggleAdmin(false);
+  if (state.mapInPanel) toggleProfile(false);
 
   if (state.mapInPanel) {
     refs.mapPanelBodyEl.appendChild(refs.mapEl);
@@ -266,8 +325,8 @@ function setMapLarge(on) {
   refs.mapBtnTextEl.textContent = on ? 'Reducir' : 'Ampliar';
   refs.mapBtn.setAttribute('aria-label', on ? 'Reducir el mapa' : 'Ampliar el mapa');
 
-  // Tras mover o redimensionar el contenedor: invalidateSize, reencuadre,
-  // rueda y rotulos.
+  // Tras mover o redimensionar el contenedor: invalidateSize, reencuadre, rueda y
+  // rótulos.
   setLargeMode(on);
 }
 
@@ -278,53 +337,59 @@ refs.closeMapBtn.addEventListener('click', () => {
   refs.mapBtn.focus();
 });
 
-// Si la ventana cruza el punto de corte con el mapa ampliado, se reduce: el
-// modo que se eligio al abrir ya no corresponde a la maqueta actual.
+// Si la ventana cruza el punto de corte con el mapa ampliado, se reduce: el modo que se
+// eligió al abrir ya no corresponde a la maqueta actual.
 compactLayout.addEventListener('change', () => {
   if (state.mapLarge) setMapLarge(false);
 });
 
-// ---------------------------------------------------------------
-// Mapa y navegacion
-// ---------------------------------------------------------------
+// Mapa y navegación
+function isArea(zone) {
+  return Boolean(zone && zone.isArea);
+}
+
 function refreshMap() {
-  drawZones(
-    getZones(), valueOf, selectZone,
-    state.selectedZone ? state.selectedZone.zona_id : null,
+  const zone = state.selectedZone;
+  drawZones(getZones(), valueOf, selectZone, zone && !isArea(zone) ? zone.zona_id : null,
     'Hogares en grupo A');
 }
 
 function refreshBreadcrumb() {
   const trail = [{ name: 'Área Metropolitana' }];
-  if (state.selectedZone) trail.push({ name: state.selectedZone.zona_nombre });
+  if (state.selectedZone && !isArea(state.selectedZone)) trail.push({ name: state.selectedZone.zona_nombre });
   renderBreadcrumb(refs.breadcrumbEl, trail, showMetroArea);
 }
 
+// Sin zona seleccionada se analiza el área metropolitana completa: para el chat, las
+// métricas, la ficha y el reporte es una zona más.
 function showMetroArea() {
-  state.selectedZone = null;
-  state.deprivations = null;
-
-  refs.zoneNameEl.textContent = 'Área Metropolitana de Bucaramanga';
-  refs.sheetZoneEl.textContent = 'Área Metropolitana de Bucaramanga';
-  refs.chatEmptyEl.hidden = false;
-  refs.chatBodyEl.hidden = true;
-  refs.sheetEmptyEl.hidden = false;
-  refs.sheetBodyEl.hidden = true;
-
-  clearMetrics(refs);
-  fitMetroArea();
-  refreshBreadcrumb();
-  refreshMap();
-  refreshDimensions();
+  selectZone(getArea());
 }
+
+refs.zoneSelectEl.addEventListener('change', () => {
+  const id = Number(refs.zoneSelectEl.value);
+  const zone = id === getArea().zona_id ? getArea() : getZones().find((item) => item.zona_id === id);
+  if (zone) selectZone(zone);
+});
 
 function selectZone(zone, zoomIn = true) {
   state.selectedZone = zone;
   state.deprivations = getDeprivations(zone.zona_id);
 
+  // Elegir una zona en el mapa ampliado lo cierra: se elige para analizarla.
+  const closedLarge = state.mapLarge;
+  if (closedLarge) setMapLarge(false);
+
   refreshBreadcrumb();
   refreshMap();
-  if (zoomIn) flyToZone(zone.cod_mpio);
+  const move = () => (isArea(zone) ? fitMetroArea() : flyToZone(zone.cod_mpio));
+  if (zoomIn && closedLarge) setTimeout(move, 350);
+  else if (zoomIn) move();
+
+  refs.zoneSelectEl.value = String(zone.zona_id);
+  refs.metricsTitleEl.textContent = isArea(zone) ? 'Métricas del área' : 'Métricas de la zona';
+  refs.chatInput.placeholder = isArea(zone)
+    ? '¿Qué quiere saber sobre el área metropolitana?' : '¿Qué quiere saber sobre esta zona?';
 
   refs.zoneNameEl.textContent = zone.zona_nombre;
   refs.sheetZoneEl.textContent = zone.zona_nombre;
@@ -332,155 +397,677 @@ function selectZone(zone, zoomIn = true) {
   refs.chatBodyEl.hidden = false;
   refs.sheetEmptyEl.hidden = true;
   refs.sheetBodyEl.hidden = false;
+  refs.exportBtn.disabled = false;
 
-  greet(zone);
+  greet(zone, assistantAvailable());
   renderMessages(refs.messagesEl, getMessages(zone.zona_id));
-  renderSuggestions(refs.suggestionsEl, SUGGESTIONS, send);
+  renderSuggestions(refs.suggestionsEl, suggestionsFor(zone, assistantAvailable()), send);
+  setChatBusy(state.waiting);
 
   const prediction = getPrediction(zone.zona_id);
   const explanation = getExplanation(zone.zona_id);
 
   renderMetrics(refs, zone, prediction);
   renderDistribution(refs.distributionEl, zone, prediction);
-  renderExplanation(refs.driversEl, refs.driversNoteEl, explanation);
+  renderExplanation(refs.driversEl, refs.driversNoteEl, explanation, isArea(zone));
   renderDeprivations(refs.deprivationsEl, state.deprivations);
   refreshDimensions();
 }
 
-// ---------------------------------------------------------------
 // Asistente
-// ---------------------------------------------------------------
-function send(question) {
-  const zone = state.selectedZone;
-  if (!zone || !question.trim()) return;
+const AI_UNAVAILABLE =
+  'La IA generativa no respondió, así que esta respuesta se armó con las cifras de la zona.';
 
-  ask(zone, question.trim());
-  renderMessages(refs.messagesEl, getMessages(zone.zona_id));
+// Una sola respuesta a la vez: Ollama atiende las peticiones en fila.
+function setChatBusy(busy) {
+  refs.chatInput.disabled = busy;
+  refs.chatSubmitBtn.disabled = busy;
+  refs.suggestionsEl.querySelectorAll('button').forEach((button) => { button.disabled = busy; });
+}
+
+function isShowing(zoneId) {
+  return Boolean(state.selectedZone && state.selectedZone.zona_id === zoneId);
+}
+
+// suggestion: texto escrito, o { text, kind } de una sugerencia.
+async function send(suggestion) {
+  const zone = state.selectedZone;
+  const { text, kind } = typeof suggestion === 'string' ? { text: suggestion } : suggestion;
+  const question = String(text).trim();
+  if (!zone || !question || state.waiting) return;
+
+  if (!assistantAvailable()) {
+    ask(zone, question);
+    renderMessages(refs.messagesEl, getMessages(zone.zona_id));
+    return;
+  }
+
+  const zoneId = zone.zona_id;
+  const history = historyFor(zoneId);
+  const message = startAnswer(zone, question);
+  const refresh = () => { if (isShowing(zoneId)) renderLastMessage(refs.messagesEl, message); };
+
+  state.waiting = true;
+  setChatBusy(true);
+  renderMessages(refs.messagesEl, getMessages(zoneId));
+  // Mientras no llega texto, el contador de segundos dice que sigue trabajando.
+  const timer = window.setInterval(() => { if (!message.text) refresh(); }, 1000);
+
+  let fallback = false;
+  const onEvent = (event) => {
+    if (event.tipo === 'meta') {
+      // En modo plantilla el asistente devuelve las cifras en crudo; las plantillas
+      // del navegador las presentan mejor.
+      fallback = !String(event.generado_con).startsWith('ollama:');
+      Object.assign(message, { engine: event.generado_con, sources: event.fuentes, warning: event.advertencia });
+    } else if (event.tipo === 'texto' && !fallback) {
+      message.text += event.delta;
+      refresh();
+    } else if (event.tipo === 'error') {
+      throw Object.assign(new Error(event.detalle), event.codigo === 'ocupado' ? { code: 'limit' } : {});
+    }
+  };
+
+  try {
+    await (kind ? interpretZone(zoneId, kind, onEvent) : askAssistant(zoneId, question, history, onEvent));
+    if (fallback || !message.text.trim()) throw new Error('Sin respuesta del modelo de lenguaje');
+    finishAnswer(message, {});
+  } catch (error) {
+    if (error.code === 'expired') {
+      endSession('expired');
+      return;
+    }
+    // Límite de uso o asistente ocupado: la respuesta de plantilla, con el aviso de
+    // esperar en vez del de "la IA no respondio".
+    if (error.code === 'limit') {
+      finishAnswer(message, { text: reply(zone, question), engine: null, note: error.message });
+      return;
+    }
+    // Si ya se había escrito parte, se conserva y se avisa del corte.
+    finishAnswer(message, message.text.trim() && !fallback
+      ? { note: 'La respuesta se interrumpió antes de terminar.' }
+      : { text: reply(zone, question), engine: null, note: AI_UNAVAILABLE });
+  } finally {
+    window.clearInterval(timer);
+    state.waiting = false;
+    setChatBusy(false);
+    refresh();
+    if (isShowing(zoneId)) refs.chatInput.focus();
+  }
 }
 
 refs.chatForm.addEventListener('submit', (event) => {
   event.preventDefault();
+  if (state.waiting) return;
   send(refs.chatInput.value);
   refs.chatInput.value = '';
 });
 
-// ---------------------------------------------------------------
-// Sesion
-// ---------------------------------------------------------------
+// Exportar reporte de la zona (HU-12): ambos roles
+function toggleExportMenu(show) {
+  const open = show === undefined ? refs.exportMenuEl.hidden : show;
 
-// Cierra la sesion de verdad: borra el token, el historial del asistente y
-// recarga la pagina para descartar todo el estado en memoria (mapa, zona,
-// cifras). replace y no assign, para no dejar la pagina autenticada en el
-// historial del navegador.
-function endSession(expired = false) {
-  resetChat();
-  logout({ expired });
-  window.location.replace(window.location.pathname);
+  refs.exportMenuEl.hidden = !open;
+  refs.exportBtn.setAttribute('aria-expanded', String(open));
+  refs.exportBtn.classList.toggle('is-active', open);
+
+  if (open) refs.exportMenuEl.querySelector('.menu-item').focus();
 }
 
-refs.logoutBtn.addEventListener('click', () => endSession(false));
+// Resumen de la conversación para el PDF.
+async function conversationSummary(zone) {
+  const conversation = conversationFor(zone.zona_id);
+  if (!conversation.length) return null;
 
-// Un 401 de la API significa token vencido o revocado.
-onUnauthorized(() => endSession(true));
+  const questions = conversation.filter((message) => message.rol === 'usuario')
+    .map((message) => message.contenido);
+  if (assistantAvailable()) {
+    try {
+      const answer = await summarizeConversation(zone.zona_id, conversation);
+      if (String(answer.generado_con).startsWith('ollama:') && answer.texto.trim()) {
+        return { text: answer.texto, engine: answer.generado_con, questions };
+      }
+    } catch (error) {
+      if (error.code === 'expired') throw error;
+    }
+  }
+  return { text: null, engine: null, questions };
+}
 
-// Los datos se sirven hoy desde el corte local, asi que ninguna peticion al
-// backend detectaria la caducidad. El cliente la vigila por su cuenta con la
-// fecha exp del token, tambien al volver a la pestaña tras suspender el equipo.
-function watchExpiry(session) {
-  const remaining = session.expiresAt - Date.now();
-  if (remaining <= 0) {
-    endSession(true);
+function setExportBusy(busy) {
+  refs.exportBtn.disabled = busy;
+  refs.exportBtnTextEl.textContent = busy ? 'Preparando resumen…' : 'Exportar reporte';
+}
+
+async function exportReport(format) {
+  const zone = state.selectedZone;
+  if (!zone) return;
+
+  const report = buildZoneReport(zone.zona_id);
+
+  if (format === 'xlsx') {
+    downloadFile(reportFileName(report, 'xlsx'), reportToXlsx(report), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     return;
   }
 
-  setTimeout(() => endSession(true), Math.min(remaining, 2 ** 31 - 1));
+  setExportBusy(true);
+  try {
+    report.conversation = await conversationSummary(zone);
+  } catch (error) {
+    if (error.code === 'expired') {
+      endSession('expired');
+      return;
+    }
+  } finally {
+    setExportBusy(false);
+  }
 
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && !getSession()) endSession(true);
-  });
+  // El navegador ofrece «Guardar como PDF» en el diálogo de impresión; así no hace falta
+  // ninguna librería externa.
+  renderPrintReport(refs.printReportEl, report);
+  window.print();
 }
 
-function showLogin(expired) {
+refs.exportBtn.addEventListener('click', () => toggleExportMenu());
+
+refs.exportMenuEl.addEventListener('click', (event) => {
+  const item = event.target.closest('.menu-item');
+  if (!item) return;
+
+  toggleExportMenu(false);
+  refs.exportBtn.focus();
+  exportReport(item.dataset.format);
+});
+
+// Flechas entre las opciones del menú.
+refs.exportMenuEl.addEventListener('keydown', (event) => {
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+
+  event.preventDefault();
+  const items = [...refs.exportMenuEl.querySelectorAll('.menu-item')];
+  const step = event.key === 'ArrowDown' ? 1 : -1;
+  const next = (items.indexOf(document.activeElement) + step + items.length) % items.length;
+  items[next].focus();
+});
+
+// Un clic fuera del menú lo cierra.
+document.addEventListener('click', (event) => {
+  if (!refs.exportMenuEl.hidden && !event.target.closest('.menu-wrap')) toggleExportMenu(false);
+});
+
+// Administración de usuarios (RF-09, HU-08): solo administrador
+function toggleAdmin(show) {
+  const open = show === undefined ? !state.adminOpen : show;
+  if (open === state.adminOpen) return;
+  if (open && (!state.session || state.session.role !== 'administrador')) return;
+
+  if (open) {
+    toggleSheet(false);
+    toggleProfile(false);
+    if (state.mapInPanel) setMapLarge(false);
+  }
+
+  state.adminOpen = open;
+  refs.adminPanelEl.hidden = !open;
+  refs.adminBtn.setAttribute('aria-expanded', String(open));
+  refs.adminBtn.classList.toggle('is-active', open);
+
+  if (!open) return;
+
+  renderAdminMessage(refs.adminMessageEl, '');
+  // En pantallas compactas el área del asistente queda debajo de la barra.
+  if (compactLayout.matches) refs.adminPanelEl.scrollIntoView({ block: 'start' });
+  refs.closeAdminBtn.focus();
+  refreshUsers();
+  refreshNameRequests();
+}
+
+// Solicitudes de cambio de nombre: la sección solo existe con backend.
+async function refreshNameRequests() {
+  const api = profileAvailable();
+  refs.requestsSectionEl.hidden = !api;
+  if (!api) return;
+
+  try {
+    const requests = await listNameRequests();
+    renderNameRequests(refs.requestListEl, requests, resolveRequest);
+    renderPendingBadge(refs.adminPendingEl, requests.length);
+  } catch (error) {
+    handleAdminError(error);
+  }
+}
+
+async function resolveRequest(item, approve, reason, buttons) {
+  buttons.forEach((button) => { button.disabled = true; });
+
+  try {
+    await resolveNameRequest(item.id, approve, reason);
+    await Promise.all([refreshNameRequests(), refreshUsers()]);
+    renderAdminMessage(refs.adminMessageEl, approve
+      ? `${item.usuario.email} ahora se llama «${item.valor_nuevo}».`
+      : `Se rechazó la solicitud de ${item.usuario.email}.`, 'ok');
+  } catch (error) {
+    buttons.forEach((button) => { button.disabled = false; });
+    handleAdminError(error);
+  }
+}
+
+function handleAdminError(error) {
+  if (error.code === 'expired') {
+    endSession('expired');
+    return;
+  }
+  renderAdminMessage(refs.adminMessageEl, error.message || 'No se pudo completar la acción.', 'error');
+}
+
+async function refreshUsers() {
+  try {
+    const users = await listUsers();
+    renderUsers(refs.userListEl, users, state.session.email, changeUserState, removeUser);
+    renderAdminSummary(refs.adminSummaryEl, users);
+    return users;
+  } catch (error) {
+    handleAdminError(error);
+    return [];
+  }
+}
+
+async function changeUserState(user, button) {
+  button.disabled = true;
+
+  try {
+    await setUserActive(user, !user.activo);
+    await refreshUsers();
+    renderAdminMessage(refs.adminMessageEl,
+      `${user.nombre} quedó ${user.activo ? 'desactivado' : 'activo'}.`, 'ok');
+  } catch (error) {
+    button.disabled = false;
+    handleAdminError(error);
+  }
+}
+
+async function removeUser(user, button) {
+  const ok = window.confirm(
+    `¿Eliminar a ${user.nombre} (${user.email})? No se puede deshacer: ` +
+    'se borran su cuenta y sus escenarios guardados. La bitácora de auditoría se conserva.');
+  if (!ok) return;
+
+  button.disabled = true;
+
+  try {
+    await deleteUser(user);
+    await refreshUsers();
+    renderAdminMessage(refs.adminMessageEl, `${user.nombre} fue eliminado.`, 'ok');
+  } catch (error) {
+    button.disabled = false;
+    handleAdminError(error);
+  }
+}
+
+refs.adminBtn.addEventListener('click', () => toggleAdmin());
+
+refs.closeAdminBtn.addEventListener('click', () => {
+  toggleAdmin(false);
+  refs.adminBtn.focus();
+});
+
+refs.userForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  refs.createUserBtn.disabled = true;
+
+  try {
+    const user = await createUser({
+      nombre: refs.newNameInput.value,
+      email: refs.newEmailInput.value,
+      password: refs.newPasswordInput.value,
+      rol: refs.newRoleInput.value
+    });
+
+    refs.userForm.reset();
+    await refreshUsers();
+    renderAdminMessage(refs.adminMessageEl,
+      `Usuario ${user.email} creado con el rol ${roleLabel(user.rol).toLowerCase()}.`, 'ok');
+    refs.newNameInput.focus();
+  } catch (error) {
+    handleAdminError(error);
+  } finally {
+    refs.createUserBtn.disabled = false;
+  }
+});
+
+// Mi perfil: todos los roles
+function toggleProfile(show) {
+  const open = show === undefined ? !state.profileOpen : show;
+  if (open === state.profileOpen) return;
+  if (open && !state.session) return;
+
+  if (open) {
+    toggleSheet(false);
+    toggleAdmin(false);
+    if (state.mapInPanel) setMapLarge(false);
+  }
+
+  state.profileOpen = open;
+  refs.profilePanelEl.hidden = !open;
+  refs.profileBtn.setAttribute('aria-expanded', String(open));
+  refs.profileBtn.classList.toggle('is-active', open);
+
+  if (!open) {
+    refs.passwordForm.reset();
+    return;
+  }
+
+  renderAdminMessage(refs.profileMessageEl, '');
+  if (compactLayout.matches) refs.profilePanelEl.scrollIntoView({ block: 'start' });
+  refs.closeProfileBtn.focus();
+  refreshProfile();
+}
+
+function handleProfileError(error) {
+  if (error.code === 'expired') {
+    endSession('expired');
+    return;
+  }
+  renderAdminMessage(refs.profileMessageEl, error.message || 'No se pudo completar la acción.', 'error');
+}
+
+// El nombre de la cabecera sigue al del perfil (puede haber cambiado por una solicitud
+// aprobada mientras la sesión seguía abierta).
+function showProfile(profile) {
+  const admin = profile.rol === 'administrador';
+  const api = !profile.local;
+
+  renderProfileFacts(refs.profileFactsEl, profile);
+  renderNameStatus(refs.nameStatusEl, profile, cancelRequest);
+  refs.profileSummaryEl.textContent = `${profile.email} · ${admin ? 'Administrador' : 'Analista'}`;
+  refs.profileLocalEl.hidden = api;
+  refs.profilePanelEl.querySelectorAll('[data-needs-api]').forEach((section) => { section.hidden = !api; });
+
+  refs.nameHelpEl.textContent = admin
+    ? 'Como administrador, tu cambio de nombre se aplica de inmediato.'
+    : 'Tu cambio de nombre lo revisa un administrador antes de aplicarse. Mientras tanto se sigue mostrando el actual.';
+  refs.saveNameBtn.textContent = admin ? 'Guardar nombre' : 'Solicitar cambio';
+  if (document.activeElement !== refs.profileNameInput) refs.profileNameInput.value = profile.nombre;
+
+  if (state.session && profile.nombre !== state.session.name) {
+    state.session = { ...state.session, name: profile.nombre };
+    renderSession(refs, state.session);
+  }
+}
+
+async function refreshProfile() {
+  try {
+    showProfile(await getProfile());
+  } catch (error) {
+    handleProfileError(error);
+  }
+}
+
+async function cancelRequest(button) {
+  button.disabled = true;
+  try {
+    showProfile(await cancelNameChange());
+    renderAdminMessage(refs.profileMessageEl, 'Cancelaste tu solicitud de cambio de nombre.', 'ok');
+  } catch (error) {
+    button.disabled = false;
+    handleProfileError(error);
+  }
+}
+
+refs.profileBtn.addEventListener('click', () => toggleProfile());
+
+refs.closeProfileBtn.addEventListener('click', () => {
+  toggleProfile(false);
+  refs.profileBtn.focus();
+});
+
+refs.nameForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  refs.saveNameBtn.disabled = true;
+
+  try {
+    const profile = await requestNameChange(refs.profileNameInput.value);
+    showProfile(profile);
+    renderAdminMessage(refs.profileMessageEl, profile.solicitud_pendiente
+      ? 'Solicitud enviada. Un administrador la revisará.'
+      : 'Tu nombre se actualizó.', 'ok');
+  } catch (error) {
+    handleProfileError(error);
+  } finally {
+    refs.saveNameBtn.disabled = false;
+  }
+});
+
+refs.passwordForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  refs.savePasswordBtn.disabled = true;
+
+  try {
+    const session = await changePassword(refs.currentPasswordInput.value,
+      refs.newPassword1Input.value, refs.newPassword2Input.value);
+    state.session = session;
+    watchExpiry();
+    refs.passwordForm.reset();
+    renderAdminMessage(refs.profileMessageEl,
+      'Contraseña cambiada. Se cerraron tus sesiones en otros equipos; esta sigue abierta.', 'ok');
+    refreshProfile();
+  } catch (error) {
+    handleProfileError(error);
+  } finally {
+    // Las contraseñas no se quedan en el formulario, salga bien o mal.
+    refs.currentPasswordInput.value = '';
+    refs.savePasswordBtn.disabled = false;
+  }
+});
+
+// Sesión (RF-01)
+const LOGIN_MESSAGES = {
+  // Genérico a propósito: no revela si falló el correo o la contraseña (flujo alternativo
+  // 1 de RF-01).
+  invalid: 'Correo o contraseña incorrectos.',
+  inactive: 'Tu usuario está desactivado. Contacta al administrador.',
+  throttled: 'Demasiados intentos de inicio de sesión desde esta red. Espera un minuto.',
+  insecure: 'El inicio de sesión requiere una conexión segura (HTTPS o localhost).'
+};
+
+const NOTICES = {
+  expired: 'Tu sesión expiró. Vuelve a iniciar sesión.',
+  logout: 'Cerraste la sesión correctamente.'
+};
+
+function loginMessage(error) {
+  if (error.code === 'locked') {
+    const minutes = error.minutes || 15;
+    return `Demasiados intentos fallidos. Espera ${minutes} minuto${minutes === 1 ? '' : 's'} ` +
+      'antes de volver a intentarlo.';
+  }
+  return LOGIN_MESSAGES[error.code] || 'No se pudo iniciar sesión. Inténtalo de nuevo.';
+}
+
+function hidePassword() {
+  refs.loginPassword.type = 'password';
+  refs.togglePasswordBtn.textContent = 'Mostrar';
+  refs.togglePasswordBtn.setAttribute('aria-pressed', 'false');
+}
+
+function showLogin(notice) {
   refs.appEl.hidden = true;
   refs.loginScreenEl.hidden = false;
-  renderLoginNotice(refs.loginNoticeEl, expired);
+  renderLoginNotice(refs.loginNoticeEl, NOTICES[notice]);
   refs.loginSubmit.disabled = false;
   refs.loginEmail.focus();
 }
 
+let expiryTimer = null;
+
+function watchExpiry() {
+  clearTimeout(expiryTimer);
+  const left = state.session.exp - Date.now();
+
+  if (left <= 0) {
+    endSession('expired');
+    return;
+  }
+  expiryTimer = setTimeout(() => endSession('expired'), Math.min(left, 2147483647));
+}
+
 function enterApp(session) {
+  state.session = session;
   refs.loginScreenEl.hidden = true;
   refs.appEl.hidden = false;
-  renderSession(refs.sessionNameEl, refs.sessionRoleEl, session.user);
-  watchExpiry(session);
 
-  // La aplicacion se hace visible antes de arrancar: Leaflet necesita que el
-  // contenedor del mapa tenga medidas reales al crearse.
+  renderSession(refs, session);
+  watchExpiry();
+
+  // El administrador ve en su botón cuántas solicitudes de nombre esperan.
+  if (session.role === 'administrador') refreshNameRequests();
+
+  // El mapa y los datos se montan solo con sesión, y una sola vez.
   if (!state.started) {
     state.started = true;
     start();
   }
 }
 
-// La contraseña se lee del campo, se entrega a login() y el campo se vacia
-// siempre, haya exito o error. No se guarda en ninguna variable persistente.
+// location.replace descarta todo el estado en memoria, incluida la conversación con cifras
+// de las zonas, y no deja la vista autenticada en el historial del navegador.
+function endSession(reason) {
+  clearTimeout(expiryTimer);
+  logout(reason);
+  window.location.replace(window.location.pathname + window.location.search);
+}
+
 refs.loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const email = refs.loginEmail.value.trim();
-  if (!email || !refs.loginPassword.value) {
-    renderLoginError(refs.loginErrorEl, 'empty');
+  const password = refs.loginPassword.value;
+
+  // La contraseña solo vive en esta función: el campo se vacía en cada intento.
+  refs.loginPassword.value = '';
+  hidePassword();
+  renderLoginNotice(refs.loginNoticeEl, '');
+
+  if (!email || !password) {
+    renderLoginError(refs.loginErrorEl, 'Escribe tu correo y tu contraseña.');
     (email ? refs.loginPassword : refs.loginEmail).focus();
     return;
   }
 
-  renderLoginError(refs.loginErrorEl, null);
-  renderLoginNotice(refs.loginNoticeEl, false);
-  setLoginBusy(refs.loginSubmit, true);
+  refs.loginSubmit.disabled = true;
+  refs.loginSubmit.textContent = 'Verificando…';
+  renderLoginError(refs.loginErrorEl, '');
 
   try {
-    const session = await login(email, refs.loginPassword.value);
-    refs.loginPassword.value = '';
-    enterApp(session);
+    enterApp(await login(email, password));
   } catch (error) {
-    refs.loginPassword.value = '';
-    renderLoginError(refs.loginErrorEl, error.reason || 'server');
+    renderLoginError(refs.loginErrorEl, loginMessage(error));
     refs.loginPassword.focus();
   } finally {
-    setLoginBusy(refs.loginSubmit, false);
+    refs.loginSubmit.disabled = false;
+    refs.loginSubmit.textContent = 'Iniciar sesión';
   }
 });
 
-// ---------------------------------------------------------------
+refs.togglePasswordBtn.addEventListener('click', () => {
+  const show = refs.loginPassword.type === 'password';
+
+  refs.loginPassword.type = show ? 'text' : 'password';
+  refs.togglePasswordBtn.textContent = show ? 'Ocultar' : 'Mostrar';
+  refs.togglePasswordBtn.setAttribute('aria-pressed', String(show));
+  refs.loginPassword.focus();
+});
+
+refs.logoutBtn.addEventListener('click', () => endSession('logout'));
+
+// Al volver a la pestaña se revisa la caducidad: los temporizadores pueden dormirse con la
+// pestaña en segundo plano.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && state.session && !getSession()) {
+    endSession('expired');
+  }
+});
+
+// Tema claro / oscuro
+// El tema guardado ya se aplicó en <head>, antes de pintar.
+const THEME_KEY = 'sd.theme';
+
+function syncThemeButtons() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  const label = dark ? 'Activar modo claro' : 'Activar modo oscuro';
+  [refs.themeBtn, refs.loginThemeBtn].forEach((button) => {
+    button.setAttribute('aria-pressed', String(dark));
+    button.setAttribute('aria-label', label);
+    button.title = label;
+  });
+  refs.profileThemeBtn.textContent = dark ? 'Usar modo claro' : 'Usar modo oscuro';
+}
+
+function toggleTheme() {
+  const dark = document.documentElement.dataset.theme !== 'dark';
+  if (dark) document.documentElement.dataset.theme = 'dark';
+  else delete document.documentElement.dataset.theme;
+
+  try {
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+  } catch (error) {
+    // Sin almacenamiento: el tema dura hasta recargar.
+  }
+  syncThemeButtons();
+  refreshTheme();
+}
+
+refs.themeBtn.addEventListener('click', toggleTheme);
+refs.loginThemeBtn.addEventListener('click', toggleTheme);
+refs.profileThemeBtn.addEventListener('click', toggleTheme);
+syncThemeButtons();
+
 // Arranque
-// ---------------------------------------------------------------
-// ---------------------------------------------------------------
-// Arranque
-// ---------------------------------------------------------------
 async function start() {
+  refs.summaryEl.textContent = 'Cargando datos…';
+
   try {
     await loadData();
   } catch (error) {
+    // Un 401 del backend al cargar: el token venció o se revocó.
+    if (error.code === 'expired') {
+      endSession('expired');
+      return;
+    }
     refs.summaryEl.textContent = 'No se pudieron cargar los datos.';
+    refs.chatEmptyEl.textContent = state.session && state.session.mode === 'api'
+      ? `No se pudieron cargar los indicadores desde el backend (${error.message}).`
+      : 'No se pudieron cargar los indicadores (api/data.json). Comprueba que la carpeta api esté publicada.';
     return;
   }
 
-  initMap('map');
+  // Sin mapa la aplicación sigue siendo útil: métricas, indicadores, ficha y asistente no
+  // dependen de él.
+  try {
+    initMap('map');
+  } catch (error) {
+    refs.mapEl.classList.add('map-unavailable');
+    refs.mapEl.textContent = 'No se pudo cargar el mapa. Comprueba que la carpeta vendor/leaflet esté publicada.';
+    refs.mapBtn.disabled = true;
+  }
+
   renderSummary(refs.summaryEl, getSummary());
   refreshDimensions();
   refreshBreadcrumb();
   refreshMap();
 
-  // Se abre sobre la zona con mayor pobreza extrema, sin acercar, para que la
-  // vista inicial conserve toda el area metropolitana.
-  selectZone(getZonesRanked()[0], false);
+  renderZoneOptions(refs.zoneSelectEl, getArea(), getZones());
+
+  // Se abre sobre el área metropolitana completa: se puede analizar sin elegir ninguna
+  // zona.
+  selectZone(getArea(), false);
 }
 
-// Sin sesion vigente solo se muestra el login; start() espera a que haya token.
+// No se arranca directamente: primero se comprueba si hay una sesión vigente.
 function boot() {
   const session = getSession();
   if (session) enterApp(session);
-  else showLogin(takeExpiredNotice());
+  else showLogin(takeNotice());
 }
 
 boot();
