@@ -372,6 +372,32 @@ inicio de sesión espera a que el navegador reciba la conexión rechazada antes 
 pasar al modo de demostración. En Windows eso tarda unos segundos, y la consola
 muestra `ERR_CONNECTION_REFUSED`. Es el comportamiento esperado.
 
+## Mi perfil (todos los roles)
+
+Se abre pulsando el nombre del usuario en la cabecera. Es un panel sobre el área
+del asistente, con el mismo patrón que la ficha técnica y la administración (son
+excluyentes y se cierran con su ✕ o con Escape).
+
+| Sección | Qué permite |
+|---|---|
+| **Cuenta** | Ver nombre, correo, rol, fecha de alta, el **inicio de sesión anterior** (para notar un acceso que no se reconoce) y cuándo se cambió la contraseña. |
+| **Nombre** | El **administrador** lo cambia directamente. El **analista** envía una **solicitud** que un administrador aprueba o rechaza (con motivo opcional); mientras está pendiente la puede cancelar, y se muestra el resultado de la última durante 14 días. |
+| **Contraseña** | Pide la actual; la nueva debe tener al menos 12 caracteres (se aceptan frases fáciles de recordar) y no puede ser una conocida ni contener el correo. **Al cambiarla se cierran las demás sesiones abiertas**; la actual sigue. |
+| **Seguridad** | «Cerrar sesión en los demás equipos» y la **actividad reciente**: inicios de sesión (con IP), intentos fallidos (resaltados), cambios de contraseña y de nombre, y las acciones de un administrador sobre la cuenta. |
+| **Preferencias** | Modo claro u oscuro (se guarda en el navegador). |
+
+El correo no se cambia desde el perfil: es el identificador para entrar.
+
+El administrador ve las **solicitudes de cambio de nombre** al principio de su
+panel, y un contador sobre el botón **Administración** cuando hay pendientes.
+
+En el modo de demostración (sin backend) el perfil es de solo lectura: no hay
+dónde guardar una solicitud que apruebe otra persona ni sesiones que cerrar.
+
+Cómo se cierran las demás sesiones: cada token lleva la «versión de sesión» del
+usuario (claim `ver`). Cambiar la contraseña o pulsar «Cerrar sesión en los demás
+equipos» sube esa versión en la base de datos, y el backend rechaza los tokens
+anteriores con «La sesión fue cerrada». La sesión actual recibe un token nuevo.
 ## Administración de usuarios (solo administrador)
 
 Implementa **RF-09 «Gestionar usuarios y roles»** e **HU-08**. El botón

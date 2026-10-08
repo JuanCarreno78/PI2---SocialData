@@ -798,6 +798,16 @@
         color: #f0c98d;
       }
 
+      :root[data-theme="dark"] .profile-note.is-warning {
+        background: #3a2c17;
+        color: #f0c98d;
+      }
+
+      :root[data-theme="dark"] .profile-note.is-error {
+        background: #3a1d1a;
+        color: #f0a59c;
+      }
+
       :root[data-theme="dark"] .state-badge {
         background: #173326;
         color: #8fd0a6;
@@ -2316,11 +2326,41 @@
         flex-wrap: wrap;
       }
 
+      /* El nombre del usuario es el boton que abre «Mi perfil». */
       .session-user {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+        padding: 4px 8px;
+        border: 1.5px solid transparent;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        font: inherit;
         line-height: 1.2;
+        text-align: right;
+        cursor: pointer;
+        transition: border-color 0.14s ease, background 0.14s ease;
+      }
+
+      .session-user:hover,
+      .session-user.is-active {
+        border-color: var(--line);
+        background: var(--surface-soft);
+      }
+
+      .session-user:hover .session-name {
+        color: var(--primary-dark);
+      }
+
+      /* Contador de solicitudes pendientes sobre «Administracion». */
+      .count-badge {
+        min-width: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: var(--high);
+        font-size: 11px;
+        line-height: 18px;
+        color: #ffffff;
       }
 
       .session-name {
@@ -2650,6 +2690,132 @@
         grid-column: 1 / -1;
       }
 
+      /* --- Mi perfil: mismo patron de panel que la administracion ------------ */
+
+      .profile-facts {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 6px 14px;
+        margin: 10px 0 0;
+        font-size: 13px;
+      }
+
+      .profile-facts dt {
+        color: var(--ink-soft);
+      }
+
+      .profile-facts dd {
+        margin: 0;
+        font-weight: 600;
+        color: var(--ink);
+        overflow-wrap: anywhere;
+      }
+
+      .profile-note {
+        margin: 8px 0 0;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        background: var(--primary-soft);
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--primary-dark);
+      }
+
+      .profile-note.is-warning {
+        background: #fbf1e3;
+        color: #7a4c16;
+      }
+
+      .profile-note.is-error {
+        background: #fbeaea;
+        color: #8e2c22;
+      }
+
+      .profile-note .btn-quiet {
+        margin-left: 6px;
+        padding: 2px 8px;
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      .profile-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .profile-form .login-field {
+        margin-top: 0;
+      }
+
+      .profile-form .is-wide {
+        grid-column: 1 / -1;
+      }
+
+      .field-hint {
+        font-size: 11.5px;
+        color: var(--ink-soft);
+      }
+
+      .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .activity-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 2px 12px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+        font-size: 12.5px;
+      }
+
+      .activity-item strong {
+        color: var(--ink);
+      }
+
+      .activity-item.is-alert strong {
+        color: var(--high);
+      }
+
+      .activity-item .activity-when {
+        color: var(--ink-soft);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .activity-item .activity-where {
+        grid-column: 1 / -1;
+        color: var(--ink-soft);
+      }
+
+      /* Solicitudes de cambio de nombre en el panel del administrador. */
+      .request-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 12px;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+        font-size: 13px;
+      }
+
+      .request-row .request-reason {
+        grid-column: 1 / -1;
+        padding: 7px 10px;
+        font-size: 12.5px;
+      }
+
       /* --- Reporte de zona para imprimir o guardar como PDF ------------------ */
 
       /* Invisible en pantalla. Al imprimir es lo unico que se muestra. */
@@ -2864,10 +3030,13 @@
 
         .session-user {
           align-items: flex-start;
+          text-align: left;
         }
 
         .user-row,
-        .user-form {
+        .user-form,
+        .profile-form,
+        .request-row {
           grid-template-columns: 1fr;
         }
 
@@ -2964,16 +3133,18 @@
         </nav>
 
         <div class="session" aria-label="Sesión">
-          <div class="session-user">
+          <button type="button" class="session-user" id="toggle-profile" title="Mi perfil"
+                  aria-expanded="false" aria-controls="profile-panel" aria-label="Mi perfil">
             <span class="session-name" id="session-name"></span>
             <span class="session-meta">
               <span class="role-badge" id="session-role"></span>
             </span>
-          </div>
+          </button>
           <button type="button" id="toggle-admin" class="btn-secondary"
                   aria-expanded="false" aria-controls="admin-panel" hidden>
             <span class="btn-icon" aria-hidden="true">⚙</span>
             Administración
+            <span class="count-badge" id="admin-pending" hidden></span>
           </button>
           <button type="button" id="toggle-theme" class="theme-toggle" aria-pressed="false"
                   aria-label="Activar modo oscuro" title="Activar modo oscuro">
@@ -3176,6 +3347,15 @@
               <div class="admin-content">
                 <p class="admin-message" id="admin-message" role="status"></p>
 
+                <!-- Solo con backend: un analista no cambia su nombre sin aprobacion. -->
+                <section class="admin-section" id="requests-section" aria-labelledby="requests-title" hidden>
+                  <h3 id="requests-title">Solicitudes de cambio de nombre</h3>
+                  <p class="panel-subtitle">
+                    Los analistas no cambian su nombre directamente: lo solicitan y aquí se aprueba o se rechaza.
+                  </p>
+                  <div id="request-list" class="user-list" role="list"></div>
+                </section>
+
                 <section class="admin-section" aria-labelledby="users-title">
                   <h3 id="users-title">Usuarios</h3>
                   <p class="panel-subtitle">
@@ -3212,6 +3392,98 @@
                       <button type="submit" id="create-user" class="btn-primary">Crear usuario</button>
                     </div>
                   </form>
+                </section>
+              </div>
+            </section>
+
+            <!-- Mi perfil: cada usuario ve y cambia los datos de su cuenta. Mismo patron
+                 de panel que la administracion; los paneles son excluyentes. -->
+            <section class="admin-panel" id="profile-panel" aria-label="Mi perfil" hidden>
+              <header class="sheet-header">
+                <div>
+                  <h2>Mi perfil</h2>
+                  <p class="panel-subtitle" id="profile-summary">Tu cuenta en SocialData</p>
+                </div>
+                <button type="button" id="close-profile" class="sheet-close"
+                        aria-label="Cerrar mi perfil">✕</button>
+              </header>
+
+              <div class="admin-content">
+                <p class="admin-message" id="profile-message" role="status"></p>
+                <p class="profile-note is-warning" id="profile-local" hidden>
+                  Estás en el modo de demostración, sin el servidor: aquí solo puedes ver tu cuenta.
+                  Los cambios de nombre y de contraseña necesitan la plataforma con el backend.
+                </p>
+
+                <section class="admin-section" aria-labelledby="account-title">
+                  <h3 id="account-title">Cuenta</h3>
+                  <dl class="profile-facts" id="profile-facts"></dl>
+                </section>
+
+                <section class="admin-section" aria-labelledby="name-title" data-needs-api>
+                  <h3 id="name-title">Nombre</h3>
+                  <p class="panel-subtitle" id="name-help"></p>
+                  <div id="name-status"></div>
+                  <form id="name-form" class="profile-form" novalidate autocomplete="off">
+                    <div class="login-field is-wide">
+                      <label for="profile-name">Nombre que se muestra</label>
+                      <input type="text" id="profile-name" class="login-input" maxlength="120" required />
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" id="save-name" class="btn-primary">Solicitar cambio</button>
+                    </div>
+                  </form>
+                </section>
+
+                <section class="admin-section" aria-labelledby="password-title" data-needs-api>
+                  <h3 id="password-title">Contraseña</h3>
+                  <p class="panel-subtitle">
+                    Al cambiarla se cierran tus sesiones abiertas en otros equipos; esta sigue abierta.
+                  </p>
+                  <form id="password-form" class="profile-form" novalidate autocomplete="off">
+                    <div class="login-field is-wide">
+                      <label for="current-password">Contraseña actual</label>
+                      <input type="password" id="current-password" class="login-input"
+                             autocomplete="current-password" required />
+                    </div>
+                    <div class="login-field">
+                      <label for="new-password-1">Contraseña nueva</label>
+                      <input type="password" id="new-password-1" class="login-input"
+                             autocomplete="new-password" minlength="12" required />
+                      <span class="field-hint">Mínimo 12 caracteres. Una frase fácil de recordar sirve, por ejemplo «Proyecto-AMB-grupo2».</span>
+                    </div>
+                    <div class="login-field">
+                      <label for="new-password-2">Repite la contraseña nueva</label>
+                      <input type="password" id="new-password-2" class="login-input"
+                             autocomplete="new-password" required />
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" id="save-password" class="btn-primary">Cambiar contraseña</button>
+                    </div>
+                  </form>
+                </section>
+
+                <section class="admin-section" aria-labelledby="security-title" data-needs-api>
+                  <h3 id="security-title">Seguridad</h3>
+                  <p class="panel-subtitle">
+                    Si no reconoces un acceso de la lista, cambia tu contraseña. Si solo dejaste la sesión
+                    abierta en otro equipo, puedes cerrarla desde aquí.
+                  </p>
+                  <div class="form-actions">
+                    <button type="button" id="close-sessions" class="btn-secondary">
+                      Cerrar sesión en los demás equipos
+                    </button>
+                  </div>
+                  <h4 class="panel-subtitle">Actividad reciente</h4>
+                  <ul class="activity-list" id="activity-list"></ul>
+                </section>
+
+                <section class="admin-section" aria-labelledby="prefs-title">
+                  <h3 id="prefs-title">Preferencias</h3>
+                  <p class="panel-subtitle">Se guardan en este navegador.</p>
+                  <div class="form-actions">
+                    <button type="button" id="profile-theme" class="btn-secondary">Usar modo oscuro</button>
+                  </div>
                 </section>
               </div>
             </section>
@@ -3773,6 +4045,11 @@
             try {
               const body = await response.json();
               if (typeof body.detail === 'string') detail = body.detail;
+              // 422: errores de validacion de FastAPI, una lista. Se muestra el
+              // primero, sin el prefijo tecnico de Pydantic.
+              else if (Array.isArray(body.detail) && body.detail[0] && body.detail[0].msg) {
+                detail = String(body.detail[0].msg).replace(/^Value error, /, '');
+              }
             } catch (error) {
               // Sin cuerpo JSON: se queda el codigo HTTP.
             }
@@ -3970,6 +4247,112 @@
         }
 
         // ---------------------------------------------------------------
+        // Mi perfil
+        // ---------------------------------------------------------------
+        // Solo con backend: en modo local no hay donde guardar una solicitud que
+        // apruebe otra persona, ni sesiones que cerrar en otros equipos.
+        function profileAvailable() {
+          const session = getSession();
+          return Boolean(session && session.mode === 'api');
+        }
+
+        function requireApi() {
+          if (!profileAvailable()) throw new Error('Esta acción necesita la plataforma con el backend.');
+        }
+
+        // El backend devuelve una sesion nueva al cambiar la contrasena o cerrar las
+        // demas sesiones: las anteriores (incluida la de esta pestana) dejaron de valer.
+        function replaceSession(body) {
+          const session = getSession();
+          const claims = jwtClaims(body.access_token);
+          const next = {
+            ...session, token: body.access_token,
+            name: body.usuario ? body.usuario.nombre : session.name,
+            exp: claims.exp ? claims.exp * 1000 : session.exp
+          };
+          writeJson(sessionStorage, SESSION_KEY, next);
+          return next;
+        }
+
+        // El nombre puede cambiar por una solicitud aprobada mientras la sesion sigue.
+        function rememberName(name) {
+          const session = getSession();
+          if (session && name && session.name !== name) {
+            writeJson(sessionStorage, SESSION_KEY, { ...session, name });
+          }
+        }
+
+        async function getProfile() {
+          const session = getSession();
+          if (!session) throw new AuthError('expired', 'La sesión expiró');
+          if (session.mode !== 'api') {
+            // Lo que el navegador sabe de la cuenta de demostracion.
+            return { nombre: session.name, email: session.email, rol: session.role, local: true };
+          }
+          const profile = await request('/perfil');
+          rememberName(profile.nombre);
+          return profile;
+        }
+
+        async function getActivity() {
+          if (!profileAvailable()) return [];
+          return (await request('/perfil/actividad')).actividad;
+        }
+
+        // Mismas reglas que el esquema CambioNombre del backend.
+        async function requestNameChange(name) {
+          requireApi();
+          const nombre = String(name).replace(/\s+/g, ' ').trim();
+          if (nombre.length < 3 || nombre.length > 120) {
+            throw new Error('El nombre debe tener entre 3 y 120 caracteres.');
+          }
+          const profile = await request('/perfil/nombre', { method: 'POST', body: JSON.stringify({ nombre }) });
+          rememberName(profile.nombre);
+          return profile;
+        }
+
+        async function cancelNameChange() {
+          requireApi();
+          return request('/perfil/nombre', { method: 'DELETE' });
+        }
+
+        // Mismas reglas que CambioClave del backend; el servidor revisa ademas que
+        // no sea una contrasena conocida ni contenga el correo.
+        async function changePassword(current, next, repeat) {
+          requireApi();
+          if (!current) throw new Error('Escribe tu contraseña actual.');
+          if (next.length < 12) throw new Error('La contraseña nueva debe tener al menos 12 caracteres.');
+          if (next !== repeat) throw new Error('Las dos contraseñas nuevas no coinciden.');
+          if (next === current) throw new Error('La contraseña nueva debe ser distinta de la actual.');
+          const body = await request('/perfil/clave', {
+            method: 'POST', body: JSON.stringify({ actual: current, nueva: next })
+          });
+          return replaceSession(body);
+        }
+
+        async function closeOtherSessions() {
+          requireApi();
+          return replaceSession(await request('/perfil/cerrar-sesiones', { method: 'POST' }));
+        }
+
+        // Solicitudes de cambio de nombre: solo el administrador, solo con backend.
+        async function listNameRequests() {
+          const session = requireAdmin();
+          if (session.mode !== 'api') return [];
+          return (await request('/auth/solicitudes')).solicitudes;
+        }
+
+        async function resolveNameRequest(id, approve, reason) {
+          requireAdmin();
+          requireApi();
+          const path = `/auth/solicitudes/${encodeURIComponent(id)}/${approve ? 'aprobar' : 'rechazar'}`;
+          return request(path, {
+            method: 'POST',
+            body: approve ? undefined : JSON.stringify({ motivo: String(reason || '').trim() || null })
+          });
+        }
+
+        // ---------------------------------------------------------------
         // Reporte de zona (HU-12)
         // ---------------------------------------------------------------
         // Solo cifras agregadas por zona: ningun identificador de hogar (RNF-02).
@@ -4011,6 +4394,8 @@
           getPrediction, getExplanation, getZonesRanked, getArea, AREA_ID,
           login, getSession, logout, takeNotice,
           listUsers, createUser, setUserActive, deleteUser,
+          profileAvailable, getProfile, getActivity, requestNameChange, cancelNameChange,
+          changePassword, closeOtherSessions, listNameRequests, resolveNameRequest,
           assistantAvailable, askAssistant, interpretZone, summarizeConversation,
           buildZoneReport
         };
@@ -4863,6 +5248,177 @@
         }
 
         // ---------------------------------------------------------------
+        // Mi perfil
+        // ---------------------------------------------------------------
+        // Todo dato del usuario entra por textContent: nombres, motivos e IP los
+        // escriben personas.
+        function formatWhen(value) {
+          if (!value) return null;
+          const date = new Date(value);
+          return Number.isNaN(date.getTime()) ? null : formatDateTime(date);
+        }
+
+        function renderProfileFacts(listEl, profile) {
+          const facts = [
+            ['Nombre', profile.nombre],
+            ['Correo', profile.email],
+            ['Rol', roleLabel(profile.rol)]
+          ];
+          if (!profile.local) {
+            facts.push(
+              ['Miembro desde', formatWhen(profile.creado_en) || '—'],
+              ['Inicio de sesión anterior', formatWhen(profile.acceso_anterior) || 'Este es tu primer inicio de sesión registrado'],
+              ['Contraseña cambiada', formatWhen(profile.clave_cambiada_en) || 'Nunca desde que se creó la cuenta']
+            );
+          }
+
+          listEl.textContent = '';
+          facts.forEach(([label, value]) => {
+            const dt = document.createElement('dt');
+            const dd = document.createElement('dd');
+            dt.textContent = label;
+            dd.textContent = value;
+            listEl.append(dt, dd);
+          });
+        }
+
+        // Estado del nombre: solicitud pendiente (con opcion de cancelarla) o el
+        // resultado de la ultima, para que el analista se entere si la rechazaron.
+        function renderNameStatus(statusEl, profile, onCancel) {
+          statusEl.textContent = '';
+          const note = document.createElement('p');
+          const pending = profile.solicitud_pendiente;
+          // El resultado de la ultima solicitud es una noticia: se muestra 14 dias.
+          const recent = profile.ultima_resuelta && profile.ultima_resuelta.resuelta_en &&
+            Date.now() - new Date(profile.ultima_resuelta.resuelta_en).getTime() < 14 * 86400000;
+          const last = recent ? profile.ultima_resuelta : null;
+
+          if (pending) {
+            note.className = 'profile-note is-warning';
+            note.textContent = `Solicitaste cambiar tu nombre a «${pending.valor_nuevo}». ` +
+              'Está pendiente de aprobación por un administrador.';
+            const cancel = document.createElement('button');
+            cancel.type = 'button';
+            cancel.className = 'btn-quiet';
+            cancel.textContent = 'Cancelar solicitud';
+            cancel.addEventListener('click', () => onCancel(cancel));
+            note.appendChild(cancel);
+          } else if (last && last.estado === 'rechazada') {
+            note.className = 'profile-note is-error';
+            note.textContent = `Rechazaron tu solicitud de llamarte «${last.valor_nuevo}»` +
+              (last.motivo ? `. Motivo: ${last.motivo}` : '.');
+          } else if (last && last.estado === 'aprobada') {
+            note.className = 'profile-note';
+            note.textContent = `Se aprobó tu cambio de nombre a «${last.valor_nuevo}».`;
+          } else {
+            return;
+          }
+          statusEl.appendChild(note);
+        }
+
+        const ACTIVITY_LABELS = {
+          login_exitoso: 'Inicio de sesión',
+          login_fallido: 'Intento fallido de inicio de sesión',
+          clave_cambiada: 'Cambio de contraseña',
+          sesiones_cerradas: 'Cierre de las sesiones en otros equipos',
+          solicitud_nombre: 'Solicitud de cambio de nombre',
+          solicitud_nombre_cancelada: 'Solicitud de cambio de nombre cancelada',
+          nombre_cambiado: 'Cambio de nombre',
+          nombre_aprobado: 'Cambio de nombre aprobado por un administrador',
+          nombre_rechazado: 'Cambio de nombre rechazado por un administrador',
+          usuario_estado_cambiado: 'Un administrador cambió el estado de la cuenta'
+        };
+
+        // Lo que conviene mirar dos veces: intentos fallidos.
+        const ACTIVITY_ALERTS = new Set(['login_fallido']);
+
+        function renderActivity(listEl, items) {
+          listEl.textContent = '';
+          if (!items.length) {
+            const empty = document.createElement('li');
+            empty.className = 'panel-subtitle';
+            empty.textContent = 'Sin actividad registrada.';
+            listEl.appendChild(empty);
+            return;
+          }
+
+          items.forEach((item) => {
+            const li = document.createElement('li');
+            const what = document.createElement('strong');
+            const when = document.createElement('span');
+            li.className = 'activity-item' + (ACTIVITY_ALERTS.has(item.accion) ? ' is-alert' : '');
+            what.textContent = ACTIVITY_LABELS[item.accion] || item.accion;
+            when.className = 'activity-when';
+            when.textContent = formatWhen(item.fecha) || '';
+            li.append(what, when);
+            if (item.ip) {
+              const where = document.createElement('span');
+              where.className = 'activity-where';
+              where.textContent = `Desde la dirección IP ${item.ip}`;
+              li.appendChild(where);
+            }
+            listEl.appendChild(li);
+          });
+        }
+
+        // Solicitudes pendientes en el panel del administrador.
+        function renderNameRequests(listEl, requests, onResolve) {
+          listEl.textContent = '';
+          if (!requests.length) {
+            const empty = document.createElement('p');
+            empty.className = 'panel-subtitle';
+            empty.textContent = 'No hay solicitudes pendientes.';
+            listEl.appendChild(empty);
+            return;
+          }
+
+          requests.forEach((item) => {
+            const row = document.createElement('div');
+            const text = document.createElement('span');
+            const actions = document.createElement('span');
+            const reason = document.createElement('input');
+            const approve = document.createElement('button');
+            const reject = document.createElement('button');
+
+            row.className = 'request-row';
+            row.setAttribute('role', 'listitem');
+            text.className = 'user-id';
+            text.innerHTML = `
+              <span class="user-name">${escapeHtml(item.usuario.nombre)} quiere llamarse «${escapeHtml(item.valor_nuevo)}»</span>
+              <span class="user-email">${escapeHtml(item.usuario.email)} · solicitado el ${escapeHtml(formatWhen(item.creada_en) || '')}</span>`;
+
+            approve.type = 'button';
+            approve.className = 'btn-secondary user-action';
+            approve.textContent = 'Aprobar';
+            approve.setAttribute('aria-label', `Aprobar el nombre ${item.valor_nuevo}`);
+            reject.type = 'button';
+            reject.className = 'btn-secondary user-action is-danger';
+            reject.textContent = 'Rechazar';
+            reject.setAttribute('aria-label', `Rechazar el nombre ${item.valor_nuevo}`);
+
+            reason.type = 'text';
+            reason.className = 'login-input request-reason';
+            reason.maxLength = 200;
+            reason.placeholder = 'Motivo del rechazo (opcional, lo verá el analista)';
+            reason.setAttribute('aria-label', `Motivo para rechazar a ${item.usuario.nombre}`);
+
+            approve.addEventListener('click', () => onResolve(item, true, '', [approve, reject]));
+            reject.addEventListener('click', () => onResolve(item, false, reason.value, [approve, reject]));
+
+            actions.className = 'user-actions';
+            actions.append(approve, reject);
+            row.append(text, actions, reason);
+            listEl.appendChild(row);
+          });
+        }
+
+        function renderPendingBadge(badgeEl, count) {
+          badgeEl.textContent = count > 0 ? String(count) : '';
+          badgeEl.hidden = !(count > 0);
+          badgeEl.setAttribute('aria-label', `${count} solicitudes pendientes`);
+        }
+
+        // ---------------------------------------------------------------
         // Reporte de zona (HU-12)
         // ---------------------------------------------------------------
         function formatDateTime(date) {
@@ -5251,6 +5807,7 @@
           renderMessages, renderLastMessage, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
+          renderProfileFacts, renderNameStatus, renderActivity, renderNameRequests, renderPendingBadge,
           reportToXlsx, reportFileName, renderPrintReport, downloadFile
         };
       })();
@@ -5619,6 +6176,8 @@
           getDeprivations, getPrediction, getExplanation, getArea,
           login, getSession, logout, takeNotice,
           listUsers, createUser, setUserActive, deleteUser,
+          profileAvailable, getProfile, getActivity, requestNameChange, cancelNameChange,
+          changePassword, closeOtherSessions, listNameRequests, resolveNameRequest,
           assistantAvailable, askAssistant, interpretZone, summarizeConversation,
           buildZoneReport
         } = Model;
@@ -5636,6 +6195,7 @@
           renderExplanation, renderDeprivations, renderMessages, renderLastMessage, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
+          renderProfileFacts, renderNameStatus, renderActivity, renderNameRequests, renderPendingBadge,
           reportToXlsx, reportFileName, renderPrintReport, downloadFile
         } = View;
 
@@ -5718,7 +6278,32 @@
           metricsTitleEl: document.getElementById('metrics-title'),
           exportBtnTextEl: document.getElementById('toggle-export-text'),
           themeBtn: document.getElementById('toggle-theme'),
-          loginThemeBtn: document.getElementById('login-theme')
+          loginThemeBtn: document.getElementById('login-theme'),
+
+          adminPendingEl: document.getElementById('admin-pending'),
+          requestsSectionEl: document.getElementById('requests-section'),
+          requestListEl: document.getElementById('request-list'),
+
+          profileBtn: document.getElementById('toggle-profile'),
+          profilePanelEl: document.getElementById('profile-panel'),
+          closeProfileBtn: document.getElementById('close-profile'),
+          profileSummaryEl: document.getElementById('profile-summary'),
+          profileMessageEl: document.getElementById('profile-message'),
+          profileLocalEl: document.getElementById('profile-local'),
+          profileFactsEl: document.getElementById('profile-facts'),
+          nameHelpEl: document.getElementById('name-help'),
+          nameStatusEl: document.getElementById('name-status'),
+          nameForm: document.getElementById('name-form'),
+          profileNameInput: document.getElementById('profile-name'),
+          saveNameBtn: document.getElementById('save-name'),
+          passwordForm: document.getElementById('password-form'),
+          currentPasswordInput: document.getElementById('current-password'),
+          newPassword1Input: document.getElementById('new-password-1'),
+          newPassword2Input: document.getElementById('new-password-2'),
+          savePasswordBtn: document.getElementById('save-password'),
+          closeSessionsBtn: document.getElementById('close-sessions'),
+          activityListEl: document.getElementById('activity-list'),
+          profileThemeBtn: document.getElementById('profile-theme')
         };
 
         const DEFAULT_LAYER = 'Hogares en grupo A (pobreza extrema)';
@@ -5736,7 +6321,8 @@
           // Hay una respuesta de la IA en camino.
           waiting: false,
           started: false,
-          adminOpen: false
+          adminOpen: false,
+          profileOpen: false
         };
 
         // Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel
@@ -5859,6 +6445,7 @@
           // solo uno a la vez.
           if (open && state.mapInPanel) setMapLarge(false);
           if (open) toggleAdmin(false);
+          if (open) toggleProfile(false);
           if (open) refs.closeSheetBtn.focus();
         }
 
@@ -5882,6 +6469,9 @@
           } else if (state.adminOpen) {
             toggleAdmin(false);
             refs.adminBtn.focus();
+          } else if (state.profileOpen) {
+            toggleProfile(false);
+            refs.profileBtn.focus();
           } else if (state.mapLarge) {
             setMapLarge(false);
             refs.mapBtn.focus();
@@ -5905,6 +6495,7 @@
           state.mapInPanel = on && !compactLayout.matches;
 
           if (state.mapInPanel) toggleAdmin(false);
+          if (state.mapInPanel) toggleProfile(false);
 
           if (state.mapInPanel) {
             refs.mapPanelBodyEl.appendChild(refs.mapEl);
@@ -6216,6 +6807,7 @@
 
           if (open) {
             toggleSheet(false);
+            toggleProfile(false);
             if (state.mapInPanel) setMapLarge(false);
           }
 
@@ -6231,6 +6823,37 @@
           if (compactLayout.matches) refs.adminPanelEl.scrollIntoView({ block: 'start' });
           refs.closeAdminBtn.focus();
           refreshUsers();
+          refreshNameRequests();
+        }
+
+        // Solicitudes de cambio de nombre: la seccion solo existe con backend.
+        async function refreshNameRequests() {
+          const api = profileAvailable();
+          refs.requestsSectionEl.hidden = !api;
+          if (!api) return;
+
+          try {
+            const requests = await listNameRequests();
+            renderNameRequests(refs.requestListEl, requests, resolveRequest);
+            renderPendingBadge(refs.adminPendingEl, requests.length);
+          } catch (error) {
+            handleAdminError(error);
+          }
+        }
+
+        async function resolveRequest(item, approve, reason, buttons) {
+          buttons.forEach((button) => { button.disabled = true; });
+
+          try {
+            await resolveNameRequest(item.id, approve, reason);
+            await Promise.all([refreshNameRequests(), refreshUsers()]);
+            renderAdminMessage(refs.adminMessageEl, approve
+              ? `${item.usuario.email} ahora se llama «${item.valor_nuevo}».`
+              : `Se rechazó la solicitud de ${item.usuario.email}.`, 'ok');
+          } catch (error) {
+            buttons.forEach((button) => { button.disabled = false; });
+            handleAdminError(error);
+          }
         }
 
         function handleAdminError(error) {
@@ -6317,6 +6940,151 @@
         });
 
         // ---------------------------------------------------------------
+        // Mi perfil: todos los roles
+        // ---------------------------------------------------------------
+        function toggleProfile(show) {
+          const open = show === undefined ? !state.profileOpen : show;
+          if (open === state.profileOpen) return;
+          if (open && !state.session) return;
+
+          if (open) {
+            toggleSheet(false);
+            toggleAdmin(false);
+            if (state.mapInPanel) setMapLarge(false);
+          }
+
+          state.profileOpen = open;
+          refs.profilePanelEl.hidden = !open;
+          refs.profileBtn.setAttribute('aria-expanded', String(open));
+          refs.profileBtn.classList.toggle('is-active', open);
+
+          if (!open) {
+            refs.passwordForm.reset();
+            return;
+          }
+
+          renderAdminMessage(refs.profileMessageEl, '');
+          if (compactLayout.matches) refs.profilePanelEl.scrollIntoView({ block: 'start' });
+          refs.closeProfileBtn.focus();
+          refreshProfile();
+        }
+
+        function handleProfileError(error) {
+          if (error.code === 'expired') {
+            endSession('expired');
+            return;
+          }
+          renderAdminMessage(refs.profileMessageEl, error.message || 'No se pudo completar la acción.', 'error');
+        }
+
+        // El nombre de la cabecera sigue al del perfil (puede haber cambiado por una
+        // solicitud aprobada mientras la sesion seguia abierta).
+        function showProfile(profile) {
+          const admin = profile.rol === 'administrador';
+          const api = !profile.local;
+
+          renderProfileFacts(refs.profileFactsEl, profile);
+          renderNameStatus(refs.nameStatusEl, profile, cancelRequest);
+          refs.profileSummaryEl.textContent = `${profile.email} · ${admin ? 'Administrador' : 'Analista'}`;
+          refs.profileLocalEl.hidden = api;
+          refs.profilePanelEl.querySelectorAll('[data-needs-api]').forEach((section) => { section.hidden = !api; });
+
+          refs.nameHelpEl.textContent = admin
+            ? 'Como administrador, tu cambio de nombre se aplica de inmediato.'
+            : 'Tu cambio de nombre lo revisa un administrador antes de aplicarse. Mientras tanto se sigue mostrando el actual.';
+          refs.saveNameBtn.textContent = admin ? 'Guardar nombre' : 'Solicitar cambio';
+          if (document.activeElement !== refs.profileNameInput) refs.profileNameInput.value = profile.nombre;
+
+          if (state.session && profile.nombre !== state.session.name) {
+            state.session = { ...state.session, name: profile.nombre };
+            renderSession(refs, state.session);
+          }
+        }
+
+        async function refreshProfile() {
+          try {
+            const [profile, activity] = await Promise.all([getProfile(), getActivity()]);
+            showProfile(profile);
+            renderActivity(refs.activityListEl, activity);
+          } catch (error) {
+            handleProfileError(error);
+          }
+        }
+
+        async function cancelRequest(button) {
+          button.disabled = true;
+          try {
+            showProfile(await cancelNameChange());
+            renderAdminMessage(refs.profileMessageEl, 'Cancelaste tu solicitud de cambio de nombre.', 'ok');
+          } catch (error) {
+            button.disabled = false;
+            handleProfileError(error);
+          }
+        }
+
+        refs.profileBtn.addEventListener('click', () => toggleProfile());
+
+        refs.closeProfileBtn.addEventListener('click', () => {
+          toggleProfile(false);
+          refs.profileBtn.focus();
+        });
+
+        refs.nameForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          refs.saveNameBtn.disabled = true;
+
+          try {
+            const profile = await requestNameChange(refs.profileNameInput.value);
+            showProfile(profile);
+            renderAdminMessage(refs.profileMessageEl, profile.solicitud_pendiente
+              ? 'Solicitud enviada. Un administrador la revisará.'
+              : 'Tu nombre se actualizó.', 'ok');
+          } catch (error) {
+            handleProfileError(error);
+          } finally {
+            refs.saveNameBtn.disabled = false;
+          }
+        });
+
+        refs.passwordForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          refs.savePasswordBtn.disabled = true;
+
+          try {
+            const session = await changePassword(refs.currentPasswordInput.value,
+              refs.newPassword1Input.value, refs.newPassword2Input.value);
+            state.session = session;
+            watchExpiry();
+            refs.passwordForm.reset();
+            renderAdminMessage(refs.profileMessageEl,
+              'Contraseña cambiada. Se cerraron tus sesiones en otros equipos; esta sigue abierta.', 'ok');
+            refreshProfile();
+          } catch (error) {
+            handleProfileError(error);
+          } finally {
+            // Las contrasenas no se quedan en el formulario, salga bien o mal.
+            refs.currentPasswordInput.value = '';
+            refs.savePasswordBtn.disabled = false;
+          }
+        });
+
+        refs.closeSessionsBtn.addEventListener('click', async () => {
+          refs.closeSessionsBtn.disabled = true;
+
+          try {
+            state.session = await closeOtherSessions();
+            watchExpiry();
+            renderAdminMessage(refs.profileMessageEl,
+              'Cerraste tu sesión en los demás equipos. Esta sigue abierta.', 'ok');
+            refreshProfile();
+          } catch (error) {
+            handleProfileError(error);
+          } finally {
+            refs.closeSessionsBtn.disabled = false;
+          }
+        });
+
+        // ---------------------------------------------------------------
         // Sesion (RF-01)
         // ---------------------------------------------------------------
         const LOGIN_MESSAGES = {
@@ -6376,6 +7144,9 @@
 
           renderSession(refs, session);
           watchExpiry();
+
+          // El administrador ve en su boton cuantas solicitudes de nombre esperan.
+          if (session.role === 'administrador') refreshNameRequests();
 
           // El mapa y los datos se montan solo con sesion, y una sola vez.
           if (!state.started) {
@@ -6459,6 +7230,7 @@
             button.setAttribute('aria-label', label);
             button.title = label;
           });
+          refs.profileThemeBtn.textContent = dark ? 'Usar modo claro' : 'Usar modo oscuro';
         }
 
         function toggleTheme() {
@@ -6477,6 +7249,7 @@
 
         refs.themeBtn.addEventListener('click', toggleTheme);
         refs.loginThemeBtn.addEventListener('click', toggleTheme);
+        refs.profileThemeBtn.addEventListener('click', toggleTheme);
         syncThemeButtons();
 
         // ---------------------------------------------------------------
