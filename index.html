@@ -2758,45 +2758,6 @@
         color: var(--ink-soft);
       }
 
-      .activity-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin: 10px 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .activity-item {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 2px 12px;
-        padding: 8px 12px;
-        border: 1px solid var(--line);
-        border-radius: var(--radius-sm);
-        background: var(--surface-soft);
-        font-size: 12.5px;
-      }
-
-      .activity-item strong {
-        color: var(--ink);
-      }
-
-      .activity-item.is-alert strong {
-        color: var(--high);
-      }
-
-      .activity-item .activity-when {
-        color: var(--ink-soft);
-        text-align: right;
-        white-space: nowrap;
-      }
-
-      .activity-item .activity-where {
-        grid-column: 1 / -1;
-        color: var(--ink-soft);
-      }
-
       /* Solicitudes de cambio de nombre en el panel del administrador. */
       .request-row {
         display: grid;
@@ -3461,21 +3422,6 @@
                       <button type="submit" id="save-password" class="btn-primary">Cambiar contraseña</button>
                     </div>
                   </form>
-                </section>
-
-                <section class="admin-section" aria-labelledby="security-title" data-needs-api>
-                  <h3 id="security-title">Seguridad</h3>
-                  <p class="panel-subtitle">
-                    Si no reconoces un acceso de la lista, cambia tu contraseña. Si solo dejaste la sesión
-                    abierta en otro equipo, puedes cerrarla desde aquí.
-                  </p>
-                  <div class="form-actions">
-                    <button type="button" id="close-sessions" class="btn-secondary">
-                      Cerrar sesión en los demás equipos
-                    </button>
-                  </div>
-                  <h4 class="panel-subtitle">Actividad reciente</h4>
-                  <ul class="activity-list" id="activity-list"></ul>
                 </section>
 
                 <section class="admin-section" aria-labelledby="prefs-title">
@@ -4250,7 +4196,7 @@
         // Mi perfil
         // ---------------------------------------------------------------
         // Solo con backend: en modo local no hay donde guardar una solicitud que
-        // apruebe otra persona, ni sesiones que cerrar en otros equipos.
+        // apruebe otra persona, ni una contrasena que cambiar.
         function profileAvailable() {
           const session = getSession();
           return Boolean(session && session.mode === 'api');
@@ -4260,8 +4206,8 @@
           if (!profileAvailable()) throw new Error('Esta acción necesita la plataforma con el backend.');
         }
 
-        // El backend devuelve una sesion nueva al cambiar la contrasena o cerrar las
-        // demas sesiones: las anteriores (incluida la de esta pestana) dejaron de valer.
+        // El backend devuelve una sesion nueva al cambiar la contrasena: las
+        // anteriores (incluida la de esta pestana) dejaron de valer.
         function replaceSession(body) {
           const session = getSession();
           const claims = jwtClaims(body.access_token);
@@ -4294,11 +4240,6 @@
           return profile;
         }
 
-        async function getActivity() {
-          if (!profileAvailable()) return [];
-          return (await request('/perfil/actividad')).actividad;
-        }
-
         // Mismas reglas que el esquema CambioNombre del backend.
         async function requestNameChange(name) {
           requireApi();
@@ -4328,11 +4269,6 @@
             method: 'POST', body: JSON.stringify({ actual: current, nueva: next })
           });
           return replaceSession(body);
-        }
-
-        async function closeOtherSessions() {
-          requireApi();
-          return replaceSession(await request('/perfil/cerrar-sesiones', { method: 'POST' }));
         }
 
         // Solicitudes de cambio de nombre: solo el administrador, solo con backend.
@@ -4394,8 +4330,8 @@
           getPrediction, getExplanation, getZonesRanked, getArea, AREA_ID,
           login, getSession, logout, takeNotice,
           listUsers, createUser, setUserActive, deleteUser,
-          profileAvailable, getProfile, getActivity, requestNameChange, cancelNameChange,
-          changePassword, closeOtherSessions, listNameRequests, resolveNameRequest,
+          profileAvailable, getProfile, requestNameChange, cancelNameChange,
+          changePassword, listNameRequests, resolveNameRequest,
           assistantAvailable, askAssistant, interpretZone, summarizeConversation,
           buildZoneReport
         };
@@ -5316,51 +5252,6 @@
           statusEl.appendChild(note);
         }
 
-        const ACTIVITY_LABELS = {
-          login_exitoso: 'Inicio de sesión',
-          login_fallido: 'Intento fallido de inicio de sesión',
-          clave_cambiada: 'Cambio de contraseña',
-          sesiones_cerradas: 'Cierre de las sesiones en otros equipos',
-          solicitud_nombre: 'Solicitud de cambio de nombre',
-          solicitud_nombre_cancelada: 'Solicitud de cambio de nombre cancelada',
-          nombre_cambiado: 'Cambio de nombre',
-          nombre_aprobado: 'Cambio de nombre aprobado por un administrador',
-          nombre_rechazado: 'Cambio de nombre rechazado por un administrador',
-          usuario_estado_cambiado: 'Un administrador cambió el estado de la cuenta'
-        };
-
-        // Lo que conviene mirar dos veces: intentos fallidos.
-        const ACTIVITY_ALERTS = new Set(['login_fallido']);
-
-        function renderActivity(listEl, items) {
-          listEl.textContent = '';
-          if (!items.length) {
-            const empty = document.createElement('li');
-            empty.className = 'panel-subtitle';
-            empty.textContent = 'Sin actividad registrada.';
-            listEl.appendChild(empty);
-            return;
-          }
-
-          items.forEach((item) => {
-            const li = document.createElement('li');
-            const what = document.createElement('strong');
-            const when = document.createElement('span');
-            li.className = 'activity-item' + (ACTIVITY_ALERTS.has(item.accion) ? ' is-alert' : '');
-            what.textContent = ACTIVITY_LABELS[item.accion] || item.accion;
-            when.className = 'activity-when';
-            when.textContent = formatWhen(item.fecha) || '';
-            li.append(what, when);
-            if (item.ip) {
-              const where = document.createElement('span');
-              where.className = 'activity-where';
-              where.textContent = `Desde la dirección IP ${item.ip}`;
-              li.appendChild(where);
-            }
-            listEl.appendChild(li);
-          });
-        }
-
         // Solicitudes pendientes en el panel del administrador.
         function renderNameRequests(listEl, requests, onResolve) {
           listEl.textContent = '';
@@ -5807,7 +5698,7 @@
           renderMessages, renderLastMessage, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
-          renderProfileFacts, renderNameStatus, renderActivity, renderNameRequests, renderPendingBadge,
+          renderProfileFacts, renderNameStatus, renderNameRequests, renderPendingBadge,
           reportToXlsx, reportFileName, renderPrintReport, downloadFile
         };
       })();
@@ -6176,8 +6067,8 @@
           getDeprivations, getPrediction, getExplanation, getArea,
           login, getSession, logout, takeNotice,
           listUsers, createUser, setUserActive, deleteUser,
-          profileAvailable, getProfile, getActivity, requestNameChange, cancelNameChange,
-          changePassword, closeOtherSessions, listNameRequests, resolveNameRequest,
+          profileAvailable, getProfile, requestNameChange, cancelNameChange,
+          changePassword, listNameRequests, resolveNameRequest,
           assistantAvailable, askAssistant, interpretZone, summarizeConversation,
           buildZoneReport
         } = Model;
@@ -6195,7 +6086,7 @@
           renderExplanation, renderDeprivations, renderMessages, renderLastMessage, renderSuggestions,
           roleLabel, renderSession, renderLoginError, renderLoginNotice,
           renderUsers, renderAdminSummary, renderAdminMessage,
-          renderProfileFacts, renderNameStatus, renderActivity, renderNameRequests, renderPendingBadge,
+          renderProfileFacts, renderNameStatus, renderNameRequests, renderPendingBadge,
           reportToXlsx, reportFileName, renderPrintReport, downloadFile
         } = View;
 
@@ -6301,8 +6192,6 @@
           newPassword1Input: document.getElementById('new-password-1'),
           newPassword2Input: document.getElementById('new-password-2'),
           savePasswordBtn: document.getElementById('save-password'),
-          closeSessionsBtn: document.getElementById('close-sessions'),
-          activityListEl: document.getElementById('activity-list'),
           profileThemeBtn: document.getElementById('profile-theme')
         };
 
@@ -7003,9 +6892,7 @@
 
         async function refreshProfile() {
           try {
-            const [profile, activity] = await Promise.all([getProfile(), getActivity()]);
-            showProfile(profile);
-            renderActivity(refs.activityListEl, activity);
+            showProfile(await getProfile());
           } catch (error) {
             handleProfileError(error);
           }
@@ -7065,22 +6952,6 @@
             // Las contrasenas no se quedan en el formulario, salga bien o mal.
             refs.currentPasswordInput.value = '';
             refs.savePasswordBtn.disabled = false;
-          }
-        });
-
-        refs.closeSessionsBtn.addEventListener('click', async () => {
-          refs.closeSessionsBtn.disabled = true;
-
-          try {
-            state.session = await closeOtherSessions();
-            watchExpiry();
-            renderAdminMessage(refs.profileMessageEl,
-              'Cerraste tu sesión en los demás equipos. Esta sigue abierta.', 'ok');
-            refreshProfile();
-          } catch (error) {
-            handleProfileError(error);
-          } finally {
-            refs.closeSessionsBtn.disabled = false;
           }
         });
 
