@@ -523,6 +523,11 @@ Tres precisiones:
 | Backend | La API: `/indicadores/resumen`, `/zonas`, `/catalogo`, `/zonas/{id}/privaciones`, y `/ia/modelo`, `/ia/prediccion/{id}`, `/ia/explicacion/{id}`. Las ocho zonas se piden en paralelo. |
 | Demostración | `api/data.json`, que tiene exactamente la misma forma. |
 
+`api/data.json` es una copia fija de esas mismas respuestas, incluidas las del
+modelo XGBoost (ficha, predicción y explicación). No se actualiza sola:
+`python pruebas/data_json.py` comprueba que coincide con la plataforma en vivo y
+`--actualizar` la regenera (por ejemplo, tras reentrenar el modelo).
+
 La predicción, la explicación y la ficha del modelo dependen de `ia-predictor`.
 Si no responde, la aplicación se abre igual con las cifras observadas: la ficha
 muestra «Predicción no disponible», el asistente lo dice en vez de fallar y el

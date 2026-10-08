@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-14",
+  "generado": "2026-10-08",
   "resumen": {
     "total_hogares": 10288,
     "total_personas": 28656,
@@ -164,7 +164,7 @@
   "zonas": [
     {
       "zona_id": 1,
-      "cod_mpio": 68001.0,
+      "cod_mpio": "68001",
       "municipio": "Bucaramanga",
       "zona": 1,
       "zona_nombre": "Bucaramanga - Cabecera urbana",
@@ -185,7 +185,7 @@
     },
     {
       "zona_id": 2,
-      "cod_mpio": 68001.0,
+      "cod_mpio": "68001",
       "municipio": "Bucaramanga",
       "zona": 2,
       "zona_nombre": "Bucaramanga - Centro poblado y rural disperso",
@@ -206,7 +206,7 @@
     },
     {
       "zona_id": 3,
-      "cod_mpio": 68276.0,
+      "cod_mpio": "68276",
       "municipio": "Floridablanca",
       "zona": 1,
       "zona_nombre": "Floridablanca - Cabecera urbana",
@@ -227,7 +227,7 @@
     },
     {
       "zona_id": 4,
-      "cod_mpio": 68276.0,
+      "cod_mpio": "68276",
       "municipio": "Floridablanca",
       "zona": 2,
       "zona_nombre": "Floridablanca - Centro poblado y rural disperso",
@@ -248,7 +248,7 @@
     },
     {
       "zona_id": 5,
-      "cod_mpio": 68307.0,
+      "cod_mpio": "68307",
       "municipio": "Girón",
       "zona": 1,
       "zona_nombre": "Girón - Cabecera urbana",
@@ -269,7 +269,7 @@
     },
     {
       "zona_id": 6,
-      "cod_mpio": 68307.0,
+      "cod_mpio": "68307",
       "municipio": "Girón",
       "zona": 2,
       "zona_nombre": "Girón - Centro poblado y rural disperso",
@@ -290,7 +290,7 @@
     },
     {
       "zona_id": 7,
-      "cod_mpio": 68547.0,
+      "cod_mpio": "68547",
       "municipio": "Piedecuesta",
       "zona": 1,
       "zona_nombre": "Piedecuesta - Cabecera urbana",
@@ -311,7 +311,7 @@
     },
     {
       "zona_id": 8,
-      "cod_mpio": 68547.0,
+      "cod_mpio": "68547",
       "municipio": "Piedecuesta",
       "zona": 2,
       "zona_nombre": "Piedecuesta - Centro poblado y rural disperso",
