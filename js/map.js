@@ -162,6 +162,8 @@ export function initMap(containerId) {
   map = L.map(containerEl, {
     zoomControl: true, scrollWheelZoom: false, minZoom: 10, maxZoom: 16
   });
+  // Crédito de Leaflet solo con su nombre, sin el ícono que trae por defecto.
+  map.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
   mapContainerEl = containerEl;
   addBaseLayer(containerEl);
   L.control.scale({ imperial: false, metric: true }).addTo(map);
