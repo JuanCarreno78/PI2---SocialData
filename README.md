@@ -29,9 +29,9 @@ demostración, que funciona también desde GitHub Pages.
 - **Con backend:** `admin@socialdata.co` y `analista@socialdata.co`, con las
   contraseñas que se asignaron en esa instalación (ver «Usuarios» en el README
   principal). Ninguna está en el repositorio.
-- **Modo de demostración** (sin backend): los mismos correos con la contraseña
-  `SocialData2026*`. Solo abre la interfaz con los datos públicos dentro del
-  navegador; el backend no la acepta.
+- **Modo de demostración** (sin backend): los mismos correos, con la contraseña
+  de demostración que entrega el equipo. Solo abre la interfaz con los datos
+  públicos dentro del navegador.
 
 Ver [Autenticación y control de acceso](#autenticación-y-control-de-acceso) para
 lo que protege y lo que no protege cada modo.
@@ -247,22 +247,17 @@ sesión entregados en los UML Parte 2 del Sprint 3.
 
 ### Usuarios de demostración
 
-Solo para el modo de demostración (sin backend):
+Solo para el modo de demostración (sin backend): `admin@socialdata.co`
+(administrador) y `analista@socialdata.co` (analista). La contraseña no se
+publica; la entrega el equipo.
 
-| Rol | Correo | Contraseña |
-|---|---|---|
-| Administrador | `admin@socialdata.co` | `SocialData2026*` |
-| Analista | `analista@socialdata.co` | `SocialData2026*` |
-
-La contraseña **no está escrita en el código**. `index.html` solo guarda su
+La contraseña **no está escrita en el código**. `js/model.js` solo guarda su
 derivación PBKDF2-SHA256 (150 000 iteraciones), con una sal aleatoria distinta
 por usuario, y la comprobación se hace con la Web Crypto API del navegador.
 
-El backend **ya no la acepta**: desde la revisión de seguridad de octubre de
-2026, `db/init/02_seed.sql` crea los usuarios sin contraseña válida y cada
-instalación asigna las suyas (`python -m app.gestion_usuarios`). Antes eran la
-misma, publicada aquí, y cualquiera podía entrar como administrador a un backend
-expuesto.
+El backend no trae contraseñas en el repositorio: `db/init/02_seed.sql` crea los
+usuarios sin contraseña válida y cada instalación asigna las suyas
+(`python -m app.gestion_usuarios`).
 
 ### Dos modos de sesión
 
