@@ -187,6 +187,7 @@ js/view.js          presentación de la información
 js/chat.js          asistente
 js/app.js           controlador
 js/theme.js         modo claro y oscuro
+img/                fotografía de la pantalla de inicio
 api/data.json       datos del modo de demostración
 vendor/leaflet/     librería del mapa
 ```

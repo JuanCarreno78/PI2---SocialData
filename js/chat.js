@@ -196,7 +196,7 @@ function compare(zone) {
   let text = 'Zonas del área metropolitana ordenadas por hogares en el grupo A:\n';
 
   ranked.forEach((item, index) => {
-    const mark = item.zona_id === zone.zona_id ? '  ←  zona seleccionada' : '';
+    const mark = item.zona_id === zone.zona_id ? ' (zona seleccionada)' : '';
     text += `\n${index + 1}. ${item.zona_nombre}: ${ratio(item.pct_grupo_a)}${mark}`;
   });
 
