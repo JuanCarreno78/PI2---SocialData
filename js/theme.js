@@ -1,3 +1,4 @@
+// SocialData
 //js/theme.js
 // Aplica el modo oscuro antes de pintar la página, para que no parpadee en claro.
 try {

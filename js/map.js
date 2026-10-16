@@ -1,3 +1,4 @@
+// SocialData
 //js/map.js
 // Mapa de las ocho zonas (Leaflet).
 

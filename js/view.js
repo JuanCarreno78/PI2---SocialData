@@ -1,3 +1,4 @@
+// SocialData
 //js/view.js
 import { scaleOf } from './map.js';
 

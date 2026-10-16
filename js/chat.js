@@ -1,3 +1,4 @@
+// SocialData
 //js/chat.js
 import {
   getDeprivations, getExplanation, getPrediction, getZonesRanked, getModelCard

@@ -1,3 +1,4 @@
+// SocialData
 //js/model.js
 // ngrok gratuito muestra una página de aviso al navegador; con esta cabecera la omite.
 const NGROK_HEADER = Object.freeze({ 'ngrok-skip-browser-warning': '1' });

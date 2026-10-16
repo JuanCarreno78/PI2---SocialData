@@ -1,3 +1,4 @@
+// SocialData
 //js/app.js
 import {
   loadData, getSummary, getCatalog, getZones, getZonesRanked, getDeprivations,
