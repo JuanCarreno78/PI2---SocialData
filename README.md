@@ -211,5 +211,5 @@ clasificación oficial del Sisbén.
 
 ## Autores
 
-Equipo 2, Proyecto Integrador II, Universidad Pontificia Bolivariana, seccional
-Bucaramanga, 2026.
+Equipo 2, Curso: Proyecto Integrador II, Universidad Pontificia Bolivariana,
+seccional Bucaramanga, 2026.
