@@ -398,8 +398,8 @@ button {
   display: grid;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
-  gap: 16px;
-  padding: 16px 20px;
+  gap: 12px;
+  padding: 10px 12px 6px;
   min-height: 0;
 }
 
@@ -453,11 +453,11 @@ button {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   min-height: 0;
   overflow-y: auto;
   scrollbar-gutter: stable;
-  padding-right: 4px;
+  padding-right: 2px;
 }
 
 /* Cada bloque conserva su alto natural. */
@@ -1561,20 +1561,20 @@ button {
 /* Pie */
 
 .app-footer {
-  padding: 8px 24px 14px;
+  padding: 2px 16px 6px;
   text-align: center;
 }
 
 .app-footer p {
   margin: 0;
-  font-size: 11.5px;
+  font-size: 11px;
+  line-height: 1.35;
   color: var(--ink-soft);
 }
 
 /* El aviso sobre la IA va primero y más visible que los créditos. */
 .app-footer .footer-ai {
-  margin-bottom: 3px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--ink);
 }
