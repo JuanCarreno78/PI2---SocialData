@@ -1571,6 +1571,14 @@ button {
   color: var(--ink-soft);
 }
 
+/* El aviso sobre la IA va primero y más visible que los créditos. */
+.app-footer .footer-ai {
+  margin-bottom: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 /* Acceso */
 
 /* Cubre toda la ventana mientras no hay sesión. */
@@ -1597,58 +1605,34 @@ button {
   margin: 0 auto;
 }
 
-.login-intro .brand h1 {
-  color: #ffffff;
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
-.login-intro .tagline {
-  color: #cfe3d7;
+.login-brand .brand-mark {
+  width: 68px;
+  height: 68px;
 }
 
-.login-intro .brand-mark-bg,
-.login-intro .brand-mark-bar {
+.login-brand .brand-mark-bg,
+.login-brand .brand-mark-bar {
   fill: #2e8b5e;
 }
 
-.login-heading {
-  margin: 36px 0 14px;
-  font-size: clamp(34px, 4.6vw, 54px);
-  line-height: 1.05;
+.login-brand h1 {
+  font-size: clamp(40px, 5.4vw, 64px);
+  line-height: 1;
   color: #ffffff;
 }
 
 .login-lead {
-  max-width: 46ch;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
+  max-width: 40ch;
+  margin: 18px 0 0;
+  font-size: 18px;
+  line-height: 1.5;
   color: #d8e8de;
-}
-
-.login-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px 32px;
-  margin: 32px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.login-facts li {
-  padding-left: 12px;
-  border-left: 3px solid #4caf7d;
-}
-
-.login-facts strong {
-  display: block;
-  font-size: 26px;
-  line-height: 1.1;
-  color: #ffffff;
-}
-
-.login-facts span {
-  font-size: 13px;
-  color: #b9d3c4;
 }
 
 .login-credit {
@@ -2470,11 +2454,8 @@ button {
     gap: 28px;
   }
 
-  .login-heading {
-    margin-top: 24px;
-  }
-
-  .login-facts {
-    margin-top: 22px;
+  .login-brand .brand-mark {
+    width: 52px;
+    height: 52px;
   }
 }
