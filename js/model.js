@@ -15,8 +15,7 @@ export async function loadData() {
   return data;
 }
 
-// Área metropolitana como una zona más (zona_id 0)
-// Así el chat, las métricas, la ficha y el reporte la tratan igual que a una zona.
+// Agrega el área metropolitana como una zona más (zona_id 0).
 export const AREA_ID = 0;
 
 function weightedMean(pairs) {
@@ -59,7 +58,7 @@ function addArea(d) {
     }))
   };
 
-  // Estimación del modelo: solo si está la de las ocho zonas.
+  // Calcula la estimación del área solo si existe la de las ocho zonas.
   const predictions = zones.map((zone) => d.detalle[String(zone.zona_id)].prediccion);
   const prediccion = predictions.every(Boolean) ? {
     zona: { id: AREA_ID, nombre: area.zona_nombre, municipio: area.municipio },
@@ -70,7 +69,7 @@ function addArea(d) {
     modelo: predictions[0].modelo
   } : null;
 
-  // Los factores SHAP explican hogares de una zona: no hay versión del área.
+  // El área no tiene factores SHAP propios.
   d.area = area;
   d.detalle[String(AREA_ID)] = { privaciones, prediccion, explicacion: null };
 }
@@ -79,7 +78,7 @@ export function getArea() {
   return data.area;
 }
 
-// Corte de los indicadores publicado junto a la página.
+// Carga los indicadores desde api/data.json.
 async function loadFromFile() {
   const response = await fetch('api/data.json', { headers: NGROK_HEADER });
 
@@ -90,7 +89,7 @@ async function loadFromFile() {
   return response.json();
 }
 
-// Predicción, explicación y ficha del modelo dependen de ia-predictor.
+// Devuelve null si ia-predictor no responde; una sesión vencida sí se propaga.
 async function optional(pending) {
   try {
     return await pending;
@@ -100,8 +99,7 @@ async function optional(pending) {
   }
 }
 
-// Arma el mismo objeto que api/data.json a partir de los endpoints del backend, que
-// devuelven exactamente esas claves.
+// Arma el mismo objeto de api/data.json con los datos del backend.
 async function loadFromApi() {
   const [resumen, zonas, catalogo, modelo] = await Promise.all([
     request('/indicadores/resumen'),
@@ -121,8 +119,7 @@ async function loadFromApi() {
     detalle[String(id)] = { privaciones, prediccion, explicacion };
   }));
 
-  // generado queda en null: no es un corte publicado sino una consulta en vivo, y el
-  // reporte lo dice así en vez de inventar una fecha de corte.
+  // Sin fecha de corte: los datos son una consulta en vivo.
   return { generado: null, resumen, catalogo, modelo, zonas: zonas.zonas, detalle };
 }
 
@@ -165,7 +162,7 @@ export function getZonesRanked() {
 }
 
 // Sesión (RF-01, RNF-02)
-// Dos modos: backend (JWT) o validación local de demostración.
+// Valida contra el backend (JWT) o, sin backend, contra los usuarios de demostración.
 
 // Versión con túnel: la dirección sale de config.js; con el proxy es '/api/v1'.
 const API_URL = (window.SD_CONFIG && window.SD_CONFIG.apiUrl) || '/api/v1';
@@ -240,7 +237,7 @@ async function derive(password, salt) {
   return new Uint8Array(bits);
 }
 
-// Comparación que recorre siempre todos los bytes: no corta en el primero distinto.
+// Compara todos los bytes sin detenerse en el primero distinto.
 function sameBytes(a, b) {
   if (a.length !== b.length) return false;
   let diff = 0;
@@ -272,8 +269,7 @@ function localRegistry() {
 
 function localUsers() {
   const registry = localRegistry();
-  // "deleted" solo aplica a la semilla: si se crea otro usuario con ese correo, es uno
-  // nuevo y se muestra.
+  // "deleted" solo aplica a los usuarios de la semilla.
   const seed = DEMO_USERS.filter((user) => !registry.deleted.includes(user.email));
   return [...seed, ...registry.created]
     .map((user) => ({ ...user, activo: !registry.inactive.includes(user.email) }));
@@ -294,13 +290,12 @@ function saveLock(email, lock) {
   writeJson(localStorage, LOCKS_KEY, locks);
 }
 
-// Mismo orden de comprobaciones que autenticar() del backend: usuario inexistente,
-// desactivado, bloqueado y, por último, contraseña.
+// Revisa en el mismo orden que el backend: existencia, estado, bloqueo y contraseña.
 async function loginLocal(email, password) {
   const user = findLocalUser(email);
 
-  // Con un correo inexistente también se deriva la clave: si no, la respuesta llegaría
-  // mucho antes y delataría que correos están registrados.
+  // Deriva la clave aunque el correo no exista, para no revelar qué correos están
+  // registrados.
   if (!user) {
     await derive(password, fromBase64(DEMO_USERS[0].salt));
     throw new AuthError('invalid', 'Credenciales inválidas');
@@ -360,8 +355,7 @@ async function loginApi(email, password) {
   }
   if (response.status === 403) throw new AuthError('inactive', 'El usuario está desactivado');
   if (response.status === 429) {
-    // Dos 429 distintos: la cuenta bloqueada tras 5 fallos, o demasiados intentos desde
-    // la misma red (límite por IP del backend).
+    // 429: cuenta bloqueada tras 5 fallos o demasiados intentos desde la misma red.
     const body = await response.json().catch(() => ({}));
     if (/desde esta red/.test(String(body.detail))) {
       throw new AuthError('throttled', 'Demasiados intentos desde esta red');
@@ -388,7 +382,7 @@ export async function login(email, password) {
     try {
       session = await loginApi(normalized, password);
     } catch (error) {
-      // Solo la falta de respuesta hace pasar al modo local.
+      // Pasa al modo local solo si el backend no responde.
       if (error instanceof AuthError || /^HTTP /.test(error.message)) throw error;
     }
   }
@@ -423,7 +417,7 @@ export function takeNotice() {
   return notice;
 }
 
-// Toda petición autenticada pasa por aquí: el token va en la cabecera y nunca en la URL.
+// Envía el token en la cabecera, nunca en la URL.
 async function request(path, options = {}) {
   const session = getSession();
   if (!session || session.mode !== 'api') throw new AuthError('expired', 'La sesión expiró');
@@ -461,15 +455,13 @@ async function request(path, options = {}) {
 }
 
 // Asistente de IA generativa (HU-18, HU-19)
-// El modelo de lenguaje corre detrás del backend (ia-asistente + Ollama), así que solo
-// existe con una sesión del backend.
+// Solo disponible con sesión del backend.
 export function assistantAvailable() {
   const session = getSession();
   return Boolean(session && session.mode === 'api');
 }
 
-// El modelo escribe a ~11 tokens/s: la respuesta llega en flujo (NDJSON) para mostrarla
-// mientras se escribe.
+// Recibe la respuesta en flujo (NDJSON) para mostrarla mientras se escribe.
 async function requestStream(path, body, onEvent) {
   const session = getSession();
   if (!session || session.mode !== 'api') throw new AuthError('expired', 'La sesión expiró');
@@ -503,7 +495,7 @@ async function requestStream(path, body, onEvent) {
       const { value, done } = await reader.read();
       buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
 
-      // Una línea puede llegar partida entre dos lecturas: la última espera.
+      // Guarda la última línea si llegó incompleta.
       const lines = buffer.split('\n');
       buffer = lines.pop();
       lines.filter((line) => line.trim()).forEach((line) => onEvent(JSON.parse(line)));
@@ -512,7 +504,7 @@ async function requestStream(path, body, onEvent) {
     }
     if (buffer.trim()) onEvent(JSON.parse(buffer));
   } catch (error) {
-    // Si onEvent corta (evento de error), se deja de leer el flujo.
+    // Deja de leer el flujo si onEvent lo indica.
     reader.cancel().catch(() => {});
     throw error;
   }
@@ -542,7 +534,7 @@ export function summarizeConversation(zoneId, history) {
 }
 
 // Administración de usuarios (RF-09, HU-08)
-// En modo API manda solo_administrador del backend.
+// Con backend, los permisos los valida el servidor.
 function requireAdmin() {
   const session = getSession();
   if (!session) throw new AuthError('expired', 'La sesión expiró');
@@ -610,8 +602,8 @@ export async function setUserActive(user, active) {
   return { ...user, activo: active };
 }
 
-// Mismas reglas que eliminar_usuario() del backend: nunca a uno mismo y solo a usuarios ya
-// desactivados, para que borrar sea un segundo paso.
+// Igual que el backend: no permite eliminarse a sí mismo y solo elimina usuarios
+// desactivados.
 export async function deleteUser(user) {
   const session = requireAdmin();
   if (user.email === session.email) throw new Error('No puedes eliminar tu propio usuario.');
@@ -626,8 +618,7 @@ export async function deleteUser(user) {
   if (!current) throw new Error('Usuario no encontrado.');
   if (current.activo) throw new Error('Desactiva el usuario antes de eliminarlo.');
 
-  // Los creados aquí se borran del todo; los de la semilla se marcan, porque vienen
-  // escritos en el código.
+  // Borra los usuarios creados aquí; los de la semilla solo se marcan como eliminados.
   const registry = localRegistry();
   const created = registry.created.some((item) => item.email === user.email);
   registry.created = registry.created.filter((item) => item.email !== user.email);
@@ -638,8 +629,7 @@ export async function deleteUser(user) {
 }
 
 // Mi perfil
-// Solo con backend: en modo local no hay dónde guardar una solicitud que apruebe otra
-// persona, ni una contraseña que cambiar.
+// Solo con backend.
 export function profileAvailable() {
   const session = getSession();
   return Boolean(session && session.mode === 'api');
@@ -649,8 +639,7 @@ function requireApi() {
   if (!profileAvailable()) throw new Error('Esta acción necesita la plataforma con el backend.');
 }
 
-// El backend devuelve una sesión nueva al cambiar la contraseña: las anteriores (incluida
-// la de esta pestaña) dejaron de valer.
+// Guarda la sesión nueva que devuelve el backend al cambiar la contraseña.
 function replaceSession(body) {
   const session = getSession();
   const claims = jwtClaims(body.access_token);
@@ -663,7 +652,7 @@ function replaceSession(body) {
   return next;
 }
 
-// El nombre puede cambiar por una solicitud aprobada mientras la sesión sigue.
+// Actualiza el nombre guardado en la sesión.
 function rememberName(name) {
   const session = getSession();
   if (session && name && session.name !== name) {
@@ -675,7 +664,7 @@ export async function getProfile() {
   const session = getSession();
   if (!session) throw new AuthError('expired', 'La sesión expiró');
   if (session.mode !== 'api') {
-    // Lo que el navegador sabe de la cuenta de demostración.
+    // Perfil de la cuenta de demostración.
     return { nombre: session.name, email: session.email, rol: session.role, local: true };
   }
   const profile = await request('/perfil');
@@ -700,8 +689,7 @@ export async function cancelNameChange() {
   return request('/perfil/nombre', { method: 'DELETE' });
 }
 
-// Mismas reglas que CambioClave del backend; el servidor revisa además que no sea una
-// contraseña conocida ni contenga el correo.
+// Mismas reglas que el esquema CambioClave del backend.
 export async function changePassword(current, next, repeat) {
   requireApi();
   if (!current) throw new Error('Escribe tu contraseña actual.');
@@ -732,7 +720,7 @@ export async function resolveNameRequest(id, approve, reason) {
 }
 
 // Reporte de zona (HU-12)
-// Solo cifras agregadas por zona: ningún identificador de hogar (RNF-02).
+// Solo cifras agregadas por zona, sin identificadores de hogar (RNF-02).
 export function buildZoneReport(zoneId) {
   const zone = getZoneById(zoneId);
   const prediction = getPrediction(zoneId);

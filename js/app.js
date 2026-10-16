@@ -135,7 +135,7 @@ const state = {
   openDimensions: [],
   selectedZone: null,
   deprivations: null,
-  // Mapa ampliado y, si lo está, si vive en el panel o crece en su sitio.
+  // Estado del mapa ampliado: si está abierto y si va en el panel o en su sitio.
   mapLarge: false,
   mapInPanel: false,
   session: null,
@@ -146,8 +146,8 @@ const state = {
   profileOpen: false
 };
 
-// Por debajo de este ancho la barra lateral y el asistente se apilan, y el panel del
-// asistente queda fuera de la vista: el mapa crece en su sitio.
+// Por debajo de este ancho la página pasa a una sola columna y el mapa se amplía en su
+// sitio.
 const compactLayout = window.matchMedia('(max-width: 1080px)');
 
 const valueOf = (zone) => Number(zone.pct_grupo_a) * 100;
@@ -207,8 +207,7 @@ function toggleAccordion(button) {
   if (open) return;
 
   const section = button.closest('.accordion');
-  // Sin requestAnimationFrame: leer getBoundingClientRect ya obliga a recalcular la
-  // maqueta, y así no depende de que se llegue a pintar un fotograma.
+  // Calcula la posición con getBoundingClientRect, sin esperar al siguiente fotograma.
   if (section) revealSection(section);
 }
 
@@ -223,8 +222,8 @@ function scrollableParent(element) {
   return null;
 }
 
-// Desplazamiento inmediato y no behavior smooth: hay navegadores que ignoran el
-// desplazamiento suave dentro de un contenedor anidado y no hacen nada.
+// Desplazamiento inmediato: algunos navegadores ignoran el desplazamiento suave en
+// contenedores anidados.
 function revealSection(section) {
   const container = scrollableParent(section);
 
@@ -237,9 +236,7 @@ function revealSection(section) {
   section.scrollIntoView({ block: 'nearest' });
 }
 
-// Las tarjetas de dimensión tienen su propio manejador y no llevan la clase
-// accordion-button; la exclusión explícita evita una doble conmutación si en el futuro
-// alguien se la añade.
+// Las tarjetas de dimensión tienen su propio manejador.
 document.addEventListener('click', (event) => {
   const button = event.target.closest('.accordion-button');
   if (button && !button.classList.contains('dimension-card')) toggleAccordion(button);
@@ -254,8 +251,8 @@ function toggleSheet(show) {
   refs.sheetBtnTextEl.textContent = open ? 'Ocultar ficha técnica' : 'Ver ficha técnica';
   refs.sheetEl.hidden = !open;
 
-  // Ficha, mapa ampliado y administración comparten el área del asistente: solo uno a la
-  // vez.
+  // Ficha, mapa ampliado y administración comparten el área del asistente: solo se abre
+  // uno a la vez.
   if (open && state.mapInPanel) setMapLarge(false);
   if (open) toggleAdmin(false);
   if (open) toggleProfile(false);
@@ -292,8 +289,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 // Mapa ampliado: el mismo botón lo amplía y lo reduce
-// En escritorio el nodo del mapa se mueve a un panel sobre el asistente, igual que la ficha
-// técnica.
+// En escritorio el mapa se mueve a un panel sobre el asistente.
 function setMapLarge(on) {
   if (on === state.mapLarge) return;
 
@@ -325,8 +321,7 @@ function setMapLarge(on) {
   refs.mapBtnTextEl.textContent = on ? 'Reducir' : 'Ampliar';
   refs.mapBtn.setAttribute('aria-label', on ? 'Reducir el mapa' : 'Ampliar el mapa');
 
-  // Tras mover o redimensionar el contenedor: invalidateSize, reencuadre, rueda y
-  // rótulos.
+  // Ajusta el mapa después de moverlo o cambiar su tamaño.
   setLargeMode(on);
 }
 
@@ -337,8 +332,7 @@ refs.closeMapBtn.addEventListener('click', () => {
   refs.mapBtn.focus();
 });
 
-// Si la ventana cruza el punto de corte con el mapa ampliado, se reduce: el modo que se
-// eligió al abrir ya no corresponde a la maqueta actual.
+// Si la ventana cambia de ancho con el mapa ampliado, lo reduce.
 compactLayout.addEventListener('change', () => {
   if (state.mapLarge) setMapLarge(false);
 });
@@ -360,8 +354,7 @@ function refreshBreadcrumb() {
   renderBreadcrumb(refs.breadcrumbEl, trail, showMetroArea);
 }
 
-// Sin zona seleccionada se analiza el área metropolitana completa: para el chat, las
-// métricas, la ficha y el reporte es una zona más.
+// Sin zona seleccionada se analiza el área metropolitana completa.
 function showMetroArea() {
   selectZone(getArea());
 }
@@ -376,7 +369,7 @@ function selectZone(zone, zoomIn = true) {
   state.selectedZone = zone;
   state.deprivations = getDeprivations(zone.zona_id);
 
-  // Elegir una zona en el mapa ampliado lo cierra: se elige para analizarla.
+  // Elegir una zona en el mapa ampliado lo cierra.
   const closedLarge = state.mapLarge;
   if (closedLarge) setMapLarge(false);
 
@@ -418,7 +411,7 @@ function selectZone(zone, zoomIn = true) {
 const AI_UNAVAILABLE =
   'La IA generativa no respondió, así que esta respuesta se armó con las cifras de la zona.';
 
-// Una sola respuesta a la vez: Ollama atiende las peticiones en fila.
+// Una sola respuesta a la vez.
 function setChatBusy(busy) {
   refs.chatInput.disabled = busy;
   refs.chatSubmitBtn.disabled = busy;
@@ -450,14 +443,13 @@ async function send(suggestion) {
   state.waiting = true;
   setChatBusy(true);
   renderMessages(refs.messagesEl, getMessages(zoneId));
-  // Mientras no llega texto, el contador de segundos dice que sigue trabajando.
+  // Muestra un contador de segundos mientras llega la respuesta.
   const timer = window.setInterval(() => { if (!message.text) refresh(); }, 1000);
 
   let fallback = false;
   const onEvent = (event) => {
     if (event.tipo === 'meta') {
-      // En modo plantilla el asistente devuelve las cifras en crudo; las plantillas
-      // del navegador las presentan mejor.
+      // En modo plantilla se usan las plantillas del navegador.
       fallback = !String(event.generado_con).startsWith('ollama:');
       Object.assign(message, { engine: event.generado_con, sources: event.fuentes, warning: event.advertencia });
     } else if (event.tipo === 'texto' && !fallback) {
@@ -477,8 +469,7 @@ async function send(suggestion) {
       endSession('expired');
       return;
     }
-    // Límite de uso o asistente ocupado: la respuesta de plantilla, con el aviso de
-    // esperar en vez del de "la IA no respondio".
+    // Límite de uso o asistente ocupado: responde con plantilla y avisa que espere.
     if (error.code === 'limit') {
       finishAnswer(message, { text: reply(zone, question), engine: null, note: error.message });
       return;
@@ -562,8 +553,7 @@ async function exportReport(format) {
     setExportBusy(false);
   }
 
-  // El navegador ofrece «Guardar como PDF» en el diálogo de impresión; así no hace falta
-  // ninguna librería externa.
+  // El PDF se genera con el diálogo de impresión del navegador.
   renderPrintReport(refs.printReportEl, report);
   window.print();
 }
@@ -771,8 +761,7 @@ function handleProfileError(error) {
   renderAdminMessage(refs.profileMessageEl, error.message || 'No se pudo completar la acción.', 'error');
 }
 
-// El nombre de la cabecera sigue al del perfil (puede haber cambiado por una solicitud
-// aprobada mientras la sesión seguía abierta).
+// Actualiza el nombre de la cabecera si cambió.
 function showProfile(profile) {
   const admin = profile.rol === 'administrador';
   const api = !profile.local;
@@ -862,8 +851,7 @@ refs.passwordForm.addEventListener('submit', async (event) => {
 
 // Sesión (RF-01)
 const LOGIN_MESSAGES = {
-  // Genérico a propósito: no revela si falló el correo o la contraseña (flujo alternativo
-  // 1 de RF-01).
+  // Mensaje genérico: no indica si falló el correo o la contraseña (RF-01).
   invalid: 'Correo o contraseña incorrectos.',
   inactive: 'Tu usuario está desactivado. Contacta al administrador.',
   throttled: 'Demasiados intentos de inicio de sesión desde esta red. Espera un minuto.',
@@ -929,8 +917,7 @@ function enterApp(session) {
   }
 }
 
-// location.replace descarta todo el estado en memoria, incluida la conversación con cifras
-// de las zonas, y no deja la vista autenticada en el historial del navegador.
+// Recarga la página para borrar el estado en memoria y no dejar la vista en el historial.
 function endSession(reason) {
   clearTimeout(expiryTimer);
   logout(reason);
@@ -943,7 +930,7 @@ refs.loginForm.addEventListener('submit', async (event) => {
   const email = refs.loginEmail.value.trim();
   const password = refs.loginPassword.value;
 
-  // La contraseña solo vive en esta función: el campo se vacía en cada intento.
+  // La contraseña solo se guarda en esta función y el campo se vacía en cada intento.
   refs.loginPassword.value = '';
   hidePassword();
   renderLoginNotice(refs.loginNoticeEl, '');
@@ -980,8 +967,7 @@ refs.togglePasswordBtn.addEventListener('click', () => {
 
 refs.logoutBtn.addEventListener('click', () => endSession('logout'));
 
-// Al volver a la pestaña se revisa la caducidad: los temporizadores pueden dormirse con la
-// pestaña en segundo plano.
+// Revisa la caducidad de la sesión al volver a la pestaña.
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && state.session && !getSession()) {
     endSession('expired');
@@ -989,7 +975,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // Tema claro / oscuro
-// El tema guardado ya se aplicó en <head>, antes de pintar.
+// El tema guardado se aplica en theme.js antes de pintar.
 const THEME_KEY = 'sd.theme';
 
 function syncThemeButtons() {
@@ -1041,8 +1027,7 @@ async function start() {
     return;
   }
 
-  // Sin mapa la aplicación sigue siendo útil: métricas, indicadores, ficha y asistente no
-  // dependen de él.
+  // Sin mapa la aplicación sigue funcionando.
   try {
     initMap('map');
   } catch (error) {
@@ -1058,12 +1043,11 @@ async function start() {
 
   renderZoneOptions(refs.zoneSelectEl, getArea(), getZones());
 
-  // Se abre sobre el área metropolitana completa: se puede analizar sin elegir ninguna
-  // zona.
+  // Abre con el área metropolitana completa.
   selectZone(getArea(), false);
 }
 
-// No se arranca directamente: primero se comprueba si hay una sesión vigente.
+// Arranca solo si hay una sesión vigente.
 function boot() {
   const session = getSession();
   if (session) enterApp(session);

@@ -5,7 +5,7 @@ let map = null;
 let markerLayer = null;
 let framed = false;
 
-// Modo ampliado: rueda activa, los cuatro rótulos fijos y un nivel más de acercamiento.
+// Modo ampliado: zoom con la rueda, rótulos fijos y un nivel más de acercamiento.
 let largeMode = false;
 let lastDraw = null;
 
@@ -43,8 +43,7 @@ const TOWN_CENTERS = {
   '68547': { lat: 6.9908, lng: -73.0508, zoom: 12 }
 };
 
-// Umbrales derivados del rango real observado entre las ocho zonas (de 12,9 % a 60,9 % de
-// hogares en el grupo A).
+// Umbrales de la escala según el rango observado (12,9 % a 60,9 % en el grupo A).
 const MEDIUM_THRESHOLD = 25;
 const HIGH_THRESHOLD = 45;
 
@@ -83,8 +82,8 @@ function currentTheme() {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
-// Degradación en cascada: si pasados unos segundos el proveedor no ha pintado ninguna
-// tesela, se prueba el siguiente; agotados todos, queda la retícula.
+// Si un proveedor no carga en unos segundos, prueba el siguiente; si ninguno responde,
+// muestra la retícula.
 function addBaseLayer(containerEl, index = 0, generation = baseGeneration) {
   if (generation !== baseGeneration) return;
   if (index >= BASE_LAYERS.length) {
@@ -97,8 +96,7 @@ function addBaseLayer(containerEl, index = 0, generation = baseGeneration) {
   const layer = L.tileLayer(source.url, source.options).addTo(map);
   baseLayers.push(layer);
 
-  // Los topónimos van en un panel propio por encima de las zonas, con pointer-events none
-  // para no interceptar los clics dirigidos a ellas.
+  // Los nombres de lugares van en un panel encima de las zonas, sin capturar los clics.
   let labelLayer = null;
   if (source.labels) {
     if (!map.getPane('labels')) {
@@ -115,8 +113,8 @@ function addBaseLayer(containerEl, index = 0, generation = baseGeneration) {
   let loaded = false;
   layer.on('load', () => { loaded = true; });
 
-  // No sirve descartar al proveedor al primer tileerror: Leaflet también lo emite cuando
-  // el mapa cancela teselas a medio descargar al reencuadrar.
+  // No descarta el proveedor por un tileerror: Leaflet también lo emite al cancelar
+  // teselas.
   setTimeout(() => {
     if (generation !== baseGeneration) return;
     const layerEl = layer.getContainer();
@@ -138,8 +136,7 @@ export function refreshTheme() {
   if (lastDraw) drawZones(...lastDraw);   // el borde de las zonas cambia con el tema
 }
 
-// fitBounds sobre un contenedor de 0 px hace que Leaflet caiga en maxZoom, que era la causa
-// de que el mapa abriera pegado a un solo municipio.
+// Evita encuadrar un contenedor sin tamaño, que dejaría el mapa en el zoom máximo.
 function frameMetroArea() {
   if (!map) return false;
   map.invalidateSize({ animate: false });
@@ -157,8 +154,7 @@ export function initMap(containerId) {
   // Leaflet se carga como recurso local (vendor/leaflet).
   if (!window.L) throw new Error('Leaflet no está disponible');
 
-  // scrollWheelZoom desactivado: el mapa vive dentro de una barra lateral con
-  // desplazamiento propio y capturaría la rueda al intentar bajar por ella.
+  // Rueda desactivada para no interferir con el desplazamiento de la barra lateral.
   map = L.map(containerEl, {
     zoomControl: true, scrollWheelZoom: false, minZoom: 10, maxZoom: 16
   });
@@ -169,7 +165,7 @@ export function initMap(containerId) {
   L.control.scale({ imperial: false, metric: true }).addTo(map);
   markerLayer = L.layerGroup().addTo(map);
 
-  // El panel se dimensiona con flexbox, así que su alto puede no estar resuelto todavía.
+  // Reencuadra cuando el panel ya tiene tamaño.
   if (!frameMetroArea()) {
     requestAnimationFrame(() => frameMetroArea());
     window.addEventListener('load', () => { if (!framed) frameMetroArea(); }, { once: true });
@@ -296,8 +292,7 @@ export function setLargeMode(on) {
   if (!map) return;
   largeMode = Boolean(on);
 
-  // La rueda solo hace zoom con el mapa ampliado; en la barra lateral debe seguir
-  // desplazando la columna.
+  // La rueda solo hace zoom con el mapa ampliado.
   if (largeMode) map.scrollWheelZoom.enable();
   else map.scrollWheelZoom.disable();
 

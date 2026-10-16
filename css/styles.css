@@ -9,8 +9,7 @@
   --line: #d8e0db;
 
   --primary: #1f6f4a;
-  /* primary-dark es para texto y --primary-deep para fondos: en claro son el mismo
-     verde, pero en oscuro el texto tiene que aclararse y el fondo no. */
+  /* --primary-dark se usa para texto y --primary-deep para fondos. */
   --primary-dark: #154d34;
   --primary-deep: #0f3a27;
   --primary-hover: #185c3d;
@@ -320,9 +319,8 @@ button {
   gap: 14px;
 }
 
-/* flex-shrink 0: el logotipo nunca cede ancho aunque el texto de al lado no quepa. */
-/* Logotipo: un marcador de ubicación con tres barras crecientes, el territorio y sus
-   datos. */
+/* El logotipo conserva su ancho. */
+/* Logotipo: marcador de ubicación con tres barras. */
 .brand-mark {
   flex-shrink: 0;
   display: block;
@@ -391,8 +389,7 @@ button {
   font-weight: 600;
 }
 
-/* minmax(0, 1fr) y no auto: sin esto la fila crece hasta el alto del contenido y las dos
-   columnas desbordan la ventana en vez de scrollear. */
+/* minmax(0, 1fr) mantiene las dos columnas dentro de la ventana. */
 .app-main {
   flex: 1;
   display: grid;
@@ -435,14 +432,13 @@ button {
   height: 16px;
 }
 
-/* Deshabilitado: sin elevación ni cambio al pasar el puntero, para que no parezca
-   pulsable. */
+/* Botón deshabilitado. */
 .btn-primary:disabled {
   opacity: 0.45;
   cursor: default;
 }
 
-/* Encabeza su sección, así que el aire va debajo y no encima. */
+/* Margen inferior del botón que encabeza la sección. */
 .btn-block {
   width: 100%;
   margin: 10px 0 4px;
@@ -491,7 +487,7 @@ button {
   gap: 10px;
 }
 
-/* Selector de zona: la forma más directa de elegir qué analizar. */
+/* Selector de zona. */
 .zone-picker {
   display: flex;
   align-items: center;
@@ -542,7 +538,7 @@ button {
   display: none;
 }
 
-/* Leaflet envuelve el contenido: el apilado va en el bloque propio. */
+/* Contenido del globo informativo del mapa. */
 .zone-tip > div {
   display: flex;
   flex-direction: column;
@@ -560,7 +556,7 @@ button {
   color: var(--ink-soft);
 }
 
-/* Contenedor del rótulo de municipio: sin el fondo blanco por defecto. */
+/* Rótulo de municipio sin el fondo blanco por defecto. */
 .town-label-icon {
   background: none;
   border: none;
@@ -668,7 +664,7 @@ button {
   background: var(--high);
 }
 
-/* El mapa es un recuadro de referencia, no el protagonista. */
+/* Mapa compacto de la barra lateral. */
 .map-canvas {
   height: clamp(185px, 24vh, 250px);
   background-color: #edf1ef;
@@ -712,8 +708,7 @@ button {
   background-color: #edf1ef;
 }
 
-/* Respaldo sin conexión: si ningún proveedor de teselas responde, map.js marca el
-   contenedor y el fondo pasa a una retícula. */
+/* Si ningún proveedor de teselas responde, el fondo muestra una retícula. */
 .map-canvas.no-basemap,
 .map-canvas.no-basemap .leaflet-container {
   background-image:
@@ -1019,8 +1014,7 @@ button {
   transform: rotate(180deg);
 }
 
-/* Lista anidada: el panel cuelga de su dimensión con una guía a la izquierda alineada
-   con el número, y empuja hacia abajo las siguientes. */
+/* Panel de indicadores debajo de su dimensión, con una guía a la izquierda. */
 .dimension-panel {
   display: flex;
   flex-direction: column;
@@ -1144,8 +1138,7 @@ button {
   margin-top: auto;
 }
 
-/* El tope en ch manda en pantallas anchas: una línea de más de ~70 caracteres se vuelve
-   incómoda de leer. */
+/* Ancho máximo de los mensajes para facilitar la lectura. */
 .chat-message {
   display: flex;
   flex-direction: column;
@@ -1162,8 +1155,7 @@ button {
   align-self: flex-start;
 }
 
-/* Las respuestas se componen con saltos de línea literales: sin pre-wrap se verían como
-   un único párrafo. */
+/* Conserva los saltos de línea de las respuestas. */
 .chat-bubble {
   padding: 11px 14px;
   border: 1px solid var(--line);
@@ -1366,7 +1358,7 @@ button {
 
 /* Mapa ampliado: panel sobre el asistente */
 
-/* Cubre todo el ancho del área: el objetivo es un mapa de trabajo, no una columna más. */
+/* El mapa ampliado ocupa todo el ancho del área. */
 .map-panel {
   position: absolute;
   inset: 0;
@@ -1572,7 +1564,7 @@ button {
   color: var(--ink-soft);
 }
 
-/* El aviso sobre la IA va primero y más visible que los créditos. */
+/* Aviso sobre la IA, más visible que los créditos. */
 .app-footer .footer-ai {
   font-size: 12px;
   font-weight: 600;
@@ -1746,8 +1738,7 @@ button {
 
 /* Sesión en la cabecera */
 
-/* El margen automático lleva la ruta de navegación junto al bloque de sesión, a la
-   derecha, en lugar de dejarla flotando en el centro. */
+/* Lleva la ruta de navegación a la derecha, junto a la sesión. */
 .app-header > nav {
   margin-left: auto;
 }
@@ -2097,7 +2088,7 @@ button {
   font-size: 12px;
 }
 
-/* Solo aparece en usuarios desactivados: eliminar es el segundo paso. */
+/* Solo aparece en usuarios desactivados. */
 .user-action.is-danger {
   border-color: var(--high);
   color: var(--high);
@@ -2329,9 +2320,7 @@ button {
     height: 100vh;
   }
 
-  /* Con el bloque de sesión la cabecera no cabe en una línea en portátiles: en vez de
-     partirse en dos filas, el lema y la ruta ceden espacio y se recortan con puntos
-     suspensivos. */
+  /* En portátiles, el lema y la ruta se recortan para que la cabecera quepa en una línea. */
   .app-header {
     flex-wrap: nowrap;
   }

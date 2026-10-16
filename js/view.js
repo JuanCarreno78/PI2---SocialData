@@ -27,9 +27,8 @@ export function formatPercent(value) {
   return `${Number(value).toFixed(1).replace('.', ',')}%`;
 }
 
-// También las comillas: el truco anterior (textContent -> innerHTML) no las escapaba, y
-// dentro de un atributo (title="...") una comilla en el dato cerraba el atributo y permitía
-// inyectar otros (XSS).
+// Escapa también las comillas para que un dato no pueda inyectar código en un atributo
+// (XSS).
 const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
 export function escapeHtml(text) {
@@ -55,7 +54,7 @@ export function renderBreadcrumb(breadcrumbEl, trail, onNavigate) {
     button.classList.add('crumb');
     if (last) button.classList.add('is-active');
     button.textContent = step.name;
-    // En escritorio la ruta puede recortarse: el texto completo queda en el title.
+    // El texto completo queda en el title por si la ruta se recorta.
     button.title = step.name;
     if (!last) button.addEventListener('click', () => onNavigate(step));
 
@@ -64,7 +63,7 @@ export function renderBreadcrumb(breadcrumbEl, trail, onNavigate) {
   });
 }
 
-// Cada dimensión es un desplegable: su botón y, justo debajo, el panel con sus indicadores.
+// Cada dimensión es un desplegable con su panel de indicadores debajo.
 export function renderDimensions(listEl, dimensions, openDimensions, onToggle) {
   listEl.textContent = '';
 
@@ -208,8 +207,7 @@ export function renderDistribution(listEl, zone, prediction) {
   });
 }
 
-// Opciones del selector de zona: el área completa y las zonas agrupadas por municipio, en
-// el orden en que llegan (municipio y luego urbana/rural).
+// Opciones del selector: el área completa y las zonas agrupadas por municipio.
 export function renderZoneOptions(selectEl, area, zones) {
   selectEl.textContent = '';
   selectEl.appendChild(new Option('Toda el área metropolitana', String(area.zona_id)));
@@ -275,7 +273,7 @@ export function renderDeprivations(listEl, deprivations) {
     heading.textContent = group.dimension;
     listEl.appendChild(heading);
 
-    // Sin dato en la zona no se dibuja la barra: una barra vacía se leería como 0 %.
+    // Sin dato no se dibuja la barra, para no confundirla con 0 %.
     group.indicadores
       .filter((indicator) => indicator.prevalencia !== null && indicator.prevalencia !== undefined)
       .forEach((indicator) => {
@@ -286,7 +284,7 @@ export function renderDeprivations(listEl, deprivations) {
   });
 }
 
-// El modelo de lenguaje escribe negritas (**texto**), títulos (### ) y viñetas de markdown.
+// Convierte el markdown de las respuestas (negritas, títulos y viñetas) en HTML.
 function formatAnswer(text) {
   return escapeHtml(text)
     .replace(/^#{1,4}\s*(.+)$/gm, '<strong>$1</strong>')
@@ -420,8 +418,7 @@ export function renderLoginNotice(noticeEl, message) {
 }
 
 // Administración
-// Los nombres y correos los escribe un administrador: todo pasa por escapeHtml o por
-// textContent.
+// Todo dato escrito por un usuario pasa por escapeHtml o textContent.
 export function renderUsers(listEl, users, currentEmail, onToggle, onDelete) {
   listEl.textContent = '';
 
@@ -486,7 +483,7 @@ export function renderAdminMessage(messageEl, text, kind) {
 }
 
 // Mi perfil
-// Todo dato del usuario entra por textContent: nombres, motivos e IP los escriben personas.
+// Los datos del usuario se insertan con textContent.
 function formatWhen(value) {
   if (!value) return null;
   const date = new Date(value);
@@ -516,13 +513,12 @@ export function renderProfileFacts(listEl, profile) {
   });
 }
 
-// Estado del nombre: solicitud pendiente (con opción de cancelarla) o el resultado de la
-// última, para que el analista se entere si la rechazaron.
+// Muestra la solicitud pendiente o el resultado de la última.
 export function renderNameStatus(statusEl, profile, onCancel) {
   statusEl.textContent = '';
   const note = document.createElement('p');
   const pending = profile.solicitud_pendiente;
-  // El resultado de la última solicitud es una noticia: se muestra 14 días.
+  // El resultado de la última solicitud se muestra durante 14 días.
   const recent = profile.ultima_resuelta && profile.ultima_resuelta.resuelta_en &&
     Date.now() - new Date(profile.ultima_resuelta.resuelta_en).getTime() < 14 * 86400000;
   const last = recent ? profile.ultima_resuelta : null;
@@ -618,9 +614,7 @@ function exportedByText(report) {
 }
 
 // Excel (.xlsx)
-// Antes se exportaba CSV, pero un CSV depende de la configuración regional: con ';' se abre
-// bien en un Excel en español y en una sola columna en uno en inglés, en Google Sheets o en
-// LibreOffice, y con ',' al revés.
+// Usa .xlsx en vez de CSV porque el CSV cambia según la configuración regional.
 
 const XLSX_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
@@ -643,7 +637,7 @@ function crc32(bytes) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 
-// ZIP sin compresión (método "store"): válido para Excel y mucho más simple.
+// ZIP sin compresión (método "store"), válido para Excel.
 function zip(files) {
   const encoder = new TextEncoder();
   const chunks = [];
@@ -840,8 +834,7 @@ export function reportToXlsx(report) {
   return new Blob(zip(files), { type: XLSX_TYPE });
 }
 
-// Las contribuciones SHAP son del hogar representativo de la zona, no de la zona entera: su
-// grupo puede no coincidir con el mayoritario.
+// Los factores SHAP son del hogar representativo, no de toda la zona.
 function driversTitle(report) {
   return 'Factores dominantes según el modelo · hogar representativo de la zona ' +
     `(clasificado en el grupo ${report.predictedGroup})`;
@@ -855,7 +848,7 @@ export function reportFileName(report, extension) {
   const slug = report.zone
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  // Fecha local y no toISOString(): esa es UTC y en Colombia, desde las 7 p. m., ya daría el día siguiente.
+  // Usa la fecha local en vez de toISOString(), que está en UTC.
   const date = report.exportedAt;
   const pad = (value) => String(value).padStart(2, '0');
   const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;

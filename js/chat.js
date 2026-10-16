@@ -28,8 +28,7 @@ function withoutAccents(text) {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
-// Líneas de intervención asociadas a cada privación, con la entidad que habitualmente las
-// lidera en el orden territorial colombiano.
+// Líneas de intervención por privación y la entidad que suele liderarlas.
 const ACTIONS = {
   'Trabajo informal':
     'rutas de formalización laboral y empresarial con la Cámara de Comercio y el SENA, y esquemas de aseguramiento para trabajadores independientes',
@@ -86,7 +85,7 @@ function rankOf(zone) {
   return { position: ranked.findIndex((z) => z.zona_id === zone.zona_id) + 1, total: ranked.length };
 }
 
-// Los factores del modelo explican hogares de una zona: el área no los tiene.
+// El área no tiene factores del modelo.
 const AREA_WITHOUT_DRIVERS =
   'Los factores del modelo se calculan por zona. Selecciona una zona en el mapa para ver ' +
   'qué pesa más en su clasificación.';
@@ -293,7 +292,7 @@ export function greet(zone, withAi = false) {
   push(zone.zona_id, 'assistant', overview(zone) + hint);
 }
 
-// Respuesta inmediata con plantillas: sin backend, o si la IA no responde.
+// Respuesta con plantillas cuando no hay backend o la IA no responde.
 export function ask(zone, question) {
   push(zone.zona_id, 'user', question);
   push(zone.zona_id, 'assistant', reply(zone, question));
@@ -324,8 +323,7 @@ export function getMessages(zoneId) {
   return messagesOf(zoneId);
 }
 
-// La conversación para el resumen del reporte: sin el saludo inicial, que es una plantilla,
-// y solo si el funcionario preguntó algo.
+// Conversación para el resumen del reporte, sin el saludo inicial.
 export function conversationFor(zoneId) {
   const messages = messagesOf(zoneId).filter((message) => !message.pending).slice(1);
   if (!messages.some((message) => message.author === 'user')) return [];
@@ -335,7 +333,7 @@ export function conversationFor(zoneId) {
   }));
 }
 
-// El backend rechaza mensajes de más de 4.000 caracteres (tope contra peticiones gigantes).
+// Recorta cada mensaje al límite que acepta el backend (4.000 caracteres).
 function clip(text) {
   return String(text || '').slice(0, 3900);
 }
